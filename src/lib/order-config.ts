@@ -1,6 +1,6 @@
 // WhatsApp number for Vanilla Valley Bakery (international format, no +).
 // South African default — bakery owner can change this number.
-export const WHATSAPP_NUMBER = "27812345678";
+export const WHATSAPP_NUMBER = "27784210783";
 export const BAKERY_NAME = "Vanilla Valley";
 
 export const OCCASIONS = [
