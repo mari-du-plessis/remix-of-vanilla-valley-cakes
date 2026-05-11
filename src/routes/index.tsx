@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroCake from "@/assets/hero-cake.jpg";
-import cake2 from "@/assets/cake-2.jpg";
-import cake3 from "@/assets/cake-3.jpg";
-import cake4 from "@/assets/cake-4.jpg";
 import logo from "@/assets/logo.jpg";
+import galleryCookie from "@/assets/gallery-cookie.jpg";
+import galleryOhBaby from "@/assets/gallery-ohbaby.jpg";
+import galleryGrinch from "@/assets/gallery-grinch.jpg";
 import { Button } from "@/components/ui/button";
 import { Cake, Heart, Sparkles } from "lucide-react";
 
@@ -12,9 +12,9 @@ export const Route = createFileRoute("/")({
 });
 
 const gallery = [
-  { src: cake2, alt: "Berry topped birthday cake" },
-  { src: cake3, alt: "Naked cake with pink roses" },
-  { src: cake4, alt: "Pastel cupcake assortment" },
+  { src: galleryCookie, alt: "Cookies & milk first birthday cake" },
+  { src: galleryOhBaby, alt: "Oh Baby teddy bear baby shower cake" },
+  { src: galleryGrinch, alt: "Grinch Christmas themed cake" },
 ];
 
 function Index() {
