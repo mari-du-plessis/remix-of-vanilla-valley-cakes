@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroCake from "@/assets/hero-cake.jpg";
-import cake2 from "@/assets/cake-2.jpg";
-import cake3 from "@/assets/cake-3.jpg";
-import cake4 from "@/assets/cake-4.jpg";
 import logo from "@/assets/logo.jpg";
+import galleryCookie from "@/assets/gallery-cookie.jpg";
+import galleryOhBaby from "@/assets/gallery-ohbaby.jpg";
+import galleryGrinch from "@/assets/gallery-grinch.jpg";
 import { Button } from "@/components/ui/button";
 import { Cake, Heart, Sparkles } from "lucide-react";
 
@@ -12,9 +12,9 @@ export const Route = createFileRoute("/")({
 });
 
 const gallery = [
-  { src: cake2, alt: "Berry topped birthday cake" },
-  { src: cake3, alt: "Naked cake with pink roses" },
-  { src: cake4, alt: "Pastel cupcake assortment" },
+  { src: galleryCookie, alt: "Cookies & milk first birthday cake" },
+  { src: galleryOhBaby, alt: "Oh Baby teddy bear baby shower cake" },
+  { src: galleryGrinch, alt: "Grinch Christmas themed cake" },
 ];
 
 function Index() {
@@ -77,18 +77,27 @@ function Index() {
         </div>
       </section>
 
-      {/* Gallery */}
-      <section className="px-6 py-10">
-        <h2 className="text-3xl text-center mb-6">Recent creations</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {gallery.map((img, i) => (
-            <div
-              key={img.src}
-              className={`rounded-2xl overflow-hidden ${i === 0 ? "col-span-2 aspect-[16/10]" : "aspect-square"}`}
-            >
-              <img src={img.src} alt={img.alt} loading="lazy" width={1024} height={1024} className="w-full h-full object-cover" />
-            </div>
-          ))}
+      {/* Gallery — moving ribbon */}
+      <section className="py-10 overflow-hidden">
+        <h2 className="text-3xl text-center mb-6 px-6">Recent creations</h2>
+        <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+          <div className="flex w-max gap-4 animate-marquee">
+            {[...gallery, ...gallery].map((img, i) => (
+              <div
+                key={i}
+                className="w-64 h-64 sm:w-72 sm:h-72 rounded-2xl overflow-hidden shadow-[var(--shadow-soft)] shrink-0"
+              >
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  loading="lazy"
+                  width={512}
+                  height={512}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
