@@ -3,6 +3,7 @@ import heroCake from "@/assets/hero-cake.jpg";
 import cake2 from "@/assets/cake-2.jpg";
 import cake3 from "@/assets/cake-3.jpg";
 import cake4 from "@/assets/cake-4.jpg";
+import logo from "@/assets/logo.jpg";
 import { Button } from "@/components/ui/button";
 import { Cake, Heart, Sparkles } from "lucide-react";
 
@@ -20,8 +21,14 @@ function Index() {
   return (
     <main className="min-h-screen">
       {/* Header */}
-      <header className="px-6 pt-8 pb-4 text-center">
-        <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground">Vanilla Valley</p>
+      <header className="px-6 pt-6 pb-2 flex flex-col items-center text-center">
+        <img
+          src={logo}
+          alt="Vanilla Valley bakery logo"
+          width={160}
+          height={160}
+          className="w-28 h-28 sm:w-32 sm:h-32 object-contain"
+        />
         <p className="text-xs text-muted-foreground mt-1">Artisan Bakery · South Africa</p>
       </header>
 
