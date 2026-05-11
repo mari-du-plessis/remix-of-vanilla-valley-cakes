@@ -8,6 +8,10 @@ import galleryFloral70 from "@/assets/gallery-floral70.jpg";
 import galleryConrad from "@/assets/gallery-conrad.jpg";
 import galleryPopArt from "@/assets/gallery-popart.jpg";
 import galleryLoanco from "@/assets/gallery-loanco.jpg";
+import galleryFastOne from "@/assets/gallery-fastone.jpg";
+import galleryCongrats from "@/assets/gallery-congrats.jpg";
+import galleryMinnie from "@/assets/gallery-minnie.jpg";
+import galleryBoago from "@/assets/gallery-boago.jpg";
 import { Button } from "@/components/ui/button";
 import { Cake, Heart, Sparkles } from "lucide-react";
 
@@ -23,6 +27,10 @@ const gallery = [
   { src: galleryConrad, alt: "Ferdinand the bull themed birthday cake" },
   { src: galleryPopArt, alt: "Pop art comic book I Love You cake" },
   { src: galleryLoanco, alt: "Blue puppy themed first birthday cake" },
+  { src: galleryFastOne, alt: "Fast One race car themed first birthday cake" },
+  { src: galleryCongrats, alt: "Black and gold graduation congrats cake" },
+  { src: galleryMinnie, alt: "Pink Minnie Mouse second birthday cake" },
+  { src: galleryBoago, alt: "Two-tier construction trucks themed birthday cake" },
 ];
 
 function Index() {
