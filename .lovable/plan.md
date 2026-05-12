@@ -1,26 +1,26 @@
-## What I found
+## Goal
 
-The code is already correct:
+Stop asking the customer to re-send the inspiration photo on WhatsApp. Instead, when they pick a photo, upload it in the background and include a tappable link in the WhatsApp order message so you can open the image straight from the chat.
 
-- `src/lib/order-config.ts` → `WHATSAPP_NUMBER = "27784210783"` (your real number, 078 421 0783 in international format)
-- `src/routes/order.tsx` reads from this constant — no hardcoded number anywhere else
+## Why a link instead of an inline image
 
-So the source of truth is right. If a test is still opening WhatsApp with the old number `27812345678`, it's almost certainly one of these three things — none of which need a code change:
+WhatsApp's `wa.me` deep-link only carries text — there's no way for a website to pre-attach an image to that message. The standard fix used by quote/order forms is to upload the photo and drop a link to it into the text.
 
-### Most likely causes
+## What changes
 
-1. **Browser cache / old preview tab** — The preview tab still has the old JavaScript bundle in memory. Fix: hard refresh the preview (Cmd/Ctrl + Shift + R), or close the preview tab and reopen it.
-2. **The app hasn't been republished** — The Published URL currently shows "(not published)". If you've shared a link with someone (or are testing on a different device using an old link), they're seeing the old build. Fix: click Publish so the new number goes live.
-3. **WhatsApp itself opened an existing chat thread** — If you previously tapped the old number, WhatsApp may auto-open that chat. Look at the recipient at the top of WhatsApp: if it says `+27 81 234 5678`, that's the cached chat, not a new link. The actual `wa.me` link being generated is correct.
+1. **Enable Lovable Cloud** — needed for file storage. (Free, no external setup.)
+2. **Create a public `inspiration-photos` storage bucket** with insert-anyone / read-anyone policies (it's a one-off image the customer chose to share, and the link needs to open without login on your phone).
+3. **Order form (`src/routes/order.tsx`):**
+   - Keep the existing file picker, but actually hold the `File` object in state (currently only the filename is stored).
+   - Show a small thumbnail preview after selection so the customer knows it was attached.
+   - On Send:
+     - If a photo was chosen, upload it to `inspiration-photos/{timestamp}-{safe-name}` and grab its public URL.
+     - Replace the current `"will send separately"` line with `*Inspiration photo:* <public URL>` in the WhatsApp message.
+     - Show a brief "Uploading photo…" toast and disable the Send button while uploading; if upload fails, fall back to the old "send separately" wording so the order still goes through.
+   - Remove the "We'll ask you to share this photo on WhatsApp after submitting" helper text.
 
-### How to confirm in 10 seconds
+## Out of scope
 
-1. Hard refresh the preview.
-2. Fill in the order form and click Send.
-3. Before WhatsApp opens, look at the URL — it should contain `wa.me/27784210783...`. If it does, the app is fine and the issue is on the WhatsApp side (cause #3).
-
-## Plan
-
-No code changes needed unless the verification above shows the URL still contains `27812345678`. If that happens, let me know and I'll dig deeper (could be a service-worker cache or a stale build artifact).
-
-If everything checks out, the next step is just to **Publish** the app so the live link uses the new number.
+- No order database, no admin dashboard — orders still flow through WhatsApp exactly as today.
+- No image resizing/compression (can add later if phone uploads feel slow).
+- No auth on uploads; the bucket only accepts images and is only written to from the order form.

@@ -1,0 +1,1 @@
+drop policy if exists "Public can view inspiration photos" on storage.objects;

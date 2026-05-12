@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +23,8 @@ type FormState = {
   flavour: string;
   filling: string;
   extras: string[];
-  inspirationName: string;
+  inspirationFile: File | null;
+  inspirationPreview: string;
   eventDate: string;
   budget: string;
   name: string;
@@ -33,7 +35,8 @@ type FormState = {
 
 const initial: FormState = {
   occasion: "", size: "", flavour: "", filling: "", extras: [],
-  inspirationName: "", eventDate: "", budget: "", name: "", phone: "", email: "", notes: "",
+  inspirationFile: null, inspirationPreview: "",
+  eventDate: "", budget: "", name: "", phone: "", email: "", notes: "",
 };
 
 const STEPS = ["Occasion", "Cake", "Details", "Contact"];
@@ -41,12 +44,24 @@ const STEPS = ["Occasion", "Cake", "Details", "Contact"];
 function OrderPage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormState>(initial);
+  const [submitting, setSubmitting] = useState(false);
 
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
   const toggleExtra = (e: string) =>
     update("extras", form.extras.includes(e) ? form.extras.filter(x => x !== e) : [...form.extras, e]);
+
+  const handleInspirationChange = (file: File | null) => {
+    setForm((f) => {
+      if (f.inspirationPreview) URL.revokeObjectURL(f.inspirationPreview);
+      return {
+        ...f,
+        inspirationFile: file,
+        inspirationPreview: file ? URL.createObjectURL(file) : "",
+      };
+    });
+  };
 
   const canNext = () => {
     if (step === 0) return !!form.occasion;
@@ -55,11 +70,37 @@ function OrderPage() {
     return !!form.name && !!form.phone;
   };
 
-  const submit = () => {
+  const uploadInspiration = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage
+      .from("inspiration-photos")
+      .upload(safeName, file, { contentType: file.type, upsert: false });
+    if (error) {
+      console.error("Inspiration upload failed", error);
+      return null;
+    }
+    const { data } = supabase.storage.from("inspiration-photos").getPublicUrl(safeName);
+    return data.publicUrl;
+  };
+
+  const submit = async () => {
     if (!form.name || !form.phone) {
       toast.error("Please add your name and phone number");
       return;
     }
+    setSubmitting(true);
+
+    let photoLine: string | null = null;
+    if (form.inspirationFile) {
+      const t = toast.loading("Uploading inspiration photo…");
+      const url = await uploadInspiration(form.inspirationFile);
+      toast.dismiss(t);
+      photoLine = url
+        ? `*Inspiration photo:* ${url}`
+        : `*Inspiration photo:* ${form.inspirationFile.name} (upload failed — please send on WhatsApp)`;
+    }
+
     const lines = [
       `🎂 *New Cake Order — ${BAKERY_NAME}*`,
       ``,
@@ -68,7 +109,7 @@ function OrderPage() {
       `*Flavour:* ${form.flavour}`,
       `*Filling:* ${form.filling}`,
       form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
-      form.inspirationName ? `*Inspiration photo:* ${form.inspirationName} (will send separately)` : null,
+      photoLine,
       `*Event date:* ${form.eventDate}`,
       form.budget ? `*Budget:* R${form.budget}` : null,
       ``,
@@ -81,6 +122,7 @@ function OrderPage() {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines)}`;
     window.open(url, "_blank");
     toast.success("Opening WhatsApp…");
+    setSubmitting(false);
   };
 
   return (
@@ -222,19 +264,23 @@ function OrderPage() {
                 className="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-2xl cursor-pointer hover:border-primary/60 transition-colors text-sm text-muted-foreground"
               >
                 <Upload className="h-4 w-4" />
-                {form.inspirationName || "Tap to upload an image"}
+                {form.inspirationFile?.name || "Tap to upload an image"}
               </label>
               <input
                 id="inspiration"
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={(e) => update("inspirationName", e.target.files?.[0]?.name ?? "")}
+                onChange={(e) => handleInspirationChange(e.target.files?.[0] ?? null)}
               />
-              {form.inspirationName && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  We'll ask you to share this photo on WhatsApp after submitting.
-                </p>
+              {form.inspirationPreview && (
+                <div className="mt-3">
+                  <img
+                    src={form.inspirationPreview}
+                    alt="Inspiration preview"
+                    className="h-32 w-32 object-cover rounded-xl border border-border"
+                  />
+                </div>
               )}
             </div>
 
@@ -308,8 +354,8 @@ function OrderPage() {
             Continue <ArrowRight className="h-4 w-4 ml-1" />
           </Button>
         ) : (
-          <Button onClick={submit} className="flex-1 h-12 rounded-full" disabled={!canNext()}>
-            <MessageCircle className="h-4 w-4 mr-2" /> Send via WhatsApp
+          <Button onClick={submit} className="flex-1 h-12 rounded-full" disabled={!canNext() || submitting}>
+            <MessageCircle className="h-4 w-4 mr-2" /> {submitting ? "Sending…" : "Send via WhatsApp"}
           </Button>
         )}
       </div>
