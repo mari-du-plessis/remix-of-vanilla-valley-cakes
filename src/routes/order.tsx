@@ -44,12 +44,24 @@ const STEPS = ["Occasion", "Cake", "Details", "Contact"];
 function OrderPage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormState>(initial);
+  const [submitting, setSubmitting] = useState(false);
 
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
   const toggleExtra = (e: string) =>
     update("extras", form.extras.includes(e) ? form.extras.filter(x => x !== e) : [...form.extras, e]);
+
+  const handleInspirationChange = (file: File | null) => {
+    setForm((f) => {
+      if (f.inspirationPreview) URL.revokeObjectURL(f.inspirationPreview);
+      return {
+        ...f,
+        inspirationFile: file,
+        inspirationPreview: file ? URL.createObjectURL(file) : "",
+      };
+    });
+  };
 
   const canNext = () => {
     if (step === 0) return !!form.occasion;
@@ -58,11 +70,37 @@ function OrderPage() {
     return !!form.name && !!form.phone;
   };
 
-  const submit = () => {
+  const uploadInspiration = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage
+      .from("inspiration-photos")
+      .upload(safeName, file, { contentType: file.type, upsert: false });
+    if (error) {
+      console.error("Inspiration upload failed", error);
+      return null;
+    }
+    const { data } = supabase.storage.from("inspiration-photos").getPublicUrl(safeName);
+    return data.publicUrl;
+  };
+
+  const submit = async () => {
     if (!form.name || !form.phone) {
       toast.error("Please add your name and phone number");
       return;
     }
+    setSubmitting(true);
+
+    let photoLine: string | null = null;
+    if (form.inspirationFile) {
+      const t = toast.loading("Uploading inspiration photo…");
+      const url = await uploadInspiration(form.inspirationFile);
+      toast.dismiss(t);
+      photoLine = url
+        ? `*Inspiration photo:* ${url}`
+        : `*Inspiration photo:* ${form.inspirationFile.name} (upload failed — please send on WhatsApp)`;
+    }
+
     const lines = [
       `🎂 *New Cake Order — ${BAKERY_NAME}*`,
       ``,
@@ -71,7 +109,7 @@ function OrderPage() {
       `*Flavour:* ${form.flavour}`,
       `*Filling:* ${form.filling}`,
       form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
-      form.inspirationName ? `*Inspiration photo:* ${form.inspirationName} (will send separately)` : null,
+      photoLine,
       `*Event date:* ${form.eventDate}`,
       form.budget ? `*Budget:* R${form.budget}` : null,
       ``,
@@ -84,6 +122,7 @@ function OrderPage() {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines)}`;
     window.open(url, "_blank");
     toast.success("Opening WhatsApp…");
+    setSubmitting(false);
   };
 
   return (
