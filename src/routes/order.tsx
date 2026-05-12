@@ -23,7 +23,8 @@ type FormState = {
   flavour: string;
   filling: string;
   extras: string[];
-  inspirationName: string;
+  inspirationFile: File | null;
+  inspirationPreview: string;
   eventDate: string;
   budget: string;
   name: string;
@@ -34,7 +35,8 @@ type FormState = {
 
 const initial: FormState = {
   occasion: "", size: "", flavour: "", filling: "", extras: [],
-  inspirationName: "", eventDate: "", budget: "", name: "", phone: "", email: "", notes: "",
+  inspirationFile: null, inspirationPreview: "",
+  eventDate: "", budget: "", name: "", phone: "", email: "", notes: "",
 };
 
 const STEPS = ["Occasion", "Cake", "Details", "Contact"];
