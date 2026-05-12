@@ -354,8 +354,8 @@ function OrderPage() {
             Continue <ArrowRight className="h-4 w-4 ml-1" />
           </Button>
         ) : (
-          <Button onClick={submit} className="flex-1 h-12 rounded-full" disabled={!canNext()}>
-            <MessageCircle className="h-4 w-4 mr-2" /> Send via WhatsApp
+          <Button onClick={submit} className="flex-1 h-12 rounded-full" disabled={!canNext() || submitting}>
+            <MessageCircle className="h-4 w-4 mr-2" /> {submitting ? "Sending…" : "Send via WhatsApp"}
           </Button>
         )}
       </div>
