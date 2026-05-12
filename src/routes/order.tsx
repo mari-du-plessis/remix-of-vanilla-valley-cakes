@@ -264,19 +264,23 @@ function OrderPage() {
                 className="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-2xl cursor-pointer hover:border-primary/60 transition-colors text-sm text-muted-foreground"
               >
                 <Upload className="h-4 w-4" />
-                {form.inspirationName || "Tap to upload an image"}
+                {form.inspirationFile?.name || "Tap to upload an image"}
               </label>
               <input
                 id="inspiration"
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={(e) => update("inspirationName", e.target.files?.[0]?.name ?? "")}
+                onChange={(e) => handleInspirationChange(e.target.files?.[0] ?? null)}
               />
-              {form.inspirationName && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  We'll ask you to share this photo on WhatsApp after submitting.
-                </p>
+              {form.inspirationPreview && (
+                <div className="mt-3">
+                  <img
+                    src={form.inspirationPreview}
+                    alt="Inspiration preview"
+                    className="h-32 w-32 object-cover rounded-xl border border-border"
+                  />
+                </div>
               )}
             </div>
 
