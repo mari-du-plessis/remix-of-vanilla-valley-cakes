@@ -115,6 +115,11 @@ function Index() {
             ))}
           </div>
         </div>
+        <div className="text-center mt-6">
+          <Link to="/gallery" className="text-sm underline text-muted-foreground hover:text-foreground">
+            See full gallery →
+          </Link>
+        </div>
       </section>
 
       {/* CTA */}
