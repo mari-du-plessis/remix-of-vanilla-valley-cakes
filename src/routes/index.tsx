@@ -134,6 +134,11 @@ function Index() {
       <footer className="px-6 py-8 text-center text-xs text-muted-foreground border-t border-border/60">
         <p>© {new Date().getFullYear()} Vanilla Valley Bakery</p>
         <p className="mt-1">Made with love in South Africa</p>
+        <p className="mt-3">
+          <Link to="/login" className="opacity-50 hover:opacity-100 transition-opacity">
+            Admin
+          </Link>
+        </p>
       </footer>
     </main>
   );
