@@ -18,6 +18,8 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -28,7 +30,23 @@ function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setInfo(null);
     setSubmitting(true);
+    if (mode === "signup") {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/admin` },
+      });
+      setSubmitting(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      setInfo("Account created. Check your email to confirm, then sign in.");
+      setMode("signin");
+      return;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setSubmitting(false);
     if (error) {
