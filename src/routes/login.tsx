@@ -59,7 +59,9 @@ function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-semibold text-foreground text-center">Admin Login</h1>
+        <h1 className="text-2xl font-semibold text-foreground text-center">
+          {mode === "signin" ? "Admin Login" : "Create Admin Account"}
+        </h1>
         <p className="text-sm text-muted-foreground text-center mt-1">
           Manage the gallery for Vanilla Valley Bakery.
         </p>
@@ -79,20 +81,31 @@ function LoginPage() {
             <input
               type="password"
               required
+              minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
+          {info && <p className="text-sm text-foreground">{info}</p>}
           <button
             type="submit"
             disabled={submitting}
             className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
-            {submitting ? "Signing in…" : "Sign in"}
+            {submitting ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}
           </button>
         </form>
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(null); setInfo(null); }}
+            className="text-sm text-muted-foreground hover:text-foreground underline"
+          >
+            {mode === "signin" ? "Create admin account" : "Have an account? Sign in"}
+          </button>
+        </div>
         <div className="mt-6 text-center">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
             ← Back to home
