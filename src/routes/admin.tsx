@@ -153,14 +153,27 @@ function AdminPage() {
 
         <form onSubmit={handleUpload} className="mt-6 space-y-3 p-4 rounded-lg border border-dashed border-border">
           <div>
-            <label className="block text-sm font-medium mb-1">Photo</label>
+            <label
+              htmlFor="file-input"
+              className="flex flex-col items-center justify-center gap-2 w-full py-8 rounded-md border-2 border-dashed border-border bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+            >
+              <Upload className="w-6 h-6 text-muted-foreground" />
+              <span className="text-sm font-medium">
+                {file ? file.name : "Tap to choose a photo"}
+              </span>
+              {file && (
+                <span className="text-xs text-muted-foreground">
+                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                </span>
+              )}
+            </label>
             <input
               id="file-input"
               type="file"
               accept="image/*"
               required
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm"
+              className="sr-only"
             />
           </div>
           <div>
@@ -178,10 +191,10 @@ function AdminPage() {
           <button
             type="submit"
             disabled={!file || uploading}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Upload className="w-4 h-4" />
-            {uploading ? "Uploading…" : "Upload photo"}
+            {uploading ? "Uploading…" : file ? "Upload photo" : "Choose a photo first"}
           </button>
         </form>
 
