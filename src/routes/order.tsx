@@ -140,8 +140,9 @@ function OrderPage() {
       ``,
       `*Occasion:* ${form.occasion}`,
       `*Size:* ${SIZES.find(s => s.id === form.size)?.label ?? form.size}`,
-      `*Flavour:* ${form.flavour}`,
-      `*Filling:* ${form.filling}`,
+      ...(form.tiers.length > 0
+        ? form.tiers.map((t, i) => `*${tierLabel(i, form.tiers.length)}:* ${t.flavour} with ${t.filling}`)
+        : [`*Flavour:* ${form.flavour}`, `*Filling:* ${form.filling}`]),
       form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
       photoLine,
       `*Event date:* ${form.eventDate}`,
