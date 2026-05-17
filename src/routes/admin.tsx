@@ -181,6 +181,18 @@ function AdminPage() {
             />
           </div>
           <div>
+            <label className="block text-sm font-medium mb-1">Category</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              {OCCASIONS.map((o) => (
+                <option key={o} value={o}>{o}</option>
+              ))}
+            </select>
+          </div>
+          <div>
             <label className="block text-sm font-medium mb-1">Caption (optional)</label>
             <input
               type="text"
@@ -210,7 +222,7 @@ function AdminPage() {
               <img src={publicUrl(p.image_path)} alt="" className="w-16 h-16 object-cover rounded" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm truncate">{p.caption || <span className="text-muted-foreground">No caption</span>}</p>
-                <p className="text-xs text-muted-foreground">Order: {p.sort_order}</p>
+                <p className="text-xs text-muted-foreground">{p.category || "Uncategorised"} · Order: {p.sort_order}</p>
               </div>
               <div className="flex flex-col gap-1">
                 <button onClick={() => handleMove(i, -1)} disabled={i === 0} className="p-1 disabled:opacity-30">
