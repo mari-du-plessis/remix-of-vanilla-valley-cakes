@@ -17,11 +17,14 @@ export const Route = createFileRoute("/order")({
   component: OrderPage,
 });
 
+type Tier = { flavour: string; filling: string };
+
 type FormState = {
   occasion: string;
   size: string;
   flavour: string;
   filling: string;
+  tiers: Tier[];
   extras: string[];
   inspirationFile: File | null;
   inspirationPreview: string;
@@ -34,9 +37,16 @@ type FormState = {
 };
 
 const initial: FormState = {
-  occasion: "", size: "", flavour: "", filling: "", extras: [],
+  occasion: "", size: "", flavour: "", filling: "", tiers: [], extras: [],
   inspirationFile: null, inspirationPreview: "",
   eventDate: "", budget: "", name: "", phone: "", email: "", notes: "",
+};
+
+const tierCount = (sizeId: string) => (sizeId === "tier2" ? 2 : sizeId === "tier3" ? 3 : 0);
+const tierLabel = (i: number, total: number) => {
+  if (total === 2) return i === 0 ? "Top tier" : "Bottom tier";
+  if (total === 3) return ["Top tier", "Middle tier", "Bottom tier"][i];
+  return `Tier ${i + 1}`;
 };
 
 const STEPS = ["Occasion", "Cake", "Details", "Contact"];
