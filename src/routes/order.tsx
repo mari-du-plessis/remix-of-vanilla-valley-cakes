@@ -228,45 +228,97 @@ function OrderPage() {
               </div>
             </div>
 
-            <div>
-              <Label className="mb-3 block">Flavour</Label>
-              <div className="flex flex-wrap gap-2">
-                {FLAVOURS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => update("flavour", f)}
-                    className={`px-4 py-2 rounded-full border text-sm transition-all ${
-                      form.flavour === f
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background hover:border-primary/40"
-                    }`}
-                  >
-                    {f}
-                  </button>
+            {form.tiers.length > 0 ? (
+              <div className="space-y-5">
+                {form.tiers.map((t, i) => (
+                  <div key={i} className="p-4 rounded-2xl border border-border/70 bg-background/50 space-y-4">
+                    <p className="text-sm font-medium tracking-wide uppercase text-primary">
+                      {tierLabel(i, form.tiers.length)}
+                    </p>
+                    <div>
+                      <Label className="mb-2 block text-xs">Flavour</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {FLAVOURS.map((f) => (
+                          <button
+                            key={f}
+                            type="button"
+                            onClick={() => setTier(i, "flavour", f)}
+                            className={`px-3 py-1.5 rounded-full border text-xs transition-all ${
+                              t.flavour === f
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background hover:border-primary/40"
+                            }`}
+                          >
+                            {f}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="mb-2 block text-xs">Filling</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {FILLINGS.map((f) => (
+                          <button
+                            key={f}
+                            type="button"
+                            onClick={() => setTier(i, "filling", f)}
+                            className={`px-3 py-1.5 rounded-full border text-xs transition-all ${
+                              t.filling === f
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background hover:border-primary/40"
+                            }`}
+                          >
+                            {f}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
+            ) : (
+              <>
+                <div>
+                  <Label className="mb-3 block">Flavour</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {FLAVOURS.map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => update("flavour", f)}
+                        className={`px-4 py-2 rounded-full border text-sm transition-all ${
+                          form.flavour === f
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background hover:border-primary/40"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            <div>
-              <Label className="mb-3 block">Filling</Label>
-              <div className="flex flex-wrap gap-2">
-                {FILLINGS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => update("filling", f)}
-                    className={`px-4 py-2 rounded-full border text-sm transition-all ${
-                      form.filling === f
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background hover:border-primary/40"
-                    }`}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
-            </div>
+                <div>
+                  <Label className="mb-3 block">Filling</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {FILLINGS.map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => update("filling", f)}
+                        className={`px-4 py-2 rounded-full border text-sm transition-all ${
+                          form.filling === f
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background hover:border-primary/40"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             <div>
               <Label className="mb-3 block">Extras (optional)</Label>
