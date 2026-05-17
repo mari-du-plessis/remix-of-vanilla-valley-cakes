@@ -4,8 +4,14 @@ export const WHATSAPP_NUMBER = "27784210783";
 export const BAKERY_NAME = "Vanilla Valley";
 
 export const OCCASIONS = [
-  "Birthday", "Wedding", "Anniversary", "Baby Shower",
-  "Bridal Shower", "Engagement", "Baptism", "Corporate", "Other",
+  "Pretty Princesses",
+  "Little Legends",
+  "The Queen Collection",
+  "Kings & Cake",
+  "Wedding",
+  "Baby Shower",
+  "Bridal Shower",
+  "General",
 ] as const;
 
 export const SIZES = [
