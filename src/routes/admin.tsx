@@ -2,12 +2,14 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Trash2, ArrowUp, ArrowDown, Upload, LogOut } from "lucide-react";
+import { OCCASIONS } from "@/lib/order-config";
 
 type Photo = {
   id: string;
   image_path: string;
   caption: string | null;
   sort_order: number;
+  category: string | null;
 };
 
 export const Route = createFileRoute("/admin")({
@@ -31,6 +33,7 @@ function AdminPage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [caption, setCaption] = useState("");
+  const [category, setCategory] = useState<string>(OCCASIONS[0]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +66,7 @@ function AdminPage() {
   const loadPhotos = async () => {
     const { data } = await supabase
       .from("gallery_photos")
-      .select("id,image_path,caption,sort_order")
+      .select("id,image_path,caption,sort_order,category")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false });
     setPhotos(data ?? []);
@@ -86,6 +89,7 @@ function AdminPage() {
       const { error: insErr } = await supabase.from("gallery_photos").insert({
         image_path: path,
         caption: caption.trim() || null,
+        category,
         sort_order: maxOrder + 1,
       });
       if (insErr) throw insErr;
