@@ -17,11 +17,14 @@ export const Route = createFileRoute("/order")({
   component: OrderPage,
 });
 
+type Tier = { flavour: string; filling: string };
+
 type FormState = {
   occasion: string;
   size: string;
   flavour: string;
   filling: string;
+  tiers: Tier[];
   extras: string[];
   inspirationFile: File | null;
   inspirationPreview: string;
@@ -34,9 +37,16 @@ type FormState = {
 };
 
 const initial: FormState = {
-  occasion: "", size: "", flavour: "", filling: "", extras: [],
+  occasion: "", size: "", flavour: "", filling: "", tiers: [], extras: [],
   inspirationFile: null, inspirationPreview: "",
   eventDate: "", budget: "", name: "", phone: "", email: "", notes: "",
+};
+
+const tierCount = (sizeId: string) => (sizeId === "tier2" ? 2 : sizeId === "tier3" ? 3 : 0);
+const tierLabel = (i: number, total: number) => {
+  if (total === 2) return i === 0 ? "Top tier" : "Bottom tier";
+  if (total === 3) return ["Top tier", "Middle tier", "Bottom tier"][i];
+  return `Tier ${i + 1}`;
 };
 
 const STEPS = ["Occasion", "Cake", "Details", "Contact"];
@@ -63,9 +73,33 @@ function OrderPage() {
     });
   };
 
+  const setSize = (id: string) => {
+    const n = tierCount(id);
+    setForm((f) => ({
+      ...f,
+      size: id,
+      tiers: n > 0
+        ? Array.from({ length: n }, (_, i) => f.tiers[i] ?? { flavour: "", filling: "" })
+        : [],
+    }));
+  };
+
+  const setTier = (i: number, key: keyof Tier, v: string) =>
+    setForm((f) => ({
+      ...f,
+      tiers: f.tiers.map((t, idx) => (idx === i ? { ...t, [key]: v } : t)),
+    }));
+
   const canNext = () => {
     if (step === 0) return !!form.occasion;
-    if (step === 1) return !!form.size && !!form.flavour && !!form.filling;
+    if (step === 1) {
+      if (!form.size) return false;
+      if (tierCount(form.size) > 0) {
+        return form.tiers.length === tierCount(form.size) &&
+          form.tiers.every((t) => t.flavour && t.filling);
+      }
+      return !!form.flavour && !!form.filling;
+    }
     if (step === 2) return !!form.eventDate;
     return !!form.name && !!form.phone;
   };
@@ -106,8 +140,9 @@ function OrderPage() {
       ``,
       `*Occasion:* ${form.occasion}`,
       `*Size:* ${SIZES.find(s => s.id === form.size)?.label ?? form.size}`,
-      `*Flavour:* ${form.flavour}`,
-      `*Filling:* ${form.filling}`,
+      ...(form.tiers.length > 0
+        ? form.tiers.map((t, i) => `*${tierLabel(i, form.tiers.length)}:* ${t.flavour} with ${t.filling}`)
+        : [`*Flavour:* ${form.flavour}`, `*Filling:* ${form.filling}`]),
       form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
       photoLine,
       `*Event date:* ${form.eventDate}`,
@@ -179,7 +214,7 @@ function OrderPage() {
                   <button
                     key={s.id}
                     type="button"
-                    onClick={() => update("size", s.id)}
+                    onClick={() => setSize(s.id)}
                     className={`p-3 rounded-2xl border text-left transition-all ${
                       form.size === s.id
                         ? "border-primary bg-accent text-accent-foreground"
@@ -193,45 +228,97 @@ function OrderPage() {
               </div>
             </div>
 
-            <div>
-              <Label className="mb-3 block">Flavour</Label>
-              <div className="flex flex-wrap gap-2">
-                {FLAVOURS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => update("flavour", f)}
-                    className={`px-4 py-2 rounded-full border text-sm transition-all ${
-                      form.flavour === f
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background hover:border-primary/40"
-                    }`}
-                  >
-                    {f}
-                  </button>
+            {form.tiers.length > 0 ? (
+              <div className="space-y-5">
+                {form.tiers.map((t, i) => (
+                  <div key={i} className="p-4 rounded-2xl border border-border/70 bg-background/50 space-y-4">
+                    <p className="text-sm font-medium tracking-wide uppercase text-primary">
+                      {tierLabel(i, form.tiers.length)}
+                    </p>
+                    <div>
+                      <Label className="mb-2 block text-xs">Flavour</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {FLAVOURS.map((f) => (
+                          <button
+                            key={f}
+                            type="button"
+                            onClick={() => setTier(i, "flavour", f)}
+                            className={`px-3 py-1.5 rounded-full border text-xs transition-all ${
+                              t.flavour === f
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background hover:border-primary/40"
+                            }`}
+                          >
+                            {f}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="mb-2 block text-xs">Filling</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {FILLINGS.map((f) => (
+                          <button
+                            key={f}
+                            type="button"
+                            onClick={() => setTier(i, "filling", f)}
+                            className={`px-3 py-1.5 rounded-full border text-xs transition-all ${
+                              t.filling === f
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background hover:border-primary/40"
+                            }`}
+                          >
+                            {f}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
+            ) : (
+              <>
+                <div>
+                  <Label className="mb-3 block">Flavour</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {FLAVOURS.map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => update("flavour", f)}
+                        className={`px-4 py-2 rounded-full border text-sm transition-all ${
+                          form.flavour === f
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background hover:border-primary/40"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            <div>
-              <Label className="mb-3 block">Filling</Label>
-              <div className="flex flex-wrap gap-2">
-                {FILLINGS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => update("filling", f)}
-                    className={`px-4 py-2 rounded-full border text-sm transition-all ${
-                      form.filling === f
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background hover:border-primary/40"
-                    }`}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
-            </div>
+                <div>
+                  <Label className="mb-3 block">Filling</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {FILLINGS.map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => update("filling", f)}
+                        className={`px-4 py-2 rounded-full border text-sm transition-all ${
+                          form.filling === f
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background hover:border-primary/40"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             <div>
               <Label className="mb-3 block">Extras (optional)</Label>
