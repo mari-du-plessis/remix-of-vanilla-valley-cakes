@@ -73,9 +73,33 @@ function OrderPage() {
     });
   };
 
+  const setSize = (id: string) => {
+    const n = tierCount(id);
+    setForm((f) => ({
+      ...f,
+      size: id,
+      tiers: n > 0
+        ? Array.from({ length: n }, (_, i) => f.tiers[i] ?? { flavour: "", filling: "" })
+        : [],
+    }));
+  };
+
+  const setTier = (i: number, key: keyof Tier, v: string) =>
+    setForm((f) => ({
+      ...f,
+      tiers: f.tiers.map((t, idx) => (idx === i ? { ...t, [key]: v } : t)),
+    }));
+
   const canNext = () => {
     if (step === 0) return !!form.occasion;
-    if (step === 1) return !!form.size && !!form.flavour && !!form.filling;
+    if (step === 1) {
+      if (!form.size) return false;
+      if (tierCount(form.size) > 0) {
+        return form.tiers.length === tierCount(form.size) &&
+          form.tiers.every((t) => t.flavour && t.filling);
+      }
+      return !!form.flavour && !!form.filling;
+    }
     if (step === 2) return !!form.eventDate;
     return !!form.name && !!form.phone;
   };
