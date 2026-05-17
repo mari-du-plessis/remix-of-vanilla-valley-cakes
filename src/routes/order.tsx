@@ -214,7 +214,7 @@ function OrderPage() {
                   <button
                     key={s.id}
                     type="button"
-                    onClick={() => update("size", s.id)}
+                    onClick={() => setSize(s.id)}
                     className={`p-3 rounded-2xl border text-left transition-all ${
                       form.size === s.id
                         ? "border-primary bg-accent text-accent-foreground"
