@@ -107,11 +107,12 @@ function AdminPage() {
     setError(null);
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() ?? "jpg";
+      const compressed = await compressImage(file);
+      const ext = (compressed.type === "image/jpeg" ? "jpg" : compressed.name.split(".").pop()) ?? "jpg";
       const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
       const { error: upErr } = await supabase.storage
         .from("gallery-photos")
-        .upload(path, file, { upsert: false, contentType: file.type });
+        .upload(path, compressed, { upsert: false, contentType: compressed.type });
       if (upErr) throw upErr;
 
       const maxOrder = photos.reduce((m, p) => Math.max(m, p.sort_order), 0);
@@ -125,7 +126,8 @@ function AdminPage() {
 
       setFile(null);
       setCaption("");
-      (document.getElementById("file-input") as HTMLInputElement | null)?.value && ((document.getElementById("file-input") as HTMLInputElement).value = "");
+      const input = document.getElementById("file-input") as HTMLInputElement | null;
+      if (input) input.value = "";
       await loadPhotos();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
@@ -133,6 +135,7 @@ function AdminPage() {
       setUploading(false);
     }
   };
+
 
   const handleDelete = async (photo: Photo) => {
     if (!confirm("Delete this photo?")) return;
