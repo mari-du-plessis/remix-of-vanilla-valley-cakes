@@ -160,7 +160,7 @@ function OrderPage() {
       form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
       photoLine,
       `*Event date:* ${form.eventDate}`,
-      form.budget ? `*Budget:* R${form.budget}` : null,
+      ``,
       ``,
       `*Name:* ${form.name}`,
       `*Phone:* ${form.phone}`,
