@@ -90,6 +90,21 @@ function OrderPage() {
       tiers: f.tiers.map((t, idx) => (idx === i ? { ...t, [key]: v } : t)),
     }));
 
+  const setTierFlavour = (i: number, name: string) => {
+    const pairing = getPairing(name);
+    setForm((f) => ({
+      ...f,
+      tiers: f.tiers.map((t, idx) =>
+        idx === i ? { flavour: name, filling: pairing ?? "" } : t,
+      ),
+    }));
+  };
+
+  const setFlavour = (name: string) => {
+    const pairing = getPairing(name);
+    setForm((f) => ({ ...f, flavour: name, filling: pairing ?? "" }));
+  };
+
   const canNext = () => {
     if (step === 0) return !!form.occasion;
     if (step === 1) {
