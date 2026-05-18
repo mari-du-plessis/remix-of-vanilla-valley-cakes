@@ -406,22 +406,6 @@ function OrderPage() {
                 className="h-12 rounded-xl"
               />
             </div>
-
-            <div>
-              <Label htmlFor="budget" className="mb-2 block">Budget (ZAR)</Label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">R</span>
-                <Input
-                  id="budget"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder="800"
-                  value={form.budget}
-                  onChange={(e) => update("budget", e.target.value)}
-                  className="h-12 rounded-xl pl-8"
-                />
-              </div>
-            </div>
           </section>
         )}
 
