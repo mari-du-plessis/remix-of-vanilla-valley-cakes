@@ -26,6 +26,35 @@ function publicUrl(path: string) {
   return supabase.storage.from("gallery-photos").getPublicUrl(path).data.publicUrl;
 }
 
+async function compressImage(file: File, maxDim = 1600, quality = 0.82): Promise<File> {
+  if (!file.type.startsWith("image/") || file.type === "image/gif") return file;
+  const dataUrl = await new Promise<string>((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result as string);
+    r.onerror = () => rej(new Error("Could not read file"));
+    r.readAsDataURL(file);
+  });
+  const img = await new Promise<HTMLImageElement>((res, rej) => {
+    const i = new Image();
+    i.onload = () => res(i);
+    i.onerror = () => rej(new Error("Could not decode image"));
+    i.src = dataUrl;
+  });
+  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return file;
+  ctx.drawImage(img, 0, 0, w, h);
+  const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/jpeg", quality));
+  if (!blob) return file;
+  if (blob.size >= file.size) return file;
+  return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+}
+
 function AdminPage() {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
@@ -78,11 +107,12 @@ function AdminPage() {
     setError(null);
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() ?? "jpg";
+      const compressed = await compressImage(file);
+      const ext = (compressed.type === "image/jpeg" ? "jpg" : compressed.name.split(".").pop()) ?? "jpg";
       const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
       const { error: upErr } = await supabase.storage
         .from("gallery-photos")
-        .upload(path, file, { upsert: false, contentType: file.type });
+        .upload(path, compressed, { upsert: false, contentType: compressed.type });
       if (upErr) throw upErr;
 
       const maxOrder = photos.reduce((m, p) => Math.max(m, p.sort_order), 0);
@@ -96,7 +126,8 @@ function AdminPage() {
 
       setFile(null);
       setCaption("");
-      (document.getElementById("file-input") as HTMLInputElement | null)?.value && ((document.getElementById("file-input") as HTMLInputElement).value = "");
+      const input = document.getElementById("file-input") as HTMLInputElement | null;
+      if (input) input.value = "";
       await loadPhotos();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
@@ -104,6 +135,7 @@ function AdminPage() {
       setUploading(false);
     }
   };
+
 
   const handleDelete = async (photo: Photo) => {
     if (!confirm("Delete this photo?")) return;
