@@ -23,15 +23,36 @@ export const SIZES = [
   { id: "cupcakes", label: "Cupcakes", serves: "Per dozen" },
 ];
 
-export const FLAVOURS = [
-  "Vanilla Sponge", "Chocolate", "Red Velvet", "Lemon",
-  "Carrot", "Funfetti", "Coffee", "Marble",
+// Fillings available for "custom" flavours (Category A)
+export const FILLINGS = [
+  "Vanilla Buttercream",
+  "Chocolate Ganache",
+  "Salted Caramel",
+  "Fresh Cream",
+  "Fresh Cream & Berries",
+  "Cream Cheese",
 ];
 
-export const FILLINGS = [
-  "Vanilla Buttercream", "Chocolate Ganache", "Cream Cheese",
-  "Strawberry Jam", "Salted Caramel", "Lemon Curd", "Fresh Cream & Berries",
+// Each flavour either lets the customer pick a filling (pairing: null)
+// or comes with a signature pairing (pairing: string).
+export type Flavour = { name: string; pairing: string | null };
+
+export const FLAVOURS: Flavour[] = [
+  { name: "Vanilla", pairing: null },
+  { name: "Chocolate", pairing: null },
+  { name: "Red Velvet", pairing: "Cream Cheese" },
+  { name: "Carrot", pairing: "Cream Cheese" },
+  { name: "Spicy Pumpkin", pairing: "Cream Cheese and Salted Caramel" },
+  { name: "Funfetti", pairing: null },
+  { name: "Lemon", pairing: "Cream Cheese" },
+  { name: "Lemon Poppy", pairing: "Cream Cheese" },
+  { name: "Coffee", pairing: null },
+  { name: "Amarula", pairing: "Amarula Chocolate Ganache" },
+  { name: "Hummingbird", pairing: "Cream Cheese" },
 ];
+
+export const getPairing = (flavourName: string): string | null =>
+  FLAVOURS.find((f) => f.name === flavourName)?.pairing ?? null;
 
 export const EXTRAS = [
   "Fresh flowers", "Edible gold leaf", "Custom topper",
