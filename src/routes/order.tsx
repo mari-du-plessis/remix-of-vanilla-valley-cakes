@@ -251,87 +251,96 @@ function OrderPage() {
                       {tierLabel(i, form.tiers.length)}
                     </p>
                     <div>
-                      <Label className="mb-2 block text-xs">Flavour</Label>
+                      <Label className="mb-1 block text-xs">Choose Your Flavour</Label>
+                      <p className="text-[11px] text-muted-foreground mb-2 italic">
+                        Some flavours are thoughtfully paired with their signature fillings.
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {FLAVOURS.map((f) => (
                           <button
-                            key={f}
+                            key={f.name}
                             type="button"
-                            onClick={() => setTier(i, "flavour", f)}
-                            className={`px-3 py-1.5 rounded-full border text-xs transition-all ${
-                              t.flavour === f
-                                ? "border-primary bg-primary text-primary-foreground"
+                            onClick={() => setTierFlavour(i, f.name)}
+                            className={`px-3 py-1.5 rounded-full border text-xs transition-all duration-300 ${
+                              t.flavour === f.name
+                                ? "border-primary bg-accent text-accent-foreground shadow-sm"
                                 : "border-border bg-background hover:border-primary/40"
                             }`}
                           >
-                            {f}
+                            {f.name}
                           </button>
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <Label className="mb-2 block text-xs">Filling</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {FILLINGS.map((f) => (
-                          <button
-                            key={f}
-                            type="button"
-                            onClick={() => setTier(i, "filling", f)}
-                            className={`px-3 py-1.5 rounded-full border text-xs transition-all ${
-                              t.filling === f
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-border bg-background hover:border-primary/40"
-                            }`}
-                          >
-                            {f}
-                          </button>
-                        ))}
+                    {t.flavour && getPairing(t.flavour) && (
+                      <p className="text-xs italic text-primary/80 transition-opacity duration-300">
+                        Paired with: {getPairing(t.flavour)}
+                      </p>
+                    )}
+                    {t.flavour && !getPairing(t.flavour) && (
+                      <div className="transition-all duration-300">
+                        <Label className="mb-2 block text-xs">Choose your filling</Label>
+                        <select
+                          value={t.filling}
+                          onChange={(e) => setTier(i, "filling", e.target.value)}
+                          className="w-full h-11 rounded-xl border border-border bg-background px-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                        >
+                          <option value="">Select a filling…</option>
+                          {FILLINGS.map((fl) => (
+                            <option key={fl} value={fl}>{fl}</option>
+                          ))}
+                        </select>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
             ) : (
               <>
                 <div>
-                  <Label className="mb-3 block">Flavour</Label>
+                  <Label className="mb-1 block">Choose Your Flavour</Label>
+                  <p className="text-xs text-muted-foreground mb-3 italic">
+                    Some flavours are thoughtfully paired with their signature fillings.
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {FLAVOURS.map((f) => (
                       <button
-                        key={f}
+                        key={f.name}
                         type="button"
-                        onClick={() => update("flavour", f)}
-                        className={`px-4 py-2 rounded-full border text-sm transition-all ${
-                          form.flavour === f
-                            ? "border-primary bg-primary text-primary-foreground"
+                        onClick={() => setFlavour(f.name)}
+                        className={`px-4 py-2 rounded-full border text-sm transition-all duration-300 ${
+                          form.flavour === f.name
+                            ? "border-primary bg-accent text-accent-foreground shadow-sm"
                             : "border-border bg-background hover:border-primary/40"
                         }`}
                       >
-                        {f}
+                        {f.name}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div>
-                  <Label className="mb-3 block">Filling</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {FILLINGS.map((f) => (
-                      <button
-                        key={f}
-                        type="button"
-                        onClick={() => update("filling", f)}
-                        className={`px-4 py-2 rounded-full border text-sm transition-all ${
-                          form.filling === f
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-background hover:border-primary/40"
-                        }`}
-                      >
-                        {f}
-                      </button>
-                    ))}
+                {form.flavour && getPairing(form.flavour) && (
+                  <p className="text-sm italic text-primary/80 transition-opacity duration-300">
+                    Paired with: {getPairing(form.flavour)}
+                  </p>
+                )}
+
+                {form.flavour && !getPairing(form.flavour) && (
+                  <div className="transition-all duration-300">
+                    <Label className="mb-2 block">Choose your filling</Label>
+                    <select
+                      value={form.filling}
+                      onChange={(e) => update("filling", e.target.value)}
+                      className="w-full h-12 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:border-primary transition-colors"
+                    >
+                      <option value="">Select a filling…</option>
+                      {FILLINGS.map((fl) => (
+                        <option key={fl} value={fl}>{fl}</option>
+                      ))}
+                    </select>
                   </div>
-                </div>
+                )}
               </>
             )}
 
