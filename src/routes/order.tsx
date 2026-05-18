@@ -29,7 +29,6 @@ type FormState = {
   inspirationFile: File | null;
   inspirationPreview: string;
   eventDate: string;
-  budget: string;
   name: string;
   phone: string;
   email: string;
@@ -39,7 +38,7 @@ type FormState = {
 const initial: FormState = {
   occasion: "", size: "", flavour: "", filling: "", tiers: [], extras: [],
   inspirationFile: null, inspirationPreview: "",
-  eventDate: "", budget: "", name: "", phone: "", email: "", notes: "",
+  eventDate: "", name: "", phone: "", email: "", notes: "",
 };
 
 const tierCount = (sizeId: string) => (sizeId === "tier2" ? 2 : sizeId === "tier3" ? 3 : 0);
