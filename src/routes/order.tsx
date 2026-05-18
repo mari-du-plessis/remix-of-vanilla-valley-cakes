@@ -10,7 +10,7 @@ import { ArrowLeft, ArrowRight, Check, Upload, MessageCircle } from "lucide-reac
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import {
-  WHATSAPP_NUMBER, BAKERY_NAME, OCCASIONS, SIZES, FLAVOURS, FILLINGS, EXTRAS,
+  WHATSAPP_NUMBER, BAKERY_NAME, OCCASIONS, SIZES, FLAVOURS, FILLINGS, EXTRAS, getPairing,
 } from "@/lib/order-config";
 
 export const Route = createFileRoute("/order")({
