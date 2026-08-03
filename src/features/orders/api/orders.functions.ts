@@ -1,0 +1,49 @@
+import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  createOrderRecord,
+  fetchOrder,
+  fetchOrders,
+  setOrderInternalNotes,
+  setOrderStatus,
+} from "./orders.server";
+import {
+  createOrderSchema,
+  listOrdersSchema,
+  orderIdSchema,
+  updateOrderNotesSchema,
+  updateOrderStatusSchema,
+} from "./schema";
+
+/** Public: turns a customer enquiry into a persistent order. */
+export const createOrder = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => createOrderSchema.parse(data))
+  .handler(async ({ data }) => createOrderRecord(data));
+
+/** Admin: list orders (RLS restricts rows to admins). */
+export const listOrders = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => listOrdersSchema.parse(data ?? {}))
+  .handler(async ({ data, context }) => fetchOrders(context.supabase, data));
+
+/** Admin: full order detail with items, options and status history. */
+export const getOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => orderIdSchema.parse(data))
+  .handler(async ({ data, context }) => fetchOrder(context.supabase, data.orderId));
+
+/** Admin: move an order through its lifecycle (history is written by trigger). */
+export const updateOrderStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => updateOrderStatusSchema.parse(data))
+  .handler(async ({ data, context }) =>
+    setOrderStatus(context.supabase, data.orderId, data.status),
+  );
+
+/** Admin: private notes never shown to the customer. */
+export const updateOrderNotes = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => updateOrderNotesSchema.parse(data))
+  .handler(async ({ data, context }) =>
+    setOrderInternalNotes(context.supabase, data.orderId, data.internalNotes),
+  );

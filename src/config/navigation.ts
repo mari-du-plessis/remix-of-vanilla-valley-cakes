@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import { Images, LayoutDashboard } from "lucide-react";
+import { ClipboardList, Images, LayoutDashboard } from "lucide-react";
+
 
 export type NavItem = {
   label: string;
@@ -22,5 +23,7 @@ export const PUBLIC_NAV: NavItem[] = [
  */
 export const ADMIN_NAV: NavItem[] = [
   { label: "Overview", to: "/admin", icon: LayoutDashboard },
+  { label: "Orders", to: "/admin/orders", icon: ClipboardList },
   { label: "Gallery", to: "/admin/gallery", icon: Images },
 ];
+
