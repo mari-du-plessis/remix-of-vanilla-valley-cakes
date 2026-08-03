@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          metadata: Json
+          name: string
+          notes: string | null
+          phone: string
+          profile_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          notes?: string | null
+          phone: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          notes?: string | null
+          phone?: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery_photos: {
         Row: {
           caption: string | null
@@ -43,6 +79,218 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      order_item_options: {
+        Row: {
+          created_at: string
+          group_key: string
+          group_label: string
+          id: string
+          option_id: string | null
+          order_item_id: string
+          position: number
+          price_cents: number | null
+          tier_index: number | null
+          value_key: string | null
+          value_label: string
+        }
+        Insert: {
+          created_at?: string
+          group_key: string
+          group_label: string
+          id?: string
+          option_id?: string | null
+          order_item_id: string
+          position?: number
+          price_cents?: number | null
+          tier_index?: number | null
+          value_key?: string | null
+          value_label: string
+        }
+        Update: {
+          created_at?: string
+          group_key?: string
+          group_label?: string
+          id?: string
+          option_id?: string | null
+          order_item_id?: string
+          position?: number
+          price_cents?: number | null
+          tier_index?: number | null
+          value_key?: string | null
+          value_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_item_options_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json
+          name: string
+          order_id: string
+          position: number
+          product_id: string | null
+          quantity: number
+          size_id: string | null
+          size_label: string | null
+          unit_price_cents: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          order_id: string
+          position?: number
+          product_id?: string | null
+          quantity?: number
+          size_id?: string | null
+          size_label?: string | null
+          unit_price_cents?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          order_id?: string
+          position?: number
+          product_id?: string | null
+          quantity?: number
+          size_id?: string | null
+          size_label?: string | null
+          unit_price_cents?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["order_status"] | null
+          id: string
+          note: string | null
+          order_id: string
+          to_status: Database["public"]["Enums"]["order_status"]
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["order_status"] | null
+          id?: string
+          note?: string | null
+          order_id: string
+          to_status: Database["public"]["Enums"]["order_status"]
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["order_status"] | null
+          id?: string
+          note?: string | null
+          order_id?: string
+          to_status?: Database["public"]["Enums"]["order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          channel: Database["public"]["Enums"]["order_channel"]
+          created_at: string
+          currency: string
+          customer_id: string
+          customer_notes: string | null
+          event_date: string | null
+          id: string
+          inspiration_url: string | null
+          internal_notes: string | null
+          metadata: Json
+          occasion: string | null
+          order_number: string
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal_cents: number | null
+          summary: string | null
+          total_cents: number | null
+          updated_at: string
+        }
+        Insert: {
+          channel?: Database["public"]["Enums"]["order_channel"]
+          created_at?: string
+          currency?: string
+          customer_id: string
+          customer_notes?: string | null
+          event_date?: string | null
+          id?: string
+          inspiration_url?: string | null
+          internal_notes?: string | null
+          metadata?: Json
+          occasion?: string | null
+          order_number?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal_cents?: number | null
+          summary?: string | null
+          total_cents?: number | null
+          updated_at?: string
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["order_channel"]
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          customer_notes?: string | null
+          event_date?: string | null
+          id?: string
+          inspiration_url?: string | null
+          internal_notes?: string | null
+          metadata?: Json
+          occasion?: string | null
+          order_number?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal_cents?: number | null
+          summary?: string | null
+          total_cents?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -77,9 +325,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      next_order_number: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin"
+      order_channel: "website" | "whatsapp" | "phone" | "instagram" | "walk_in"
+      order_status:
+        | "enquiry"
+        | "quoted"
+        | "confirmed"
+        | "in_production"
+        | "ready"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -208,6 +466,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin"],
+      order_channel: ["website", "whatsapp", "phone", "instagram", "walk_in"],
+      order_status: [
+        "enquiry",
+        "quoted",
+        "confirmed",
+        "in_production",
+        "ready",
+        "completed",
+        "cancelled",
+      ],
     },
   },
 } as const
