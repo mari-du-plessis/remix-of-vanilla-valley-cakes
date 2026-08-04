@@ -1,10 +1,12 @@
 import { Label } from "@/components/ui/label";
 import { OptionPill, SelectField } from "@/components/common";
-import { FILLINGS, FLAVOURS, getPairing } from "@/config/catalog";
+import type { Flavour } from "@/config/catalog";
 
 type FlavourPickerProps = {
   flavour: string;
   filling: string;
+  flavours: Flavour[];
+  fillings: string[];
   onFlavourChange: (name: string) => void;
   onFillingChange: (name: string) => void;
   compact?: boolean;
@@ -13,15 +15,21 @@ type FlavourPickerProps = {
 /**
  * Flavour pills + conditional filling selector.
  * Shared by the single-cake path and each tier of a tiered cake.
+ * Choices are supplied by the caller so the same component works with the
+ * database catalog, a template or a preview.
  */
 export function FlavourPicker({
   flavour,
   filling,
+  flavours,
+  fillings,
   onFlavourChange,
   onFillingChange,
   compact = false,
 }: FlavourPickerProps) {
-  const pairing = flavour ? getPairing(flavour) : null;
+  const pairing = flavour
+    ? (flavours.find((f) => f.name === flavour)?.pairing ?? null)
+    : null;
 
   return (
     <>
@@ -39,7 +47,7 @@ export function FlavourPicker({
           Some flavours are thoughtfully paired with their signature fillings.
         </p>
         <div className="flex flex-wrap gap-2">
-          {FLAVOURS.map((f) => (
+          {flavours.map((f) => (
             <OptionPill
               key={f.name}
               size={compact ? "sm" : "md"}
@@ -72,7 +80,7 @@ export function FlavourPicker({
           <SelectField
             value={filling}
             onChange={onFillingChange}
-            options={FILLINGS}
+            options={fillings}
             placeholder="Select a filling…"
             size={compact ? "sm" : "md"}
           />
