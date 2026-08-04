@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { StepProgress } from "@/components/common";
 import { BRAND } from "@/config/brand";
 import { ORDER_STEPS } from "@/features/order/types";
+import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { useOrderForm } from "@/features/order/hooks/useOrderForm";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
 import { OccasionStep } from "@/features/order/components/OccasionStep";
