@@ -64,6 +64,7 @@ function OrderPage() {
         {step === 1 && (
           <CakeStep
             form={form}
+            catalog={catalog}
             onSizeChange={order.setSize}
             onFlavourChange={order.setFlavour}
             onFillingChange={(v) => order.update("filling", v)}
