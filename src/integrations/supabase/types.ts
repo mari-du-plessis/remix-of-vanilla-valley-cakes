@@ -80,6 +80,149 @@ export type Database = {
         }
         Relationships: []
       }
+      option_groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_required: boolean
+          key: string
+          metadata: Json
+          name: string
+          select_type: Database["public"]["Enums"]["option_select_type"]
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          key: string
+          metadata?: Json
+          name: string
+          select_type?: Database["public"]["Enums"]["option_select_type"]
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          key?: string
+          metadata?: Json
+          name?: string
+          select_type?: Database["public"]["Enums"]["option_select_type"]
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      option_rules: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          option_id: string
+          rule_type: Database["public"]["Enums"]["option_rule_type"]
+          target_label: string | null
+          target_option_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          option_id: string
+          rule_type: Database["public"]["Enums"]["option_rule_type"]
+          target_label?: string | null
+          target_option_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          option_id?: string
+          rule_type?: Database["public"]["Enums"]["option_rule_type"]
+          target_label?: string | null
+          target_option_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "option_rules_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "option_rules_target_option_id_fkey"
+            columns: ["target_option_id"]
+            isOneToOne: false
+            referencedRelation: "options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      options: {
+        Row: {
+          created_at: string
+          description: string | null
+          group_id: string
+          id: string
+          is_active: boolean
+          key: string
+          metadata: Json
+          name: string
+          price_adjustment_cents: number
+          sort_order: number
+          svg_token: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          group_id: string
+          id?: string
+          is_active?: boolean
+          key: string
+          metadata?: Json
+          name: string
+          price_adjustment_cents?: number
+          sort_order?: number
+          svg_token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          group_id?: string
+          id?: string
+          is_active?: boolean
+          key?: string
+          metadata?: Json
+          name?: string
+          price_adjustment_cents?: number
+          sort_order?: number
+          svg_token?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "options_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "option_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_item_options: {
         Row: {
           created_at: string
@@ -292,6 +435,140 @@ export type Database = {
           },
         ]
       }
+      product_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      product_option_groups: {
+        Row: {
+          created_at: string
+          id: string
+          is_required: boolean | null
+          option_group_id: string
+          product_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_required?: boolean | null
+          option_group_id: string
+          product_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_required?: boolean | null
+          option_group_id?: string
+          product_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_option_groups_option_group_id_fkey"
+            columns: ["option_group_id"]
+            isOneToOne: false
+            referencedRelation: "option_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_option_groups_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          base_price_cents: number | null
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          kind: Database["public"]["Enums"]["product_kind"]
+          metadata: Json
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          base_price_cents?: number | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["product_kind"]
+          metadata?: Json
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          base_price_cents?: number | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["product_kind"]
+          metadata?: Json
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -329,6 +606,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin"
+      option_rule_type: "pairs_with" | "requires" | "excludes"
+      option_select_type: "single" | "multi"
       order_channel: "website" | "whatsapp" | "phone" | "instagram" | "walk_in"
       order_status:
         | "enquiry"
@@ -338,6 +617,7 @@ export type Database = {
         | "ready"
         | "completed"
         | "cancelled"
+      product_kind: "cake" | "baked_good" | "gift_card" | "service" | "delivery"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -466,6 +746,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin"],
+      option_rule_type: ["pairs_with", "requires", "excludes"],
+      option_select_type: ["single", "multi"],
       order_channel: ["website", "whatsapp", "phone", "instagram", "walk_in"],
       order_status: [
         "enquiry",
@@ -476,6 +758,7 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      product_kind: ["cake", "baked_good", "gift_card", "service", "delivery"],
     },
   },
 } as const
