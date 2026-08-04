@@ -82,7 +82,7 @@ export function buildOrderPayload(
       {
         name: "Custom Cake",
         sizeId: form.size || undefined,
-        sizeLabel: form.size ? getSizeLabel(form.size) : undefined,
+        sizeLabel: form.size ? (extra.sizeLabel ?? form.size) : undefined,
         quantity: 1,
         options,
       },
