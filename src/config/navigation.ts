@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { ClipboardList, Images, LayoutDashboard } from "lucide-react";
+import { Cake, ClipboardList, Images, LayoutDashboard } from "lucide-react";
 
 
 export type NavItem = {
