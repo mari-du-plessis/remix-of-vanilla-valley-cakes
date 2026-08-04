@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { getPairing, getTierCount } from "@/config/catalog";
+import { flavourPairing, tierCount, type CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import {
   EMPTY_ORDER_FORM,
   ORDER_STEPS,
@@ -9,9 +9,10 @@ import {
 
 /**
  * Owns all order wizard state, tier rules and per-step validation.
- * The route component stays presentational.
+ * Cake choices come from the catalog (database-backed) rather than constants,
+ * so tiers and signature pairings follow whatever the bakery configures.
  */
-export function useOrderForm() {
+export function useOrderForm(catalog: CakeCatalog) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<OrderFormState>(EMPTY_ORDER_FORM);
 
@@ -43,17 +44,20 @@ export function useOrderForm() {
     });
   }, []);
 
-  const setSize = useCallback((sizeId: string) => {
-    const count = getTierCount(sizeId);
-    setForm((f) => ({
-      ...f,
-      size: sizeId,
-      tiers:
-        count > 0
-          ? Array.from({ length: count }, (_, i) => f.tiers[i] ?? { flavour: "", filling: "" })
-          : [],
-    }));
-  }, []);
+  const setSize = useCallback(
+    (sizeId: string) => {
+      const count = tierCount(catalog, sizeId);
+      setForm((f) => ({
+        ...f,
+        size: sizeId,
+        tiers:
+          count > 0
+            ? Array.from({ length: count }, (_, i) => f.tiers[i] ?? { flavour: "", filling: "" })
+            : [],
+      }));
+    },
+    [catalog],
+  );
 
   const setTierField = useCallback((index: number, key: keyof CakeTier, value: string) => {
     setForm((f) => ({
@@ -62,26 +66,32 @@ export function useOrderForm() {
     }));
   }, []);
 
-  const setTierFlavour = useCallback((index: number, name: string) => {
-    const pairing = getPairing(name);
-    setForm((f) => ({
-      ...f,
-      tiers: f.tiers.map((t, i) =>
-        i === index ? { flavour: name, filling: pairing ?? "" } : t,
-      ),
-    }));
-  }, []);
+  const setTierFlavour = useCallback(
+    (index: number, name: string) => {
+      const pairing = flavourPairing(catalog, name);
+      setForm((f) => ({
+        ...f,
+        tiers: f.tiers.map((t, i) =>
+          i === index ? { flavour: name, filling: pairing ?? "" } : t,
+        ),
+      }));
+    },
+    [catalog],
+  );
 
-  const setFlavour = useCallback((name: string) => {
-    const pairing = getPairing(name);
-    setForm((f) => ({ ...f, flavour: name, filling: pairing ?? "" }));
-  }, []);
+  const setFlavour = useCallback(
+    (name: string) => {
+      const pairing = flavourPairing(catalog, name);
+      setForm((f) => ({ ...f, flavour: name, filling: pairing ?? "" }));
+    },
+    [catalog],
+  );
 
   const canContinue = useCallback(() => {
     if (step === 0) return !!form.occasion;
     if (step === 1) {
       if (!form.size) return false;
-      const count = getTierCount(form.size);
+      const count = tierCount(catalog, form.size);
       if (count > 0) {
         return form.tiers.length === count && form.tiers.every((t) => t.flavour && t.filling);
       }
@@ -89,7 +99,7 @@ export function useOrderForm() {
     }
     if (step === 2) return !!form.eventDate;
     return !!form.name && !!form.phone;
-  }, [step, form]);
+  }, [step, form, catalog]);
 
   return {
     step,

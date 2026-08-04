@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { StepProgress } from "@/components/common";
 import { BRAND } from "@/config/brand";
 import { ORDER_STEPS } from "@/features/order/types";
+import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { useOrderForm } from "@/features/order/hooks/useOrderForm";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
 import { OccasionStep } from "@/features/order/components/OccasionStep";
@@ -34,7 +35,8 @@ export const Route = createFileRoute("/order")({
 });
 
 function OrderPage() {
-  const order = useOrderForm();
+  const { catalog } = useCakeCatalog();
+  const order = useOrderForm(catalog);
   const { submit, submitting } = useSubmitOrder();
   const { form, step } = order;
 
@@ -62,6 +64,7 @@ function OrderPage() {
         {step === 1 && (
           <CakeStep
             form={form}
+            catalog={catalog}
             onSizeChange={order.setSize}
             onFlavourChange={order.setFlavour}
             onFillingChange={(v) => order.update("filling", v)}

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { buildWhatsAppLink } from "@/config/brand";
 import { BUCKETS, uploadToBucket } from "@/lib/supabase/storage";
+import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
+import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catalog";
 import { buildOrderPayload } from "@/features/orders/lib/buildOrderPayload";
 import { useCreateOrder } from "@/features/orders/hooks/useOrders";
 import { buildOrderMessage } from "../lib/buildOrderMessage";
@@ -19,6 +21,7 @@ import type { OrderFormState } from "../types";
 export function useSubmitOrder() {
   const [submitting, setSubmitting] = useState(false);
   const createOrder = useCreateOrder();
+  const { catalog } = useCakeCatalog();
 
   const submit = async (form: OrderFormState) => {
     if (!form.name || !form.phone) {
@@ -41,12 +44,13 @@ export function useSubmitOrder() {
       }
     }
 
-    const message = buildOrderMessage(form, { photoLine });
+    const sizeLabel = form.size ? resolveSizeLabel(catalog, form.size) : undefined;
+    const message = buildOrderMessage(form, { photoLine, sizeLabel });
 
     let orderNumber: string | null = null;
     try {
       const saved = await createOrder.mutateAsync(
-        buildOrderPayload(form, { inspirationUrl, summary: message }),
+        buildOrderPayload(form, { inspirationUrl, summary: message, sizeLabel }),
       );
       orderNumber = saved.orderNumber;
     } catch {

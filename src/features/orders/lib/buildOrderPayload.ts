@@ -1,4 +1,3 @@
-import { getSizeLabel } from "@/config/catalog";
 import { tierLabel } from "@/features/order/lib/tiers";
 import type { OrderFormState } from "@/features/order/types";
 import type { CreateOrderInput } from "../api/schema";
@@ -7,10 +6,15 @@ import type { CreateOrderInput } from "../api/schema";
  * Pure mapper: cake-builder form state -> persistable order payload.
  * Lives here (not in the wizard) so any future intake surface — admin manual
  * capture, WhatsApp import, AI inspiration — can reuse the same shape.
+ * `sizeLabel` is resolved by the caller from the catalog.
  */
 export function buildOrderPayload(
   form: OrderFormState,
-  extra: { inspirationUrl?: string | null; summary?: string | null } = {},
+  extra: {
+    inspirationUrl?: string | null;
+    summary?: string | null;
+    sizeLabel?: string;
+  } = {},
 ): CreateOrderInput {
   const options: NonNullable<CreateOrderInput["items"][number]["options"]> = [];
 
@@ -78,7 +82,7 @@ export function buildOrderPayload(
       {
         name: "Custom Cake",
         sizeId: form.size || undefined,
-        sizeLabel: form.size ? getSizeLabel(form.size) : undefined,
+        sizeLabel: form.size ? (extra.sizeLabel ?? form.size) : undefined,
         quantity: 1,
         options,
       },

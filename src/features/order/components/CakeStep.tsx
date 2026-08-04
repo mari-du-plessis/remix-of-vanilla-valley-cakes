@@ -1,13 +1,14 @@
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SelectableCard } from "@/components/common";
-import { EXTRAS, SIZES } from "@/config/catalog";
+import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { tierLabel } from "../lib/tiers";
 import type { CakeTier, OrderFormState } from "../types";
 import { FlavourPicker } from "./FlavourPicker";
 
 type CakeStepProps = {
   form: OrderFormState;
+  catalog: CakeCatalog;
   onSizeChange: (sizeId: string) => void;
   onFlavourChange: (name: string) => void;
   onFillingChange: (name: string) => void;
@@ -18,6 +19,7 @@ type CakeStepProps = {
 
 export function CakeStep({
   form,
+  catalog,
   onSizeChange,
   onFlavourChange,
   onFillingChange,
@@ -32,7 +34,7 @@ export function CakeStep({
       <div>
         <Label className="mb-3 block">Size</Label>
         <div className="grid grid-cols-2 gap-2">
-          {SIZES.map((s) => (
+          {catalog.sizes.map((s) => (
             <SelectableCard
               key={s.id}
               selected={form.size === s.id}
@@ -60,6 +62,8 @@ export function CakeStep({
                 compact
                 flavour={t.flavour}
                 filling={t.filling}
+                flavours={catalog.flavours}
+                fillings={catalog.fillings}
                 onFlavourChange={(name) => onTierFlavourChange(i, name)}
                 onFillingChange={(name) => onTierFieldChange(i, "filling", name)}
               />
@@ -70,6 +74,8 @@ export function CakeStep({
         <FlavourPicker
           flavour={form.flavour}
           filling={form.filling}
+          flavours={catalog.flavours}
+          fillings={catalog.fillings}
           onFlavourChange={onFlavourChange}
           onFillingChange={onFillingChange}
         />
@@ -78,7 +84,7 @@ export function CakeStep({
       <div>
         <Label className="mb-3 block">Extras (optional)</Label>
         <div className="space-y-2">
-          {EXTRAS.map((e) => (
+          {catalog.extras.map((e) => (
             <label
               key={e}
               className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background cursor-pointer"

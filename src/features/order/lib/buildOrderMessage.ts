@@ -1,21 +1,21 @@
 import { BRAND } from "@/config/brand";
-import { getSizeLabel } from "@/config/catalog";
 import { tierLabel } from "./tiers";
 import type { OrderFormState } from "../types";
 
 /**
  * Pure formatter for the customer's order summary.
  * Kept free of React/Supabase so quotations and PDFs can reuse it later.
+ * The caller resolves the size label from the catalog.
  */
 export function buildOrderMessage(
   form: OrderFormState,
-  options: { photoLine?: string | null } = {},
+  options: { photoLine?: string | null; sizeLabel?: string } = {},
 ): string {
   return [
     `🎂 *New Cake Order — ${BRAND.name}*`,
     ``,
     `*Occasion:* ${form.occasion}`,
-    `*Size:* ${getSizeLabel(form.size)}`,
+    `*Size:* ${options.sizeLabel ?? form.size}`,
     ...(form.tiers.length > 0
       ? form.tiers.map(
           (t, i) => `*${tierLabel(i, form.tiers.length)}:* ${t.flavour} with ${t.filling}`,
