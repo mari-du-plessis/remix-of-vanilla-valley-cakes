@@ -34,7 +34,8 @@ export const Route = createFileRoute("/order")({
 });
 
 function OrderPage() {
-  const order = useOrderForm();
+  const { catalog } = useCakeCatalog();
+  const order = useOrderForm(catalog);
   const { submit, submitting } = useSubmitOrder();
   const { form, step } = order;
 
