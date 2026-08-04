@@ -24,6 +24,7 @@ export const PUBLIC_NAV: NavItem[] = [
 export const ADMIN_NAV: NavItem[] = [
   { label: "Overview", to: "/admin", icon: LayoutDashboard },
   { label: "Orders", to: "/admin/orders", icon: ClipboardList },
+  { label: "Products", to: "/admin/products", icon: Cake },
   { label: "Gallery", to: "/admin/gallery", icon: Images },
 ];
 
