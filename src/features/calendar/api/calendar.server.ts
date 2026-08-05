@@ -187,7 +187,7 @@ export async function updateCalendarEventRow(
   id: string,
   values: Partial<CalendarEventInput>,
 ) {
-  const { error } = await client.from("calendar_events").update(eventRow(values)).eq("id", id);
+  const { error } = await client.from("calendar_events").update(eventRow(values) as never).eq("id", id);
   if (error) throw new Error(error.message);
   return { ok: true as const };
 }
@@ -230,7 +230,7 @@ export async function updateCapacitySettingRow(
 ) {
   const { error } = await client
     .from("capacity_settings")
-    .update(capacityRow(values))
+    .update(capacityRow(values) as never)
     .eq("id", id);
   if (error) throw new Error(error.message);
   return { ok: true as const };
