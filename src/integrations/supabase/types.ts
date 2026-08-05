@@ -14,6 +14,137 @@ export type Database = {
   }
   public: {
     Tables: {
+      availability_blocks: {
+        Row: {
+          block_type: Database["public"]["Enums"]["availability_block_type"]
+          created_at: string
+          created_by: string | null
+          end_date: string
+          id: string
+          metadata: Json
+          reason: string | null
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          block_type?: Database["public"]["Enums"]["availability_block_type"]
+          created_at?: string
+          created_by?: string | null
+          end_date: string
+          id?: string
+          metadata?: Json
+          reason?: string | null
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          block_type?: Database["public"]["Enums"]["availability_block_type"]
+          created_at?: string
+          created_by?: string | null
+          end_date?: string
+          id?: string
+          metadata?: Json
+          reason?: string | null
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      calendar_events: {
+        Row: {
+          all_day: boolean
+          created_at: string
+          created_by: string | null
+          end_at: string | null
+          event_type: Database["public"]["Enums"]["calendar_event_type"]
+          id: string
+          location: string | null
+          metadata: Json
+          notes: string | null
+          order_id: string | null
+          start_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          all_day?: boolean
+          created_at?: string
+          created_by?: string | null
+          end_at?: string | null
+          event_type?: Database["public"]["Enums"]["calendar_event_type"]
+          id?: string
+          location?: string | null
+          metadata?: Json
+          notes?: string | null
+          order_id?: string | null
+          start_at: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          all_day?: boolean
+          created_at?: string
+          created_by?: string | null
+          end_at?: string | null
+          event_type?: Database["public"]["Enums"]["calendar_event_type"]
+          id?: string
+          location?: string | null
+          metadata?: Json
+          notes?: string | null
+          order_id?: string | null
+          start_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capacity_settings: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          lead_time_days: number
+          max_orders_per_day: number
+          max_servings_per_day: number | null
+          metadata: Json
+          notes: string | null
+          updated_at: string
+          weekday: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lead_time_days?: number
+          max_orders_per_day?: number
+          max_servings_per_day?: number | null
+          metadata?: Json
+          notes?: string | null
+          updated_at?: string
+          weekday?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lead_time_days?: number
+          max_orders_per_day?: number
+          max_servings_per_day?: number | null
+          metadata?: Json
+          notes?: string | null
+          updated_at?: string
+          weekday?: number | null
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           created_at: string
@@ -595,6 +726,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      day_availability: {
+        Args: { _from: string; _to: string }
+        Returns: {
+          block_reason: string
+          day: string
+          is_available: boolean
+          is_blocked: boolean
+          lead_time_days: number
+          max_orders: number
+          order_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -606,6 +749,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin"
+      availability_block_type: "closure" | "holiday" | "fully_booked" | "custom"
+      calendar_event_type:
+        | "production"
+        | "collection"
+        | "delivery"
+        | "consultation"
+        | "other"
       option_rule_type: "pairs_with" | "requires" | "excludes"
       option_select_type: "single" | "multi"
       order_channel: "website" | "whatsapp" | "phone" | "instagram" | "walk_in"
@@ -746,6 +896,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin"],
+      availability_block_type: ["closure", "holiday", "fully_booked", "custom"],
+      calendar_event_type: [
+        "production",
+        "collection",
+        "delivery",
+        "consultation",
+        "other",
+      ],
       option_rule_type: ["pairs_with", "requires", "excludes"],
       option_select_type: ["single", "multi"],
       order_channel: ["website", "whatsapp", "phone", "instagram", "walk_in"],

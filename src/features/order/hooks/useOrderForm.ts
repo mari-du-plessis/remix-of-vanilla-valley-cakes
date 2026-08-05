@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
 import { flavourPairing, tierCount, type CakeCatalog } from "@/features/catalog/lib/cake-catalog";
+import { FEATURE_FLAGS } from "@/config/features";
+import { useAvailabilityWindow } from "@/features/calendar/hooks/useAvailability";
 import {
   EMPTY_ORDER_FORM,
   ORDER_STEPS,
@@ -15,6 +17,14 @@ import {
 export function useOrderForm(catalog: CakeCatalog) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<OrderFormState>(EMPTY_ORDER_FORM);
+
+  /**
+   * Availability runs behind the scenes today: the lookup always happens so the
+   * data is ready, but dates are only refused once
+   * `FEATURE_FLAGS.enforceOrderAvailability` is switched on. The customer UI is
+   * unchanged until then.
+   */
+  const availability = useAvailabilityWindow();
 
   const update = useCallback(
     <K extends keyof OrderFormState>(key: K, value: OrderFormState[K]) =>
@@ -97,9 +107,14 @@ export function useOrderForm(catalog: CakeCatalog) {
       }
       return !!form.flavour && !!form.filling;
     }
-    if (step === 2) return !!form.eventDate;
+    if (step === 2) {
+      if (!form.eventDate) return false;
+      if (FEATURE_FLAGS.enforceOrderAvailability)
+        return availability.isDateAvailable(form.eventDate);
+      return true;
+    }
     return !!form.name && !!form.phone;
-  }, [step, form, catalog]);
+  }, [step, form, catalog, availability]);
 
   return {
     step,
@@ -114,5 +129,7 @@ export function useOrderForm(catalog: CakeCatalog) {
     setTierFlavour,
     setFlavour,
     canContinue,
+    /** Availability integration point for the customer wizard (see feature flag). */
+    availability,
   };
 }
