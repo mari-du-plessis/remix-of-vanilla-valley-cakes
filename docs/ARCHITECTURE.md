@@ -12,6 +12,7 @@ src/
   features/
     order/         Customer order wizard (types, lib, hooks, components)
     gallery/       Gallery domain (types, api, hooks, components) — shared by public + admin
+    calendar/      Calendar & availability (types, api, lib, hooks, views)
     auth/          useAuth, useIsAdmin, useSignOut
     admin/         Admin shell, page header, per-module managers
   lib/
@@ -27,7 +28,11 @@ Rule: routes compose, features own logic, config owns data, `components/common` 
 - Public: `/` landing, `/gallery` (category filtered, DB-backed), `/order` (4-step wizard → WhatsApp).
 - Auth: `/login` (email/password), `_authenticated` gate, admin role check via `user_roles`.
 - Admin: `/admin` overview, `/admin/gallery` (upload, caption, category, reorder, delete).
-- Data: `gallery_photos` table, `gallery-photos` + `inspiration-photos` buckets.
+- Admin: `/admin/orders`, `/admin/products`, `/admin/calendar` (month/week/day,
+  availability blocks, capacity & lead time).
+- Data: `gallery_photos`, orders tables, catalog tables, `calendar_events`,
+  `availability_blocks`, `capacity_settings`, `day_availability()` lookup, plus
+  `gallery-photos` + `inspiration-photos` buckets.
 
 ## What was refactored
 
@@ -43,7 +48,10 @@ Rule: routes compose, features own logic, config owns data, `components/common` 
 ## Remaining technical debt
 
 - Homepage gallery strip uses bundled static images instead of `gallery_photos`.
-- Orders are not persisted — WhatsApp only.
+- Calendar availability/capacity tabs reuse the range query with a wide window;
+  a dedicated list endpoint would be leaner once blocks grow.
+- `day_availability()` is a public SECURITY DEFINER function by design — it
+  returns counts and flags only, never customer or order data.
 - `GALLERY_CATEGORIES` duplicates order occasions; will diverge, so it stays a separate export.
 - Login has no Google sign-in and no password reset.
 - No PDF/quotation layer yet (message builder is already pure, ready to reuse).
@@ -62,7 +70,8 @@ Full schema design: `docs/DATA-MODEL.md`.
 2. **SVG cake builder** — `features/cake-builder`, driven by catalog ids; renders into the order wizard's Cake step.
 3. **Products & pricing** — move `config/catalog` into `products` / `option_groups` / `options` / `price_lists`; consumers keep the same getters. Products cover cakes, baked goods, gift cards, delivery and services.
 4. **Cake templates** — `cake_templates` (same JSONB shape as `cake_designs`): save, duplicate, categorise, start-from-template in the builder. Admin at `/admin/templates`.
-5. **Calendar / availability** — `/admin/calendar`, blocks dates in the order wizard's Details step.
+5. ~~**Calendar / availability**~~ — done. `/admin/calendar`; the wizard's date
+   gating is wired behind `FEATURE_FLAGS.enforceOrderAvailability`.
 6. **PDF quotations** — quotes are orders in `quoted` status; `quotes` stores versioned documents only. Reuses `buildOrderMessage` as the shared quote model.
 7. **Staff** — `staff_members` on top of `profiles` + `user_roles`; `/admin/staff`.
 8. **Production workflows** — configurable `workflow_templates` per product; `order_tasks` + assignments hang off orders without changing them. `/admin/workflows`, `/admin/production`.
