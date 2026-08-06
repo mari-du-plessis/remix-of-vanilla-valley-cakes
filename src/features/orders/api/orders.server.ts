@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import type { OrderDetail, OrderListItem, OrderStatus } from "../types";
-import { createOrderSchema, listOrdersSchema } from "./schema";
+import { createAdminOrderSchema, listOrdersSchema } from "./schema";
 import type { z } from "zod";
 
 type Client = SupabaseClient<Database>;
@@ -86,7 +86,7 @@ export const mapOrderDetail = (row: any): OrderDetail => ({
  * customer is anonymous — every field is validated before it is written and
  * nothing is read back beyond the new order's identifiers.
  */
-export async function createOrderRecord(input: z.infer<typeof createOrderSchema>) {
+export async function createOrderRecord(input: z.infer<typeof createAdminOrderSchema>) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   let customerId = input.customerId ?? null;
