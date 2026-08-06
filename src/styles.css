@@ -173,6 +173,20 @@
   }
 }
 
+/*
+ * Admin portal headings. Mirrors the "Vanilla Valley" branding treatment in the
+ * admin shell — clean uppercase sans with wide tracking — so every admin H1/H2
+ * reads consistently regardless of module.
+ */
+@utility admin-heading {
+  font-family: var(--font-admin);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+}
+
+
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
