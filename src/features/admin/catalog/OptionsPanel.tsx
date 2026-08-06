@@ -13,7 +13,9 @@ import {
   useSaveOption,
   useSaveOptionGroup,
 } from "@/features/catalog/hooks/useCatalog";
+import { uniqueSlug } from "@/features/catalog/lib/slug";
 import type { CatalogOption, OptionGroup } from "@/features/catalog/types";
+import { AppearanceField } from "./AppearanceField";
 import { CatalogCrudList } from "./CatalogCrudList";
 import {
   FormActions,
@@ -25,24 +27,34 @@ import {
 
 function GroupForm({ row, onClose }: { row: OptionGroup | null; onClose: () => void }) {
   const save = useSaveOptionGroup();
+  const { data: groups = [] } = useOptionGroups();
   const { state, set } = useFormState({
     name: row?.name ?? "",
-    key: row?.key ?? "",
     select_type: row?.select_type ?? "single",
     is_required: row?.is_required ?? false,
     sort_order: String(row?.sort_order ?? 0),
     is_active: row?.is_active ?? true,
   });
 
+  const nameError = state.name.trim() ? null : "Name is required";
+  const key = state.name.trim()
+    ? uniqueSlug(
+        state.name,
+        groups.map((g) => g.key),
+        row?.key ?? null,
+      )
+    : "";
+
   return (
     <form
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={async (e) => {
         e.preventDefault();
+        if (nameError) return;
         await save.mutateAsync({
           ...(row ? { id: row.id } : {}),
           name: state.name,
-          key: state.key,
+          key,
           select_type: state.select_type as OptionGroup["select_type"],
           is_required: state.is_required,
           sort_order: Number(state.sort_order) || 0,
@@ -51,13 +63,16 @@ function GroupForm({ row, onClose }: { row: OptionGroup | null; onClose: () => v
         onClose();
       }}
     >
-      <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
-      <TextField
-        label="Key"
-        value={state.key}
-        placeholder="auto from name"
-        onChange={(v) => set("key", v)}
-      />
+      <div>
+        <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+        <p className="mt-1 text-xs text-muted-foreground">
+          {nameError ? (
+            <span className="text-destructive">{nameError}</span>
+          ) : (
+            <>Reference: {key}</>
+          )}
+        </p>
+      </div>
       <NativeSelectField
         label="Selection"
         value={state.select_type}
@@ -84,7 +99,7 @@ function GroupForm({ row, onClose }: { row: OptionGroup | null; onClose: () => v
         onChange={(v) => set("is_active", v)}
       />
       <div className="sm:col-span-2">
-        <FormActions onCancel={onClose} saving={save.isPending} />
+        <FormActions onCancel={onClose} saving={save.isPending || Boolean(nameError)} />
       </div>
     </form>
   );
@@ -100,34 +115,52 @@ function OptionForm({
   onClose: () => void;
 }) {
   const save = useSaveOption();
+  const { data: groups = [] } = useOptionGroups();
+  const { data: allOptions = [] } = useAllOptions();
+  const groupKey = groups.find((g) => g.id === groupId)?.key ?? null;
+  const siblings = allOptions.filter((o) => o.group_id === groupId);
+  const isSizeGroup = groupKey === "size";
+
   const meta = (row?.metadata ?? {}) as Record<string, unknown>;
   const { state, set } = useFormState({
     name: row?.name ?? "",
-    key: row?.key ?? "",
     description: row?.description ?? "",
     svg_token: row?.svg_token ?? "",
+    colour: typeof meta["colour"] === "string" ? (meta["colour"] as string) : "#f5e6d3",
     serves: typeof meta["serves"] === "string" ? (meta["serves"] as string) : "",
     tiers: typeof meta["tiers"] === "number" ? String(meta["tiers"]) : "",
     sort_order: String(row?.sort_order ?? 0),
     is_active: row?.is_active ?? true,
   });
 
+  const nameError = state.name.trim() ? null : "Name is required";
+  const key = state.name.trim()
+    ? uniqueSlug(
+        state.name,
+        siblings.map((o) => o.key),
+        row?.key ?? null,
+      )
+    : "";
+
   return (
     <form
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={async (e) => {
         e.preventDefault();
+        if (nameError) return;
         const metadata: Record<string, unknown> = { ...meta };
         if (state.serves) metadata["serves"] = state.serves;
         else delete metadata["serves"];
         if (state.tiers) metadata["tiers"] = Number(state.tiers);
         else delete metadata["tiers"];
+        if (state.svg_token) metadata["colour"] = state.colour;
+        else delete metadata["colour"];
 
         await save.mutateAsync({
           ...(row ? { id: row.id } : {}),
           group_id: groupId,
           name: state.name,
-          key: state.key,
+          key,
           description: state.description,
           svg_token: state.svg_token,
           sort_order: Number(state.sort_order) || 0,
@@ -137,49 +170,67 @@ function OptionForm({
         onClose();
       }}
     >
-      <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
-      <TextField
-        label="Key"
-        value={state.key}
-        placeholder="auto from name"
-        onChange={(v) => set("key", v)}
-      />
-      <TextField
-        label="Serves (sizes only)"
-        value={state.serves}
-        placeholder="Serves 10–15"
-        onChange={(v) => set("serves", v)}
-      />
-      <TextField
-        label="Tiers (sizes only)"
-        type="number"
-        value={state.tiers}
-        placeholder="0"
-        onChange={(v) => set("tiers", v)}
-      />
-      <TextField
-        label="Builder token"
-        value={state.svg_token}
-        placeholder="used by the cake builder"
-        onChange={(v) => set("svg_token", v)}
-      />
+      <div>
+        <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+        <p className="mt-1 text-xs text-muted-foreground">
+          {nameError ? (
+            <span className="text-destructive">{nameError}</span>
+          ) : (
+            <>Reference: {key}</>
+          )}
+        </p>
+      </div>
       <TextField
         label="Sort order"
         type="number"
         value={state.sort_order}
         onChange={(v) => set("sort_order", v)}
       />
+      {isSizeGroup && (
+        <>
+          <TextField
+            label="Serves"
+            value={state.serves}
+            placeholder="Serves 10–15"
+            onChange={(v) => set("serves", v)}
+          />
+          <TextField
+            label="Tiers"
+            type="number"
+            value={state.tiers}
+            placeholder="0"
+            onChange={(v) => set("tiers", v)}
+          />
+        </>
+      )}
+      <div className="sm:col-span-2">
+        <AppearanceField
+          groupKey={groupKey}
+          token={state.svg_token}
+          colour={state.colour}
+          onTokenChange={(v) => set("svg_token", v)}
+          onColourChange={(v) => set("colour", v)}
+        />
+      </div>
+      <div className="sm:col-span-2">
+        <TextField
+          label="Description"
+          value={state.description}
+          onChange={(v) => set("description", v)}
+        />
+      </div>
       <ToggleField
         label="Active"
         checked={state.is_active}
         onChange={(v) => set("is_active", v)}
       />
       <div className="sm:col-span-2">
-        <FormActions onCancel={onClose} saving={save.isPending} />
+        <FormActions onCancel={onClose} saving={save.isPending || Boolean(nameError)} />
       </div>
     </form>
   );
 }
+
 
 /** Signature pairings, e.g. Red Velvet → Cream Cheese. */
 function PairingRules({ options }: { options: CatalogOption[] }) {

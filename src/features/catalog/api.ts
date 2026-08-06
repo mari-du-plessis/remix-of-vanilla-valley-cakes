@@ -93,12 +93,11 @@ const run = async (promise: PromiseLike<{ error: unknown }>) => {
   if (error) throw error;
 };
 
-export const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
+import { slugify } from "./lib/slug";
+
+export { slugify };
+
+
 
 export type CategoryInput = Partial<Omit<ProductCategory, "id">> & { name: string };
 

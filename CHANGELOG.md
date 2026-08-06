@@ -2,6 +2,31 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Phase 1 usability improvements
+
+### Added
+- **Manual order creation**: `New order` in the admin Orders header opens
+  `ManualOrderDialog` — search an existing customer or capture a new one, pick
+  the channel and opening status, add items with size, flavour, filling and
+  quantity, plus customer and internal notes. Persisted through the new
+  admin-only `createAdminOrder` server function which shares
+  `createOrderRecord` with the public wizard.
+- **`CustomerPickerField`**: reusable customer search/select control for any
+  future intake surface.
+- **Automatic slugs**: categories, products, options and price lists derive
+  their slug from the name via `uniqueSlug`; the manual slug fields are gone.
+- **Cake builder appearance mapping**: guided `AppearanceField` selector backed
+  by `src/config/cake-builder.ts` tokens instead of free-text SVG tokens.
+- **Pricing usability**: guided rule conditions (rush lead time, delivery zone)
+  instead of raw JSON, catalog-driven size dropdowns on price items, and an
+  "editing price list" switcher at the top of the Pricing screen.
+
+### Security
+- The public order intake schema cannot set `status`, `customerId` or
+  `internalNotes`; those live only on the authenticated admin schema.
+
+
+
 ## Customer management module
 
 ### Added

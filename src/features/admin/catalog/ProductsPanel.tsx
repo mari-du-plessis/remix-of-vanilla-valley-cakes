@@ -10,6 +10,7 @@ import {
   useSaveProduct,
   useSetProductOptionGroup,
 } from "@/features/catalog/hooks/useCatalog";
+import { uniqueSlug } from "@/features/catalog/lib/slug";
 import { PRODUCT_KINDS, type Product, type ProductKind } from "@/features/catalog/types";
 import { CatalogCrudList } from "./CatalogCrudList";
 import {
@@ -24,9 +25,9 @@ import {
 function ProductForm({ row, onClose }: { row: Product | null; onClose: () => void }) {
   const save = useSaveProduct();
   const { data: categories = [] } = useCategories();
+  const { data: products = [] } = useProducts();
   const { state, set } = useFormState({
     name: row?.name ?? "",
-    slug: row?.slug ?? "",
     description: row?.description ?? "",
     category_id: row?.category_id ?? "",
     kind: (row?.kind ?? "cake") as ProductKind,
@@ -34,15 +35,25 @@ function ProductForm({ row, onClose }: { row: Product | null; onClose: () => voi
     is_active: row?.is_active ?? true,
   });
 
+  const nameError = state.name.trim() ? null : "Name is required";
+  const slug = state.name.trim()
+    ? uniqueSlug(
+        state.name,
+        products.map((p) => p.slug),
+        row?.slug ?? null,
+      )
+    : "";
+
   return (
     <form
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={async (e) => {
         e.preventDefault();
+        if (nameError) return;
         await save.mutateAsync({
           ...(row ? { id: row.id } : {}),
           name: state.name,
-          slug: state.slug,
+          slug,
           description: state.description,
           category_id: state.category_id || null,
           kind: state.kind,
@@ -52,13 +63,17 @@ function ProductForm({ row, onClose }: { row: Product | null; onClose: () => voi
         onClose();
       }}
     >
-      <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
-      <TextField
-        label="Slug"
-        value={state.slug}
-        placeholder="auto from name"
-        onChange={(v) => set("slug", v)}
-      />
+      <div>
+        <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+        <p className="mt-1 text-xs text-muted-foreground">
+          {nameError ? (
+            <span className="text-destructive">{nameError}</span>
+          ) : (
+            <>Web address: /{slug}</>
+          )}
+        </p>
+      </div>
+
       <NativeSelectField
         label="Category"
         value={state.category_id}
@@ -93,7 +108,10 @@ function ProductForm({ row, onClose }: { row: Product | null; onClose: () => voi
         onChange={(v) => set("is_active", v)}
       />
       <div className="sm:col-span-2">
-        <FormActions onCancel={onClose} saving={save.isPending} />
+        <FormActions
+          onCancel={onClose}
+          saving={save.isPending || Boolean(nameError)}
+        />
       </div>
     </form>
   );

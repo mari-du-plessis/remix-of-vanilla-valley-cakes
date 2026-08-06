@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
+  createAdminOrder,
   createOrder,
   getOrder,
   listOrders,
   updateOrderNotes,
   updateOrderStatus,
 } from "../api/orders.functions";
-import type { CreateOrderInput } from "../api/schema";
+import type { CreateAdminOrderInput, CreateOrderInput } from "../api/schema";
 import type { OrderDetail, OrderListItem, OrderStatus } from "../types";
 
 export const orderKeys = {
@@ -70,5 +71,22 @@ export function useCreateOrder() {
   const mutate = useServerFn(createOrder);
   return useMutation({
     mutationFn: (input: CreateOrderInput) => mutate({ data: input }),
+  });
+}
+
+/**
+ * Admin capture of an order that arrived on WhatsApp, the phone, Instagram or
+ * in person. Shares the persistence path with the public wizard.
+ */
+export function useCreateAdminOrder() {
+  const queryClient = useQueryClient();
+  const mutate = useServerFn(createAdminOrder);
+  return useMutation({
+    mutationFn: (input: CreateAdminOrderInput) => mutate({ data: input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: orderKeys.all });
+      toast.success("Order created");
+    },
+    onError: (error: Error) => toast.error(error.message),
   });
 }

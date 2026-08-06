@@ -17,13 +17,7 @@ export const orderStatusSchema = z.enum([
   "cancelled",
 ]);
 
-export const orderChannelSchema = z.enum([
-  "website",
-  "whatsapp",
-  "phone",
-  "instagram",
-  "walk_in",
-]);
+export const orderChannelSchema = z.enum(["website", "whatsapp", "phone", "instagram", "walk_in"]);
 
 export const orderOptionSchema = z.object({
   groupKey: trimmed(50).min(1),
@@ -42,6 +36,10 @@ export const orderItemSchema = z.object({
   options: z.array(orderOptionSchema).max(60).default([]),
 });
 
+/**
+ * Public intake (the customer wizard). Deliberately cannot set a status, an
+ * existing customer id or internal notes — those are admin-only concerns.
+ */
 export const createOrderSchema = z.object({
   customer: z.object({
     name: trimmed(100).min(1, "Name is required"),
@@ -50,13 +48,19 @@ export const createOrderSchema = z.object({
   }),
   channel: orderChannelSchema.default("website"),
   occasion: trimmed(100).optional(),
-  eventDate: z
-    .union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")])
-    .optional(),
+  eventDate: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]).optional(),
   customerNotes: trimmed(2000).optional(),
   inspirationUrl: z.union([z.string().url().max(1000), z.literal("")]).optional(),
   summary: trimmed(4000).optional(),
   items: z.array(orderItemSchema).min(1).max(20),
+});
+
+/** Admin capture: WhatsApp, phone, Instagram and walk-in orders. */
+export const createAdminOrderSchema = createOrderSchema.extend({
+  /** Set when the admin picks an existing customer instead of capturing one. */
+  customerId: z.string().uuid().optional(),
+  status: orderStatusSchema.default("enquiry"),
+  internalNotes: trimmed(4000).optional(),
 });
 
 export const listOrdersSchema = z.object({
@@ -78,4 +82,5 @@ export const updateOrderNotesSchema = z.object({
 });
 
 export type CreateOrderInput = z.input<typeof createOrderSchema>;
+export type CreateAdminOrderInput = z.input<typeof createAdminOrderSchema>;
 export type ListOrdersInput = z.input<typeof listOrdersSchema>;

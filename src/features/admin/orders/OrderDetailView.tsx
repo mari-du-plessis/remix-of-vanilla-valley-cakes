@@ -21,9 +21,7 @@ import type { OrderStatus } from "@/features/orders/types";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]">
-      <h2 className="admin-heading mb-4 text-xs text-muted-foreground">
-        {title}
-      </h2>
+      <h2 className="admin-heading mb-4 text-xs text-muted-foreground">{title}</h2>
       {children}
     </section>
   );

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import type { OrderDetail, OrderListItem, OrderStatus } from "../types";
-import { createOrderSchema, listOrdersSchema } from "./schema";
+import { createAdminOrderSchema, listOrdersSchema } from "./schema";
 import type { z } from "zod";
 
 type Client = SupabaseClient<Database>;
@@ -86,38 +86,44 @@ export const mapOrderDetail = (row: any): OrderDetail => ({
  * customer is anonymous — every field is validated before it is written and
  * nothing is read back beyond the new order's identifiers.
  */
-export async function createOrderRecord(input: z.infer<typeof createOrderSchema>) {
+export async function createOrderRecord(input: z.infer<typeof createAdminOrderSchema>) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-  const phone = input.customer.phone;
-  const { data: customer, error: customerError } = await supabaseAdmin
-    .from("customers")
-    .upsert(
-      {
-        phone,
-        name: input.customer.name,
-        email: input.customer.email || null,
-      },
-      { onConflict: "phone" },
-    )
-    .select("id")
-    .single();
-  if (customerError) throw new Error(customerError.message);
+  let customerId = input.customerId ?? null;
+  if (!customerId) {
+    const { data: customer, error: customerError } = await supabaseAdmin
+      .from("customers")
+      .upsert(
+        {
+          phone: input.customer.phone,
+          name: input.customer.name,
+          email: input.customer.email || null,
+        },
+        { onConflict: "phone" },
+      )
+      .select("id")
+      .single();
+    if (customerError) throw new Error(customerError.message);
+    customerId = customer.id;
+  }
 
   const { data: order, error: orderError } = await supabaseAdmin
     .from("orders")
     .insert({
-      customer_id: customer.id,
+      customer_id: customerId,
       channel: input.channel,
+      status: input.status,
       occasion: input.occasion || null,
       event_date: input.eventDate || null,
       customer_notes: input.customerNotes || null,
+      internal_notes: input.internalNotes || null,
       inspiration_url: input.inspirationUrl || null,
       summary: input.summary || null,
     })
     .select("id, order_number")
     .single();
   if (orderError) throw new Error(orderError.message);
+
 
   for (const [index, item] of input.items.entries()) {
     const { data: savedItem, error: itemError } = await supabaseAdmin

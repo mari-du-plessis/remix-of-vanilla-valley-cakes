@@ -8,6 +8,7 @@ import {
   setOrderStatus,
 } from "./orders.server";
 import {
+  createAdminOrderSchema,
   createOrderSchema,
   listOrdersSchema,
   orderIdSchema,
@@ -18,7 +19,18 @@ import {
 /** Public: turns a customer enquiry into a persistent order. */
 export const createOrder = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => createOrderSchema.parse(data))
+  .handler(async ({ data }) => createOrderRecord({ ...data, status: "enquiry" }));
+
+/**
+ * Admin: capture an order taken on WhatsApp, the phone, Instagram or in person.
+ * Unlike the public intake it may attach to an existing customer and open at
+ * any status.
+ */
+export const createAdminOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => createAdminOrderSchema.parse(data))
   .handler(async ({ data }) => createOrderRecord(data));
+
 
 /** Admin: list orders (RLS restricts rows to admins). */
 export const listOrders = createServerFn({ method: "POST" })

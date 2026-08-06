@@ -7,16 +7,11 @@ import {
   ToggleField,
   useFormState,
 } from "@/features/admin/catalog/fields";
+import { uniqueSlug } from "@/features/catalog/lib/slug";
 import type { PriceList } from "@/features/pricing/types";
 import type { PriceListInput } from "@/features/pricing/api/schema";
 
 const CURRENCIES = [{ value: "ZAR", label: "ZAR (R)" }];
-
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
 
 /** Manage the named price lists (standard, festive season, wholesale…). */
 export function PriceListsPanel({
@@ -68,15 +63,14 @@ export function PriceListsPanel({
               {row.currency}
               {row.effectiveFrom ? ` · from ${row.effectiveFrom}` : ""}
               {row.effectiveTo ? ` · until ${row.effectiveTo}` : ""}
-              {selectedId === row.id && totalItems !== undefined
-                ? ` · ${totalItems} prices`
-                : ""}
+              {selectedId === row.id && totalItems !== undefined ? ` · ${totalItems} prices` : ""}
             </p>
           </div>
         )}
         renderForm={(row, close) => (
           <PriceListForm
             row={row}
+            takenSlugs={priceLists.map((list) => list.slug)}
             onCancel={close}
             onSubmit={(values) => {
               if (row) onUpdate(row.id, values);
@@ -92,16 +86,17 @@ export function PriceListsPanel({
 
 function PriceListForm({
   row,
+  takenSlugs,
   onSubmit,
   onCancel,
 }: {
   row: PriceList | null;
+  takenSlugs: string[];
   onSubmit: (values: PriceListInput) => void;
   onCancel: () => void;
 }) {
   const { state, set } = useFormState({
     name: row?.name ?? "",
-    slug: row?.slug ?? "",
     currency: row?.currency ?? "ZAR",
     effectiveFrom: row?.effectiveFrom ?? "",
     effectiveTo: row?.effectiveTo ?? "",
@@ -109,14 +104,18 @@ function PriceListForm({
     isActive: row?.isActive ?? true,
   });
 
+  const nameError = state.name.trim() ? null : "Name is required";
+  const slug = state.name.trim() ? uniqueSlug(state.name, takenSlugs, row?.slug ?? null) : "";
+
   return (
     <form
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={(event) => {
         event.preventDefault();
+        if (nameError) return;
         onSubmit({
           name: state.name,
-          slug: state.slug || slugify(state.name),
+          slug,
           currency: state.currency,
           effectiveFrom: state.effectiveFrom || null,
           effectiveTo: state.effectiveTo || null,
@@ -125,13 +124,17 @@ function PriceListForm({
         });
       }}
     >
-      <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
-      <TextField
-        label="Slug"
-        value={state.slug}
-        placeholder={slugify(state.name) || "standard"}
-        onChange={(v) => set("slug", v)}
-      />
+      <div>
+        <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+        <p className="mt-1 text-xs text-muted-foreground">
+          {nameError ? (
+            <span className="text-destructive">{nameError}</span>
+          ) : (
+            <>Reference: {slug}</>
+          )}
+        </p>
+      </div>
+
       <NativeSelectField
         label="Currency"
         value={state.currency}
@@ -155,13 +158,9 @@ function PriceListForm({
         checked={state.isDefault}
         onChange={(v) => set("isDefault", v)}
       />
-      <ToggleField
-        label="Active"
-        checked={state.isActive}
-        onChange={(v) => set("isActive", v)}
-      />
+      <ToggleField label="Active" checked={state.isActive} onChange={(v) => set("isActive", v)} />
       <div className="sm:col-span-2">
-        <FormActions onCancel={onCancel} />
+        <FormActions onCancel={onCancel} saving={Boolean(nameError)} />
       </div>
     </form>
   );
