@@ -52,6 +52,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
   const deleteLine = useDeleteQuoteLine();
   const saveSettings = useSaveQuoteSettings();
   const addNote = useAddQuoteNote();
+  const { data: pricing } = usePricingSnapshot(quote?.priceListId ?? null);
 
   const [notes, setNotes] = useState("");
   const [terms, setTerms] = useState("");
