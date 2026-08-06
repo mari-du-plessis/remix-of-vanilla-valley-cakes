@@ -52,7 +52,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
       )}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6">
-        <SiteWordmark className="items-start text-left" />
+        <SiteWordmark align="left" className="self-stretch text-left" />
         <nav className="flex items-center gap-5">
           {PUBLIC_NAV.map((item) => (
             <Link
