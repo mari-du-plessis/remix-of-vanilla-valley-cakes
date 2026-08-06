@@ -1,0 +1,231 @@
+import { useMemo } from "react";
+import { cn } from "@/lib/utils";
+import { CANVAS, buildTierBoxes, clusterAnchors } from "../lib/geometry";
+import type { CakeAsset, CakeDesign } from "../types";
+import { AssetLayer } from "./AssetLayer";
+
+/**
+ * CakePreview — the live cake illustration.
+ *
+ * The cake is assembled from the asset library rather than drawn inline, so
+ * every visual piece can be replaced or refined in the admin panel. Layers are
+ * composed back to front:
+ *
+ *   board → tier bodies → icing / pattern finishes → base borders → drip →
+ *   scatters → clusters (flowers, leaves, macarons…) → topper → text
+ *
+ * Tier geometry is computed, so any tier count from 1–4 composes correctly and
+ * a three-tier square cake really does render three square tiers.
+ */
+export function CakePreview({
+  design,
+  assets,
+  className,
+}: {
+  design: CakeDesign;
+  assets: CakeAsset[];
+  className?: string;
+}) {
+  const index = useMemo(() => new Map(assets.map((a) => [a.key, a])), [assets]);
+
+  const selected = useMemo(
+    () =>
+      design.assetKeys
+        .map((key) => index.get(key))
+        .filter((a): a is CakeAsset => !!a && a.is_active)
+        .sort((a, b) => a.z_index - b.z_index),
+    [design.assetKeys, index],
+  );
+
+  const bySlot = (slot: CakeAsset["slot"]) => selected.filter((a) => a.slot === slot);
+
+  const shape = index.get(design.shapeKey) ?? bySlot("tier-body")[0];
+  const boxes = useMemo(
+    () => buildTierBoxes(design.tierCount, design.shapeKey),
+    [design.tierCount, design.shapeKey],
+  );
+
+  const board = bySlot("board")[0];
+  const finishes = bySlot("tier-finish");
+  const borders = bySlot("border");
+  const drips = bySlot("drip");
+  const scatters = bySlot("scatter");
+  const clusters = bySlot("cluster");
+  const toppers = bySlot("topper");
+  const plaque = bySlot("text")[0];
+
+  const topBox = boxes[boxes.length - 1]!;
+  const bottomBox = boxes[0]!;
+
+  return (
+    <svg
+      viewBox={`0 0 ${CANVAS.width} ${CANVAS.height}`}
+      role="img"
+      aria-label={`Live preview of a ${design.tierCount} tier cake`}
+      className={cn("h-full w-full", className)}
+      style={design.colors as React.CSSProperties}
+    >
+      <defs>
+        <filter id="vv-cake-soft" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="9" />
+        </filter>
+      </defs>
+
+      {/* contact shadow */}
+      <ellipse
+        cx={CANVAS.width / 2}
+        cy={CANVAS.baseY + 26}
+        rx={150}
+        ry={16}
+        fill="var(--cake-shade)"
+        opacity={0.14}
+        filter="url(#vv-cake-soft)"
+      />
+
+      {boxes.map((box, i) => {
+        const tier = design.tiers[Math.min(i, design.tiers.length - 1)];
+        const style = {
+          "--cake-sponge": tier?.spongeColor,
+          "--cake-filling": tier?.fillingColor,
+        } as React.CSSProperties;
+        const bodyHeight = box.height + box.width * 0.12;
+
+        return (
+          <g key={`tier-${i}`} style={style}>
+            <AssetLayer
+              asset={shape}
+              x={box.cx - box.width / 2}
+              y={box.top}
+              width={box.width}
+              height={bodyHeight}
+              stretch
+            />
+
+            {finishes.map((asset) => (
+              <AssetLayer
+                key={`${asset.key}-${i}`}
+                asset={asset}
+                x={box.cx - box.width / 2}
+                y={box.top}
+                width={box.width}
+                height={box.height}
+                stretch
+              />
+            ))}
+
+            {scatters.map((asset) => (
+              <AssetLayer
+                key={`${asset.key}-${i}`}
+                asset={asset}
+                x={box.cx - box.width / 2}
+                y={box.top + box.height * 0.12}
+                width={box.width}
+                height={box.height * 0.8}
+              />
+            ))}
+
+            {borders.map((asset) => (
+              <AssetLayer
+                key={`${asset.key}-${i}`}
+                asset={asset}
+                x={box.cx - box.width / 2}
+                y={box.top + box.height - 6}
+                width={box.width}
+                height={13}
+                stretch
+              />
+            ))}
+
+            {drips.map((asset) => (
+              <AssetLayer
+                key={`${asset.key}-${i}`}
+                asset={asset}
+                x={box.cx - box.width / 2}
+                y={box.top + 2}
+                width={box.width}
+                height={Math.min(52, box.height * 0.55)}
+                stretch
+              />
+            ))}
+
+            {clusters.length > 0 &&
+              clusterAnchors(box, i, boxes.length).map((anchor, ai) => (
+                <g key={`cluster-${i}-${ai}`}>
+                  {clusters.map((asset) => (
+                    <AssetLayer
+                      key={`${asset.key}-${i}-${ai}`}
+                      asset={asset}
+                      x={anchor.x}
+                      y={anchor.y}
+                      width={anchor.size}
+                      height={anchor.size}
+                    />
+                  ))}
+                </g>
+              ))}
+          </g>
+        );
+      })}
+
+      {/* number / letter cakes show the age straight on the sculpted slab */}
+      {design.shapeKey === "shape-number" && (
+        <text
+          x={bottomBox.cx}
+          y={bottomBox.top + bottomBox.height * 0.68}
+          textAnchor="middle"
+          fontSize={96}
+          fontWeight={600}
+          fill="var(--cake-gold)"
+          opacity={0.9}
+        >
+          {design.text.slice(0, 3) || "18"}
+        </text>
+      )}
+
+      {toppers.map((asset, i) => (
+        <AssetLayer
+          key={asset.key}
+          asset={asset}
+          x={topBox.cx - 42 + i * 6}
+          y={topBox.top - 88}
+          width={84}
+          height={84}
+        />
+      ))}
+
+      {design.text && design.shapeKey !== "shape-number" && (
+        <g>
+          {plaque && (
+            <AssetLayer
+              asset={plaque}
+              x={bottomBox.cx - 78}
+              y={bottomBox.top + bottomBox.height * 0.32}
+              width={156}
+              height={44}
+              stretch
+            />
+          )}
+          <text
+            x={bottomBox.cx}
+            y={bottomBox.top + bottomBox.height * 0.32 + 29}
+            textAnchor="middle"
+            fontSize={19}
+            fill="var(--cake-shade)"
+            opacity={0.85}
+          >
+            {design.text.slice(0, 18)}
+          </text>
+        </g>
+      )}
+
+      {/* the board is drawn last so tiers sit cleanly on its front lip */}
+      <AssetLayer
+        asset={board}
+        x={CANVAS.width / 2 - 155}
+        y={CANVAS.baseY - 12}
+        width={310}
+        height={72}
+      />
+    </svg>
+  );
+}

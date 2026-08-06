@@ -22,6 +22,8 @@ export function buildOrderMessage(
         )
       : [`*Flavour:* ${form.flavour}`, `*Filling:* ${form.filling}`]),
     form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
+    form.cakeText.trim() ? `*Message on cake:* ${form.cakeText.trim()}` : null,
+
     options.photoLine ?? null,
     `*Event date:* ${form.eventDate}`,
     ``,

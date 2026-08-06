@@ -92,3 +92,62 @@ export function appearanceTokensFor(groupKey?: string | null): AppearanceToken[]
 
 export const appearanceLabel = (token: string | null | undefined) =>
   APPEARANCE_TOKENS.find((entry) => entry.value === token)?.label ?? token ?? null;
+
+/* ------------------------------ colour palette ----------------------------- */
+
+/**
+ * Default CSS custom properties handed to the SVG cake illustration. Assets
+ * paint with `var(--cake-*)` so a single colour change re-themes every piece.
+ */
+export const CAKE_COLOR_DEFAULTS: Record<string, string> = {
+  "--cake-icing": "#f4ebdf",
+  "--cake-shade": "#2a2320",
+  "--cake-sponge": "#d8b184",
+  "--cake-filling": "#f7e8d4",
+  "--cake-drip": "#4a2f26",
+  "--cake-gold": "#c19a3d",
+  "--cake-leaf": "#5f7a52",
+  "--cake-flower": "#e8d5cf",
+  "--cake-flower-alt": "#f4e6e1",
+  "--cake-berry": "#7a2233",
+  "--cake-pearl": "#efe6da",
+  "--cake-accent": "#b8895f",
+  "--cake-wood": "#c69a67",
+  "--cake-wood-dark": "#a8794b",
+};
+
+const SPONGE_COLOURS: Record<string, string> = {
+  vanilla: "#e8cfa2",
+  chocolate: "#6b4429",
+  "red velvet": "#9c3324",
+  carrot: "#c98a4b",
+  lemon: "#efd97a",
+  "lemon poppy": "#ecd98a",
+  coffee: "#7b5638",
+  funfetti: "#f2ddc2",
+  amarula: "#a5754a",
+  hummingbird: "#d2a86f",
+  "spicy pumpkin": "#d08b45",
+};
+
+const FILLING_COLOURS: Record<string, string> = {
+  "vanilla buttercream": "#f8ecd8",
+  "chocolate ganache": "#503020",
+  "salted caramel": "#c8873f",
+  "fresh cream": "#fbf4e8",
+  "fresh cream & berries": "#f0cdd2",
+  "cream cheese": "#f7f0e2",
+};
+
+const lookup = (table: Record<string, string>, name: string, fallback: string) => {
+  const key = name.trim().toLowerCase();
+  if (table[key]) return table[key];
+  const partial = Object.keys(table).find((k) => key.includes(k) || k.includes(key));
+  return (partial && table[partial]) || fallback;
+};
+
+export const spongeColour = (flavour: string) =>
+  flavour ? lookup(SPONGE_COLOURS, flavour, CAKE_COLOR_DEFAULTS["--cake-sponge"]!) : CAKE_COLOR_DEFAULTS["--cake-sponge"]!;
+
+export const fillingColour = (filling: string) =>
+  filling ? lookup(FILLING_COLOURS, filling, CAKE_COLOR_DEFAULTS["--cake-filling"]!) : CAKE_COLOR_DEFAULTS["--cake-filling"]!;

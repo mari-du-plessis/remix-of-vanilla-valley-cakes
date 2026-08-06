@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminCakeBuilderRouteImport } from './routes/_authenticated/admin/cake-builder'
 import { Route as AuthenticatedAdminCalendarRouteImport } from './routes/_authenticated/admin/calendar'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin/gallery'
 import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authenticated/admin/pricing'
@@ -59,6 +60,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminCakeBuilderRoute =
+  AuthenticatedAdminCakeBuilderRouteImport.update({
+    id: '/cake-builder',
+    path: '/cake-builder',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminCalendarRoute =
   AuthenticatedAdminCalendarRouteImport.update({
     id: '/calendar',
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
   '/admin/calendar': typeof AuthenticatedAdminCalendarRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/pricing': typeof AuthenticatedAdminPricingRoute
@@ -129,6 +137,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
   '/admin/calendar': typeof AuthenticatedAdminCalendarRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/pricing': typeof AuthenticatedAdminPricingRoute
@@ -147,6 +156,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
   '/_authenticated/admin/calendar': typeof AuthenticatedAdminCalendarRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRoute
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order'
     | '/admin'
+    | '/admin/cake-builder'
     | '/admin/calendar'
     | '/admin/gallery'
     | '/admin/pricing'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/login'
     | '/order'
+    | '/admin/cake-builder'
     | '/admin/calendar'
     | '/admin/gallery'
     | '/admin/pricing'
@@ -197,6 +209,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order'
     | '/_authenticated/admin'
+    | '/_authenticated/admin/cake-builder'
     | '/_authenticated/admin/calendar'
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/pricing'
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/cake-builder': {
+      id: '/_authenticated/admin/cake-builder'
+      path: '/cake-builder'
+      fullPath: '/admin/cake-builder'
+      preLoaderRoute: typeof AuthenticatedAdminCakeBuilderRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/calendar': {
       id: '/_authenticated/admin/calendar'
       path: '/calendar'
@@ -327,6 +347,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminCakeBuilderRoute: typeof AuthenticatedAdminCakeBuilderRoute
   AuthenticatedAdminCalendarRoute: typeof AuthenticatedAdminCalendarRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRoute
@@ -340,6 +361,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminCakeBuilderRoute: AuthenticatedAdminCakeBuilderRoute,
     AuthenticatedAdminCalendarRoute: AuthenticatedAdminCalendarRoute,
     AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
     AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRoute,
@@ -379,13 +401,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

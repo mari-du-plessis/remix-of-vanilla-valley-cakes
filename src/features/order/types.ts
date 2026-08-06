@@ -7,6 +7,8 @@ export type OrderFormState = {
   filling: string;
   tiers: CakeTier[];
   extras: string[];
+  /** Optional message piped / printed on the cake, shown live in the builder. */
+  cakeText: string;
   inspirationFile: File | null;
   inspirationPreview: string;
   eventDate: string;
@@ -23,6 +25,7 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   filling: "",
   tiers: [],
   extras: [],
+  cakeText: "",
   inspirationFile: null,
   inspirationPreview: "",
   eventDate: "",
@@ -31,5 +34,6 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   email: "",
   notes: "",
 };
+
 
 export const ORDER_STEPS = ["Occasion", "Cake", "Details", "Contact"] as const;
