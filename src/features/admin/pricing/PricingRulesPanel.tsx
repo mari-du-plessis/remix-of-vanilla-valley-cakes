@@ -1,3 +1,4 @@
+import { clampRangeEnd } from "@/lib/date-range";
 import { AdminSection } from "@/features/admin/components/AdminSection";
 import { CatalogCrudList } from "@/features/admin/catalog/CatalogCrudList";
 import {
@@ -254,7 +255,8 @@ function PricingRuleForm({
         label="Effective to"
         type="date"
         value={state.effectiveTo}
-        onChange={(v) => set("effectiveTo", v)}
+        min={state.effectiveFrom || undefined}
+        onChange={(v) => set("effectiveTo", clampRangeEnd(state.effectiveFrom, v))}
       />
       <ToggleField
         label="Applies to every price list"

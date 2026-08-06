@@ -2,9 +2,30 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Phase 1 refinements
+
+### Added
+
+- **Shared date-range helpers** (`src/lib/date-range.ts`): `rangeEndMin`,
+  `clampRangeEnd`, `isPastDate` and `todayIso`. Every "from → to" picker now
+  disables and clamps end dates that fall before the start date — blocked
+  dates, price list validity, pricing rule validity and quote validity.
+- **Quote expiry warning**: accepting a quote past its `Valid until` date opens
+  a confirmation dialog explaining the quoted prices may no longer be valid.
+  It is a warning only — acceptance always remains possible.
+
+### Changed
+
+- **Accepting a quote confirms its order**: `updateQuoteSettings` moves the
+  linked order from `enquiry`/`quoted` to `confirmed` automatically; orders
+  further along the lifecycle are left untouched. `useSaveQuoteSettings`
+  invalidates order queries and reports the change.
+- `TextField` accepts `min`/`max` so date and numeric fields can be bounded.
+
 ## Quote management module
 
 ### Added
+
 - **Quotes schema**: `quotes` (numbered `VVQ-YYYY-####`, revisioned per order,
   status, validity, deposit, totals, printed notes and terms),
   `quote_line_items`, `quote_notes` and an automatic `quote_status_history`.
@@ -23,10 +44,10 @@ All notable changes to the Vanilla Valley platform.
 - **Reusable components**: `QuoteStatusBadge`, `QuoteList`, `QuoteLineEditor`
   and `OrderQuotesPanel`.
 
-
 ## Phase 1 usability improvements
 
 ### Added
+
 - **Manual order creation**: `New order` in the admin Orders header opens
   `ManualOrderDialog` — search an existing customer or capture a new one, pick
   the channel and opening status, add items with size, flavour, filling and
@@ -44,14 +65,14 @@ All notable changes to the Vanilla Valley platform.
   "editing price list" switcher at the top of the Pricing screen.
 
 ### Security
+
 - The public order intake schema cannot set `status`, `customerId` or
   `internalNotes`; those live only on the authenticated admin schema.
-
-
 
 ## Customer management module
 
 ### Added
+
 - **Database**: extended `customers` with `status` (`customer_status` enum:
   lead / active / vip / inactive / blocked), `tags text[]`, `whatsapp_phone`,
   `preferred_channel` (`contact_channel` enum) and `marketing_opt_in`. New
@@ -74,12 +95,14 @@ All notable changes to the Vanilla Valley platform.
   internal notes and a placeholder for the future customer account link.
 
 ### Changed
+
 - `ADMIN_NAV` gained a Customers entry. The public order wizard, order
   persistence and WhatsApp flow are untouched.
 
 ## Pricing module & typography system
 
 ### Added
+
 - **Database**: `price_lists`, `price_list_items`, `pricing_rules` with enums
   `price_target_type`, `price_unit`, `pricing_rule_type`,
   `pricing_adjustment_type`. Admin-only RLS — pricing is never exposed publicly.
@@ -100,6 +123,7 @@ All notable changes to the Vanilla Valley platform.
   `display-heading` and `eyebrow` utilities.
 
 ### Changed
+
 - One heading font (`--font-heading`, the branding sans) now drives H1–H6 on
   both the public site and admin; H1/H2 use the uppercase wide-tracked
   treatment, H3–H6 continue with tighter tracking. Body copy, forms, nav,
@@ -108,11 +132,10 @@ All notable changes to the Vanilla Valley platform.
   request); the script logo asset is unchanged. `admin-heading` is kept as an
   alias of the shared treatment.
 
-
-
 ## Week View production schedule
 
 ### Changed
+
 - Week view is now a Sunday → Saturday list of full-width collapsible day rows
   (`WeekSchedule`) instead of narrow columns. Each row header shows the weekday,
   date, capacity meter and availability signal; expanding reveals horizontal
@@ -124,16 +147,16 @@ All notable changes to the Vanilla Valley platform.
   `admin-heading` utility, customer headings use Cormorant Garamond.
 
 ### Added
+
 - `src/features/calendar/lib/workload.ts` — availability signal mapping
   (Available, Busy, Nearly full, Fully booked, Closed).
 - `src/features/calendar/components/CapacityMeter.tsx`,
   `ProductionCard.tsx`, `WeekSchedule.tsx`.
 
-
-
 ## Calendar & Availability module
 
 ### Added
+
 - **Database**: `calendar_events`, `availability_blocks`, `capacity_settings`,
   enums `calendar_event_type` / `availability_block_type`, and the privacy-safe
   `day_availability(from, to)` lookup.
@@ -148,15 +171,18 @@ All notable changes to the Vanilla Valley platform.
 - `src/config/features.ts` for build-but-not-enabled behaviour.
 
 ## Products module
+
 - `product_categories`, `products`, `option_groups`, `options`,
   `product_option_groups`, `option_rules`; catalog moved from config to the
   database; `/admin/products`.
 
 ## Orders module
+
 - `customers`, `orders`, `order_items`, `order_item_options`,
   `order_status_history`; order persistence on the public wizard;
   `/admin/orders` list and detail.
 
 ## Architecture refactor
+
 - Feature-based structure (`src/features/*`), `src/config/*`, shared primitives
   in `src/components/common`, thin routes, admin shell.
