@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EmptyState, LoadingState } from "@/components/common";
+import { clampRangeEnd, rangeEndMin } from "@/lib/date-range";
 import { AdminSection } from "@/features/admin/components/AdminSection";
 import { formatOrderDate } from "@/features/orders/lib/format";
 import { AVAILABILITY_BLOCK_TYPES, getBlockTypeLabel } from "../lib/event-meta";
@@ -54,7 +55,10 @@ export function AvailabilityPanel({
             id="block-start"
             type="date"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              setEndDate((current) => clampRangeEnd(e.target.value, current));
+            }}
           />
         </div>
         <div className="space-y-1.5">
@@ -63,8 +67,8 @@ export function AvailabilityPanel({
             id="block-end"
             type="date"
             value={endDate}
-            min={startDate || undefined}
-            onChange={(e) => setEndDate(e.target.value)}
+            min={rangeEndMin(startDate)}
+            onChange={(e) => setEndDate(clampRangeEnd(startDate, e.target.value))}
           />
         </div>
         <div className="space-y-1.5">
