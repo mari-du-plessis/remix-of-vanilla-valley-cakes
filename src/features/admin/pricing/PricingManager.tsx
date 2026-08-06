@@ -57,6 +57,34 @@ export function PricingManager() {
         description="Internal price lists, product and option prices, delivery and rush fees, and the rules that adjust them. Customers still request quotations — no prices are shown publicly."
       />
 
+      {(priceLists.data?.length ?? 0) > 0 && (
+        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-border/70 bg-muted/40 px-4 py-3">
+          <label
+            htmlFor="active-price-list"
+            className="text-xs uppercase tracking-wide text-muted-foreground"
+          >
+            Editing price list
+          </label>
+          <select
+            id="active-price-list"
+            value={activeListId ?? ""}
+            onChange={(event) => setSelectedId(event.target.value)}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            {(priceLists.data ?? []).map((list) => (
+              <option key={list.id} value={list.id}>
+                {list.name}
+                {list.isDefault ? " (default)" : ""}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">
+            Every price and rule below belongs to this list unless it is marked global.
+          </p>
+        </div>
+      )}
+
+
       <Tabs defaultValue="prices" className="mt-6">
         <TabsList>
           <TabsTrigger value="prices">Product &amp; option prices</TabsTrigger>
