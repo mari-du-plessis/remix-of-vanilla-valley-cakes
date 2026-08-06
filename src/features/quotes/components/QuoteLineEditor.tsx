@@ -2,30 +2,56 @@ import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SelectField } from "@/components/common";
+import { cn } from "@/lib/utils";
 import { centsToAmount, formatCents, parseAmountToCents } from "@/features/pricing/lib/money";
 import { QUOTE_LINE_KIND_LABELS } from "../types";
 import type { QuoteLineItem, QuoteLineKind } from "../types";
 
-const KIND_OPTIONS = Object.entries(QUOTE_LINE_KIND_LABELS).map(([value, label]) => ({
+const KIND_ENTRIES = Object.entries(QUOTE_LINE_KIND_LABELS) as [QuoteLineKind, string][];
+
+function KindSelect({
   value,
-  label,
-}));
+  disabled,
+  onChange,
+}: {
+  value: QuoteLineKind;
+  disabled?: boolean;
+  onChange: (value: QuoteLineKind) => void;
+}) {
+  return (
+    <select
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value as QuoteLineKind)}
+      aria-label="Line type"
+      className={cn(
+        "h-10 w-full rounded-xl border border-border bg-background px-3 text-sm transition-colors focus:border-primary focus:outline-none",
+        disabled && "opacity-60",
+      )}
+    >
+      {KIND_ENTRIES.map(([kind, label]) => (
+        <option key={kind} value={kind}>
+          {label}
+        </option>
+      ))}
+    </select>
+  );
+}
 
 type LineDraft = {
   label: string;
-  detail: string;
   kind: QuoteLineKind;
   quantity: string;
   amount: string;
 };
 
-const EMPTY_DRAFT: LineDraft = {
-  label: "",
-  detail: "",
-  kind: "custom",
-  quantity: "1",
-  amount: "0.00",
+const EMPTY_DRAFT: LineDraft = { label: "", kind: "custom", quantity: "1", amount: "0.00" };
+
+export type QuoteLineEdit = {
+  label?: string;
+  kind?: QuoteLineKind;
+  quantity?: number;
+  unitCents?: number;
 };
 
 /**
@@ -45,11 +71,10 @@ export function QuoteLineEditor({
   lines: QuoteLineItem[];
   currency: string;
   readOnly?: boolean;
-  onUpdate: (id: string, values: Partial<QuoteLineItem>) => void;
+  onUpdate: (id: string, values: QuoteLineEdit) => void;
   onDelete: (id: string) => void;
   onAdd: (values: {
     label: string;
-    detail: string | null;
     kind: QuoteLineKind;
     quantity: number;
     unitCents: number;
@@ -63,7 +88,6 @@ export function QuoteLineEditor({
     if (!draft.label.trim()) return;
     onAdd({
       label: draft.label.trim(),
-      detail: draft.detail.trim() || null,
       kind: draft.kind,
       quantity: Math.max(1, Number.parseInt(draft.quantity, 10) || 1),
       unitCents: parseAmountToCents(draft.amount),
@@ -73,72 +97,70 @@ export function QuoteLineEditor({
 
   return (
     <div className="space-y-3">
-      <div className="hidden gap-3 px-1 text-xs text-muted-foreground sm:grid sm:grid-cols-[1fr_120px_80px_110px_40px]">
+      <div className="hidden gap-3 px-1 text-xs text-muted-foreground sm:grid sm:grid-cols-[1fr_130px_70px_110px_100px_40px]">
         <span>Description</span>
         <span>Type</span>
         <span className="text-right">Qty</span>
         <span className="text-right">Unit</span>
+        <span className="text-right">Amount</span>
         <span />
       </div>
 
       {lines.map((line) => (
         <div
           key={line.id}
-          className="grid gap-3 rounded-xl border border-border p-3 sm:grid-cols-[1fr_120px_80px_110px_40px] sm:items-center sm:border-0 sm:p-1"
+          className="grid gap-3 rounded-xl border border-border p-3 sm:grid-cols-[1fr_130px_70px_110px_100px_40px] sm:items-center sm:border-0 sm:p-1"
         >
           <div className="space-y-1">
             <Input
-              value={line.label}
+              key={`${line.id}-label`}
+              defaultValue={line.label}
               disabled={readOnly}
-              onChange={(event) => onUpdate(line.id, { label: event.target.value })}
-              onBlur={(event) =>
-                onUpdate(line.id, { label: event.target.value, __commit: true } as never)
-              }
+              onBlur={(event) => {
+                const label = event.target.value.trim();
+                if (label && label !== line.label) onUpdate(line.id, { label });
+              }}
             />
             {line.detail && (
               <p className="px-1 text-xs text-muted-foreground">{line.detail}</p>
             )}
           </div>
 
-          <SelectField
+          <KindSelect
             value={line.kind}
-            options={KIND_OPTIONS}
             disabled={readOnly}
-            onChange={(value) =>
-              onUpdate(line.id, { kind: value as QuoteLineKind, __commit: true } as never)
-            }
+            onChange={(kind) => onUpdate(line.id, { kind })}
           />
 
           <Input
+            key={`${line.id}-qty`}
             type="number"
             min={1}
             className="text-right"
             defaultValue={line.quantity}
             disabled={readOnly}
-            onBlur={(event) =>
-              onUpdate(line.id, {
-                quantity: Math.max(1, Number.parseInt(event.target.value, 10) || 1),
-                __commit: true,
-              } as never)
-            }
+            onBlur={(event) => {
+              const quantity = Math.max(1, Number.parseInt(event.target.value, 10) || 1);
+              if (quantity !== line.quantity) onUpdate(line.id, { quantity });
+            }}
           />
 
           <Input
+            key={`${line.id}-unit`}
             className="text-right"
             defaultValue={centsToAmount(line.unitCents)}
             disabled={readOnly}
-            onBlur={(event) =>
-              onUpdate(line.id, {
-                unitCents: parseAmountToCents(event.target.value),
-                __commit: true,
-              } as never)
-            }
+            onBlur={(event) => {
+              const unitCents = parseAmountToCents(event.target.value);
+              if (unitCents !== line.unitCents) onUpdate(line.id, { unitCents });
+            }}
           />
 
-          <div className="flex items-center justify-between gap-2 sm:justify-end">
-            <span className="text-sm sm:hidden">
-              {formatCents(line.amountCents, currency)}
-            </span>
+          <span className="text-right text-sm font-medium">
+            {formatCents(line.amountCents, currency)}
+          </span>
+
+          <div className="flex justify-end">
             {!readOnly && (
               <Button
                 variant="ghost"
@@ -155,17 +177,13 @@ export function QuoteLineEditor({
       ))}
 
       {!readOnly && (
-        <div className="grid gap-3 rounded-xl border border-dashed border-border p-3 sm:grid-cols-[1fr_120px_80px_110px_40px] sm:items-center">
+        <div className="grid gap-3 rounded-xl border border-dashed border-border p-3 sm:grid-cols-[1fr_130px_70px_110px_100px_40px] sm:items-center">
           <Input
             placeholder="Add a line — e.g. Cake stand hire"
             value={draft.label}
             onChange={(event) => set({ label: event.target.value })}
           />
-          <SelectField
-            value={draft.kind}
-            options={KIND_OPTIONS}
-            onChange={(value) => set({ kind: value as QuoteLineKind })}
-          />
+          <KindSelect value={draft.kind} onChange={(kind) => set({ kind })} />
           <Input
             type="number"
             min={1}
@@ -178,6 +196,7 @@ export function QuoteLineEditor({
             value={draft.amount}
             onChange={(event) => set({ amount: event.target.value })}
           />
+          <span className="hidden sm:block" />
           <Button
             size="icon"
             aria-label="Add line"
