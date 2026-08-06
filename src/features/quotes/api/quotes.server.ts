@@ -325,6 +325,7 @@ export async function insertQuoteLine(client: Client, input: QuoteLineInput) {
   const { error } = await client.from("quote_line_items").insert({
     quote_id: input.quoteId,
     kind: input.kind ?? "custom",
+    price_list_item_id: input.priceListItemId ?? null,
     label: input.label,
     detail: input.detail ?? null,
     quantity,
@@ -355,6 +356,9 @@ export async function updateQuoteLine(
     .from("quote_line_items")
     .update({
       ...(values.kind ? { kind: values.kind } : {}),
+      ...(values.priceListItemId !== undefined
+        ? { price_list_item_id: values.priceListItemId }
+        : {}),
       ...(values.label !== undefined ? { label: values.label } : {}),
       ...(values.detail !== undefined ? { detail: values.detail } : {}),
       ...(values.position !== undefined ? { position: values.position } : {}),
