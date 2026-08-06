@@ -21,7 +21,7 @@ export function SiteWordmark({ className, align = "center" }: { className?: stri
       <img
         src={logoSrc}
         alt={`${BRAND.name} logo`}
-        className="h-full w-auto shrink-0 rounded-md border border-border/60 object-cover"
+        className="h-auto w-auto shrink-0 self-stretch rounded-md border border-border/60 object-cover"
       />
       <span className={cn("flex flex-col", align === "center" ? "items-center" : "items-start")}>
         <span className="display-heading text-lg leading-none sm:text-xl">{BRAND.name}</span>
