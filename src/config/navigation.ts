@@ -5,6 +5,7 @@ import {
   ClipboardList,
   Images,
   LayoutDashboard,
+  Palette,
   Tags,
   Users,
 } from "lucide-react";
@@ -34,6 +35,8 @@ export const ADMIN_NAV: NavItem[] = [
   { label: "Customers", to: "/admin/customers", icon: Users },
   { label: "Calendar", to: "/admin/calendar", icon: CalendarDays },
   { label: "Products", to: "/admin/products", icon: Cake },
+  { label: "Cake builder", to: "/admin/cake-builder", icon: Palette },
+
   { label: "Pricing", to: "/admin/pricing", icon: Tags },
 
   { label: "Gallery", to: "/admin/gallery", icon: Images },

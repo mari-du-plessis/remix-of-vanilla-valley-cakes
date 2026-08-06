@@ -1,7 +1,9 @@
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SelectableCard } from "@/components/common";
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
+import { CakeBuilderPreview } from "@/features/cake-builder/components/CakeBuilderPreview";
 import { tierLabel } from "../lib/tiers";
 import type { CakeTier, OrderFormState } from "../types";
 import { FlavourPicker } from "./FlavourPicker";
@@ -15,6 +17,7 @@ type CakeStepProps = {
   onTierFlavourChange: (index: number, name: string) => void;
   onTierFieldChange: (index: number, key: keyof CakeTier, value: string) => void;
   onToggleExtra: (extra: string) => void;
+  onCakeTextChange: (value: string) => void;
 };
 
 export function CakeStep({
@@ -26,10 +29,19 @@ export function CakeStep({
   onTierFlavourChange,
   onTierFieldChange,
   onToggleExtra,
+  onCakeTextChange,
 }: CakeStepProps) {
   return (
     <section className="space-y-6">
       <h2 className="text-3xl">Design your cake</h2>
+
+      {/* Live illustration — updates as every selection changes */}
+      <div className="sticky top-2 z-10 rounded-2xl border border-border/70 bg-background/80 backdrop-blur-sm p-2 shadow-sm">
+        <CakeBuilderPreview form={form} catalog={catalog} className="h-56 w-full" />
+        <p className="pb-1 text-center text-[11px] italic text-muted-foreground">
+          A guide to your design — your cake is handmade, so the finish will be unique.
+        </p>
+      </div>
 
       <div>
         <Label className="mb-3 block">Size</Label>
@@ -97,6 +109,19 @@ export function CakeStep({
             </label>
           ))}
         </div>
+      </div>
+
+      <div>
+        <Label htmlFor="cake-text" className="mb-2 block">
+          Message on the cake (optional)
+        </Label>
+        <Input
+          id="cake-text"
+          value={form.cakeText}
+          maxLength={40}
+          onChange={(e) => onCakeTextChange(e.target.value)}
+          placeholder="Happy Birthday Sonja"
+        />
       </div>
     </section>
   );

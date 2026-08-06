@@ -50,6 +50,90 @@ export type Database = {
         }
         Relationships: []
       }
+      cake_builder_asset_options: {
+        Row: {
+          asset_id: string
+          created_at: string
+          id: string
+          option_id: string
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string
+          id?: string
+          option_id: string
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string
+          id?: string
+          option_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cake_builder_asset_options_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "cake_builder_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cake_builder_asset_options_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cake_builder_assets: {
+        Row: {
+          category: Database["public"]["Enums"]["cake_asset_category"]
+          created_at: string
+          id: string
+          is_active: boolean
+          key: string
+          metadata: Json
+          name: string
+          notes: string | null
+          slot: Database["public"]["Enums"]["cake_asset_slot"]
+          svg_content: string
+          updated_at: string
+          version: number
+          z_index: number
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["cake_asset_category"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key: string
+          metadata?: Json
+          name: string
+          notes?: string | null
+          slot?: Database["public"]["Enums"]["cake_asset_slot"]
+          svg_content: string
+          updated_at?: string
+          version?: number
+          z_index?: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["cake_asset_category"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key?: string
+          metadata?: Json
+          name?: string
+          notes?: string | null
+          slot?: Database["public"]["Enums"]["cake_asset_slot"]
+          svg_content?: string
+          updated_at?: string
+          version?: number
+          z_index?: number
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           all_day: boolean
@@ -1066,6 +1150,31 @@ export type Database = {
     Enums: {
       app_role: "admin"
       availability_block_type: "closure" | "holiday" | "fully_booked" | "custom"
+      cake_asset_category:
+        | "board"
+        | "shape"
+        | "icing"
+        | "drip"
+        | "flower"
+        | "leaf"
+        | "sprinkle"
+        | "pearl"
+        | "gold_leaf"
+        | "topper"
+        | "text_plaque"
+        | "border"
+        | "pattern"
+        | "decoration"
+      cake_asset_slot:
+        | "board"
+        | "tier-body"
+        | "tier-finish"
+        | "drip"
+        | "border"
+        | "cluster"
+        | "scatter"
+        | "topper"
+        | "text"
       calendar_event_type:
         | "production"
         | "collection"
@@ -1239,6 +1348,33 @@ export const Constants = {
     Enums: {
       app_role: ["admin"],
       availability_block_type: ["closure", "holiday", "fully_booked", "custom"],
+      cake_asset_category: [
+        "board",
+        "shape",
+        "icing",
+        "drip",
+        "flower",
+        "leaf",
+        "sprinkle",
+        "pearl",
+        "gold_leaf",
+        "topper",
+        "text_plaque",
+        "border",
+        "pattern",
+        "decoration",
+      ],
+      cake_asset_slot: [
+        "board",
+        "tier-body",
+        "tier-finish",
+        "drip",
+        "border",
+        "cluster",
+        "scatter",
+        "topper",
+        "text",
+      ],
       calendar_event_type: [
         "production",
         "collection",

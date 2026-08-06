@@ -66,6 +66,16 @@ export function buildOrderPayload(
     }),
   );
 
+  if (form.cakeText.trim()) {
+    options.push({
+      groupKey: "message",
+      groupLabel: "Message on cake",
+      valueLabel: form.cakeText.trim(),
+      tierIndex: null,
+    });
+  }
+
+
   return {
     customer: {
       name: form.name,

@@ -71,6 +71,8 @@ function OrderPage() {
             onTierFlavourChange={order.setTierFlavour}
             onTierFieldChange={order.setTierField}
             onToggleExtra={order.toggleExtra}
+            onCakeTextChange={(v) => order.update("cakeText", v)}
+
           />
         )}
 
