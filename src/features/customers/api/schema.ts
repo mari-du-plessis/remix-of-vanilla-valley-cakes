@@ -4,13 +4,7 @@ import { z } from "zod";
 
 const trimmed = (max: number) => z.string().trim().max(max);
 
-export const customerStatusSchema = z.enum([
-  "lead",
-  "active",
-  "vip",
-  "inactive",
-  "blocked",
-]);
+export const customerStatusSchema = z.enum(["lead", "active", "vip", "inactive", "blocked"]);
 
 export const contactChannelSchema = z.enum(["whatsapp", "phone", "email", "instagram"]);
 
@@ -31,7 +25,10 @@ export const customerInputSchema = z.object({
   name: trimmed(120).min(1, "Name is required"),
   phone: trimmed(30).min(5, "Phone number is required"),
   whatsappPhone: trimmed(30).nullable().optional(),
-  email: z.union([z.string().trim().email(), z.literal("")]).nullable().optional(),
+  email: z
+    .union([z.string().trim().email(), z.literal("")])
+    .nullable()
+    .optional(),
   status: customerStatusSchema.default("lead"),
   preferredChannel: contactChannelSchema.default("whatsapp"),
   tags: z.array(trimmed(40)).max(20).default([]),

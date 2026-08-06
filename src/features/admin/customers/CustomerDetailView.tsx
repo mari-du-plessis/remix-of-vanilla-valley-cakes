@@ -11,10 +11,7 @@ import { CustomerForm } from "@/features/customers/components/CustomerForm";
 import { CustomerNotesPanel } from "@/features/customers/components/CustomerNotesPanel";
 import { CustomerStatusBadge } from "@/features/customers/components/CustomerStatusBadge";
 import { CustomerTagList } from "@/features/customers/components/CustomerTagList";
-import {
-  CONTACT_CHANNEL_LABELS,
-  whatsappNumber,
-} from "@/features/customers/lib/customer-meta";
+import { CONTACT_CHANNEL_LABELS, whatsappNumber } from "@/features/customers/lib/customer-meta";
 import {
   useAddCustomerNote,
   useCreateAddress,
@@ -56,9 +53,7 @@ export function CustomerDetailView({ customerId }: { customerId: string }) {
   if (error || !customer)
     return (
       <EmptyState
-        message={
-          error ? `Could not load this customer — ${error.message}` : "Customer not found."
-        }
+        message={error ? `Could not load this customer — ${error.message}` : "Customer not found."}
         action={
           <Button asChild variant="outline">
             <Link to="/admin/customers">Back to customers</Link>
@@ -121,10 +116,7 @@ export function CustomerDetailView({ customerId }: { customerId: string }) {
             title="Order history"
             description={`${customer.stats.orderCount} order${customer.stats.orderCount === 1 ? "" : "s"} in total.`}
           >
-            <OrderList
-              orders={customer.orders}
-              emptyMessage="No orders yet for this customer."
-            />
+            <OrderList orders={customer.orders} emptyMessage="No orders yet for this customer." />
           </AdminSection>
 
           <AdminSection
@@ -206,17 +198,13 @@ export function CustomerDetailView({ customerId }: { customerId: string }) {
               <Stat
                 label="Last order"
                 value={
-                  customer.stats.lastOrderAt
-                    ? formatOrderDateTime(customer.stats.lastOrderAt)
-                    : "—"
+                  customer.stats.lastOrderAt ? formatOrderDateTime(customer.stats.lastOrderAt) : "—"
                 }
               />
               <Stat
                 label="Next booking"
                 value={
-                  customer.stats.nextEventDate
-                    ? formatOrderDate(customer.stats.nextEventDate)
-                    : "—"
+                  customer.stats.nextEventDate ? formatOrderDate(customer.stats.nextEventDate) : "—"
                 }
               />
               <Stat label="Lifetime spend" value="Coming with quotations" />

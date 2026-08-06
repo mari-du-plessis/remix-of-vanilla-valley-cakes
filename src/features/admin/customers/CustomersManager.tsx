@@ -34,11 +34,7 @@ export function CustomersManager() {
         title="Customers"
         description="Every person who has enquired or ordered — contact details, addresses, notes and order history."
         action={
-          <Button
-            size="sm"
-            className="rounded-full"
-            onClick={() => setAdding((value) => !value)}
-          >
+          <Button size="sm" className="rounded-full" onClick={() => setAdding((value) => !value)}>
             {adding ? <X className="mr-1 h-4 w-4" /> : <Plus className="mr-1 h-4 w-4" />}
             {adding ? "Cancel" : "Add customer"}
           </Button>

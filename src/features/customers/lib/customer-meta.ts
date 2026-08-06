@@ -63,10 +63,8 @@ export const CUSTOMER_SORTS = [
 ] as const;
 
 /** Digits-only number used for WhatsApp deep links. */
-export const whatsappNumber = (customer: {
-  phone: string;
-  whatsappPhone?: string | null;
-}) => (customer.whatsappPhone || customer.phone).replace(/\D/g, "");
+export const whatsappNumber = (customer: { phone: string; whatsappPhone?: string | null }) =>
+  (customer.whatsappPhone || customer.phone).replace(/\D/g, "");
 
 export const formatAddress = (address: {
   line1: string;

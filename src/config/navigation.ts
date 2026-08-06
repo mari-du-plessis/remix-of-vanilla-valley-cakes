@@ -9,8 +9,6 @@ import {
   Users,
 } from "lucide-react";
 
-
-
 export type NavItem = {
   label: string;
   to: string;
@@ -40,4 +38,3 @@ export const ADMIN_NAV: NavItem[] = [
 
   { label: "Gallery", to: "/admin/gallery", icon: Images },
 ];
-

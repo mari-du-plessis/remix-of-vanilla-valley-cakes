@@ -52,10 +52,7 @@ export function CustomerNotesPanel({
       ) : (
         <ul className="space-y-3">
           {notes.map((note) => (
-            <li
-              key={note.id}
-              className="rounded-xl border border-border/70 bg-background/60 p-3"
-            >
+            <li key={note.id} className="rounded-xl border border-border/70 bg-background/60 p-3">
               <div className="flex items-start justify-between gap-3">
                 <p className="whitespace-pre-wrap text-sm">{note.body}</p>
                 <Button

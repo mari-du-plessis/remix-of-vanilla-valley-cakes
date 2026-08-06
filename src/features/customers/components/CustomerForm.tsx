@@ -116,7 +116,12 @@ export function CustomerForm({
         <CustomerTagList
           tags={state.tags}
           className="mt-2"
-          onRemove={(tag) => set("tags", state.tags.filter((t) => t !== tag))}
+          onRemove={(tag) =>
+            set(
+              "tags",
+              state.tags.filter((t) => t !== tag),
+            )
+          }
         />
       </Field>
 

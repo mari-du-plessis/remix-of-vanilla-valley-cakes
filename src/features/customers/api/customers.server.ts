@@ -99,27 +99,19 @@ function buildStats(orders: any[]): Map<string, CustomerStats> {
 const toDbCustomer = (values: Partial<CustomerInput>) => ({
   ...(values.name !== undefined ? { name: values.name } : {}),
   ...(values.phone !== undefined ? { phone: values.phone } : {}),
-  ...(values.whatsappPhone !== undefined
-    ? { whatsapp_phone: values.whatsappPhone || null }
-    : {}),
+  ...(values.whatsappPhone !== undefined ? { whatsapp_phone: values.whatsappPhone || null } : {}),
   ...(values.email !== undefined ? { email: values.email || null } : {}),
   ...(values.status !== undefined ? { status: values.status } : {}),
-  ...(values.preferredChannel !== undefined
-    ? { preferred_channel: values.preferredChannel }
-    : {}),
+  ...(values.preferredChannel !== undefined ? { preferred_channel: values.preferredChannel } : {}),
   ...(values.tags !== undefined ? { tags: values.tags } : {}),
   ...(values.notes !== undefined ? { notes: values.notes || null } : {}),
-  ...(values.marketingOptIn !== undefined
-    ? { marketing_opt_in: values.marketingOptIn }
-    : {}),
+  ...(values.marketingOptIn !== undefined ? { marketing_opt_in: values.marketingOptIn } : {}),
 });
 
 const toDbAddress = (values: Partial<AddressInput>) => ({
   ...(values.customerId !== undefined ? { customer_id: values.customerId } : {}),
   ...(values.label !== undefined ? { label: values.label } : {}),
-  ...(values.recipientName !== undefined
-    ? { recipient_name: values.recipientName || null }
-    : {}),
+  ...(values.recipientName !== undefined ? { recipient_name: values.recipientName || null } : {}),
   ...(values.phone !== undefined ? { phone: values.phone || null } : {}),
   ...(values.line1 !== undefined ? { line1: values.line1 } : {}),
   ...(values.line2 !== undefined ? { line2: values.line2 || null } : {}),
@@ -128,9 +120,7 @@ const toDbAddress = (values: Partial<AddressInput>) => ({
   ...(values.province !== undefined ? { province: values.province || null } : {}),
   ...(values.postalCode !== undefined ? { postal_code: values.postalCode || null } : {}),
   ...(values.country !== undefined ? { country: values.country } : {}),
-  ...(values.deliveryNotes !== undefined
-    ? { delivery_notes: values.deliveryNotes || null }
-    : {}),
+  ...(values.deliveryNotes !== undefined ? { delivery_notes: values.deliveryNotes || null } : {}),
   ...(values.isDefault !== undefined ? { is_default: values.isDefault } : {}),
 });
 
