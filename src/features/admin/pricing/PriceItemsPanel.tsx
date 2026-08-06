@@ -81,6 +81,8 @@ export function PriceItemsPanel({
     products.data?.find((product) => product.id === id)?.name ?? null;
   const optionName = (id: string | null) =>
     options.data?.find((option) => option.id === id)?.name ?? null;
+  const sizeName = (key: string) =>
+    sizeChoices.find((size) => size.key === key)?.name ?? key;
 
   return (
     <AdminSection title={title} description={description}>
