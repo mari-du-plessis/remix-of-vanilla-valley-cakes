@@ -104,7 +104,7 @@ export function PriceItemsPanel({
               {row.productId ? ` · ${productName(row.productId) ?? "product"}` : ""}
               {row.optionId ? ` · ${optionName(row.optionId) ?? "option"}` : ""}
               {row.tierCount ? ` · ${row.tierCount} tiers` : ""}
-              {row.sizeKey ? ` · ${row.sizeKey}` : ""}
+              {row.sizeKey ? ` · ${sizeName(row.sizeKey)}` : ""}
             </p>
           </div>
         )}
