@@ -169,7 +169,7 @@ function PriceListForm({
         onChange={(v) => set("isActive", v)}
       />
       <div className="sm:col-span-2">
-        <FormActions onCancel={onCancel} />
+        <FormActions onCancel={onCancel} saving={Boolean(nameError)} />
       </div>
     </form>
   );
