@@ -115,6 +115,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
             <QuoteLineEditor
               lines={quote.lines}
               currency={quote.currency}
+              priceListItems={pricing?.items ?? []}
               readOnly={readOnly}
               busy={busy}
               onUpdate={(id, values: QuoteLineEdit) => updateLine.mutate({ id, values })}
