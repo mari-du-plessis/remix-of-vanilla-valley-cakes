@@ -139,12 +139,15 @@ function PricingRuleForm({
     conditionsError = "Conditions must be valid JSON";
   }
 
+  const nameError = state.name.trim() ? null : "Name is required";
+  const hasError = Boolean(conditionsError || nameError);
+
   return (
     <form
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={(event) => {
         event.preventDefault();
-        if (conditionsError) return;
+        if (hasError) return;
         onSubmit({
           priceListId: state.global ? null : priceListId,
           ruleType: state.ruleType,
