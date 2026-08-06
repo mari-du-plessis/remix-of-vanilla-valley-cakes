@@ -172,7 +172,10 @@ function PricingRuleForm({
         onChange={(v) => set("ruleType", v as PricingRuleType)}
         options={RULE_OPTIONS}
       />
-      <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+      <div>
+        <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+        {nameError && <p className="mt-1 text-xs text-destructive">{nameError}</p>}
+      </div>
       <NativeSelectField
         label="Adjustment"
         value={state.adjustmentType}
