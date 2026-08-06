@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AdminSection } from "@/features/admin/components/AdminSection";
 import { CatalogCrudList } from "@/features/admin/catalog/CatalogCrudList";
 import {
@@ -8,7 +7,6 @@ import {
   ToggleField,
   useFormState,
 } from "@/features/admin/catalog/fields";
-import { formatCents } from "@/features/pricing/lib/money";
 import type { PriceList } from "@/features/pricing/types";
 import type { PriceListInput } from "@/features/pricing/api/schema";
 
@@ -167,10 +165,4 @@ function PriceListForm({
       </div>
     </form>
   );
-}
-
-/** Small read-only helper reused by the summary strip. */
-export function PriceTotal({ cents, currency }: { cents: number; currency: string }) {
-  const [visible] = useState(true);
-  return <span>{visible ? formatCents(cents, currency) : "—"}</span>;
 }
