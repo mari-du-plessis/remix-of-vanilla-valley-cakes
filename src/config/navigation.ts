@@ -3,6 +3,7 @@ import {
   Cake,
   CalendarDays,
   ClipboardList,
+  FileText,
   Images,
   LayoutDashboard,
   Palette,
@@ -36,6 +37,8 @@ export const ADMIN_NAV: NavItem[] = [
   { label: "Calendar", to: "/admin/calendar", icon: CalendarDays },
   { label: "Products", to: "/admin/products", icon: Cake },
   { label: "Cake builder", to: "/admin/cake-builder", icon: Palette },
+
+  { label: "Quotes", to: "/admin/quotes", icon: FileText },
 
   { label: "Pricing", to: "/admin/pricing", icon: Tags },
 
