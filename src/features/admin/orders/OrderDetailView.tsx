@@ -104,6 +104,10 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             </Button>
           </Section>
 
+          <Section title="Quotes">
+            <OrderQuotesPanel orderId={order.id} />
+          </Section>
+
           <Section title="History">
             <OrderTimeline history={order.history} />
           </Section>
