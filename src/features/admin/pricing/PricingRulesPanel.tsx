@@ -151,7 +151,7 @@ function PricingRuleForm({
         onSubmit({
           priceListId: state.global ? null : priceListId,
           ruleType: state.ruleType,
-          name: state.name,
+          name: state.name.trim(),
           description: state.description || null,
           adjustmentType: state.adjustmentType,
           adjustmentValue:
