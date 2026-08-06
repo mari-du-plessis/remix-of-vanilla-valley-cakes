@@ -27,7 +27,7 @@ export function SiteWordmark({
       <img
         src={logoSrc}
         alt={`${BRAND.name} logo`}
-        className="aspect-square h-full min-h-11 w-auto shrink-0 self-stretch rounded-md border border-border/60 object-cover"
+        className="h-full w-auto shrink-0 self-stretch rounded-md border border-border/60 object-cover"
       />
       <span
         className={cn(
