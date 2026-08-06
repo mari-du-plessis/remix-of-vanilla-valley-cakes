@@ -39,7 +39,7 @@ export function CalendarToolbar({
         <Button variant="ghost" size="sm" onClick={onToday}>
           Today
         </Button>
-        <h2 className="ml-1 text-sm font-semibold sm:text-base">{title}</h2>
+        <h2 className="admin-heading ml-1 text-xs sm:text-sm">{title}</h2>
       </div>
 
       <div className="flex items-center gap-2">

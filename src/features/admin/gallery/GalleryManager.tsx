@@ -98,7 +98,7 @@ export function GalleryManager() {
         </button>
       </form>
 
-      <h2 className="mt-8 text-lg font-semibold">Photos ({photos.length})</h2>
+      <h2 className="admin-heading mt-8 text-base">Photos ({photos.length})</h2>
       <div className="mt-3 space-y-3">
         {isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
         {!isLoading && photos.length === 0 && (

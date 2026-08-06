@@ -59,6 +59,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-status-available: var(--status-available);
+  --color-status-busy: var(--status-busy);
+  --color-status-nearly-full: var(--status-nearly-full);
+  --color-status-full: var(--status-full);
+  --color-status-closed: var(--status-closed);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-admin: var(--font-admin);
 }
 
 :root {
@@ -85,8 +93,17 @@
   --gradient-soft: linear-gradient(180deg, oklch(0.97 0.018 50), oklch(0.93 0.03 25));
   --gradient-warm: linear-gradient(135deg, oklch(0.95 0.025 40), oklch(0.88 0.045 20));
   --shadow-soft: 0 10px 40px -15px oklch(0.55 0.07 20 / 0.18);
-  --font-display: 'Dancing Script', cursive;
+  /* Customer-facing headings: a timeless, highly readable serif. */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Inter', sans-serif;
+  /* Admin portal headings: the clean uppercase branding font. */
+  --font-admin: 'Inter', sans-serif;
+  /* Workload / availability signal colours. */
+  --status-available: oklch(0.62 0.13 150);
+  --status-busy: oklch(0.75 0.14 80);
+  --status-nearly-full: oklch(0.68 0.16 55);
+  --status-full: oklch(0.58 0.19 25);
+  --status-closed: oklch(0.65 0.01 60);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -155,6 +172,20 @@
     letter-spacing: 0;
   }
 }
+
+/*
+ * Admin portal headings. Mirrors the "Vanilla Valley" branding treatment in the
+ * admin shell — clean uppercase sans with wide tracking — so every admin H1/H2
+ * reads consistently regardless of module.
+ */
+@utility admin-heading {
+  font-family: var(--font-admin);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+}
+
+
 
 @keyframes marquee {
   from { transform: translateX(0); }

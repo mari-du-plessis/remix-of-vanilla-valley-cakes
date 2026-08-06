@@ -11,7 +11,7 @@ import {
 } from "date-fns";
 import type { CalendarView } from "../types";
 
-const WEEK_OPTIONS = { weekStartsOn: 1 } as const; // Monday-first (SA convention)
+const WEEK_OPTIONS = { weekStartsOn: 0 } as const; // Sunday-first (SA convention)
 
 export const toKey = (date: Date | string) =>
   typeof date === "string" ? date.slice(0, 10) : format(date, "yyyy-MM-dd");
@@ -53,7 +53,7 @@ export function viewTitle(view: CalendarView, anchor: Date) {
   return format(anchor, "MMMM yyyy");
 }
 
-export const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 /** 0 = Sunday, matching Postgres `EXTRACT(DOW)`. */
 export const WEEKDAY_NAMES = [

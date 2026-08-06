@@ -2,6 +2,27 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Week View production schedule
+
+### Changed
+- Week view is now a Sunday → Saturday list of full-width collapsible day rows
+  (`WeekSchedule`) instead of narrow columns. Each row header shows the weekday,
+  date, capacity meter and availability signal; expanding reveals horizontal
+  `ProductionCard` entries for orders and manual events with quick actions.
+- Calendar toolbar gained global "Expand all" / "Collapse all" controls (week
+  view only) and uses the admin heading style for the range title.
+- Admin shell content width widened to `max-w-6xl` so the schedule stays legible.
+- Calendar weeks now start on Sunday; admin typography unified via the
+  `admin-heading` utility, customer headings use Cormorant Garamond.
+
+### Added
+- `src/features/calendar/lib/workload.ts` — availability signal mapping
+  (Available, Busy, Nearly full, Fully booked, Closed).
+- `src/features/calendar/components/CapacityMeter.tsx`,
+  `ProductionCard.tsx`, `WeekSchedule.tsx`.
+
+
+
 ## Calendar & Availability module
 
 ### Added
