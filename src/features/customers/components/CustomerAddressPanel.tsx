@@ -1,6 +1,4 @@
-import { Plus, Star, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/common";
+import { Star } from "lucide-react";
 import { CatalogCrudList } from "@/features/admin/catalog/CatalogCrudList";
 import {
   AreaField,
