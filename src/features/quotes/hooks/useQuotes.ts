@@ -100,10 +100,7 @@ export function useDeleteQuoteLine() {
 
 export function useSaveQuoteSettings() {
   const mutate = useServerFn(saveQuoteSettings);
-  return useQuoteMutation(
-    (input: QuoteSettingsInput) => mutate({ data: input }),
-    "Quote updated",
-  );
+  return useQuoteMutation((input: QuoteSettingsInput) => mutate({ data: input }), "Quote updated");
 }
 
 export function useAddQuoteNote() {

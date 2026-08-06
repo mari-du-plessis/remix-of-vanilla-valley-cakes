@@ -38,9 +38,7 @@ export const getQuote = createServerFn({ method: "POST" })
 export const createQuoteFromOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => generateQuoteSchema.parse(data))
-  .handler(async ({ data, context }) =>
-    generateQuote(context.supabase, data, context.userId),
-  );
+  .handler(async ({ data, context }) => generateQuote(context.supabase, data, context.userId));
 
 export const addQuoteLine = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -50,9 +48,7 @@ export const addQuoteLine = createServerFn({ method: "POST" })
 export const editQuoteLine = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => updateQuoteLineSchema.parse(data))
-  .handler(async ({ data, context }) =>
-    updateQuoteLine(context.supabase, data.id, data.values),
-  );
+  .handler(async ({ data, context }) => updateQuoteLine(context.supabase, data.id, data.values));
 
 export const removeQuoteLine = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -69,9 +65,7 @@ export const saveQuoteSettings = createServerFn({ method: "POST" })
 export const addQuoteNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => quoteNoteInputSchema.parse(data))
-  .handler(async ({ data, context }) =>
-    insertQuoteNote(context.supabase, data, context.userId),
-  );
+  .handler(async ({ data, context }) => insertQuoteNote(context.supabase, data, context.userId));
 
 export const deleteQuote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

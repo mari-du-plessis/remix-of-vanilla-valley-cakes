@@ -8,12 +8,7 @@ import {
   fetchPricingRules,
 } from "@/features/pricing/api/pricing.server";
 import type { PricingSnapshot } from "@/features/pricing/types";
-import type {
-  QuoteDetail,
-  QuoteLineItem,
-  QuoteListItem,
-  QuoteStatus,
-} from "../types";
+import type { QuoteDetail, QuoteLineItem, QuoteListItem, QuoteStatus } from "../types";
 import type { QuoteLineInput } from "./schema";
 
 type Client = SupabaseClient<Database>;
@@ -67,14 +62,9 @@ const mapDetail = (row: any): QuoteDetail => ({
   customerPhone: row.order?.customer?.phone ?? null,
   customerEmail: row.order?.customer?.email ?? null,
   occasion: row.order?.occasion ?? null,
-  lines: [...(row.lines ?? [])]
-    .sort((a: any, b: any) => a.position - b.position)
-    .map(mapLine),
+  lines: [...(row.lines ?? [])].sort((a: any, b: any) => a.position - b.position).map(mapLine),
   quoteNotes: [...(row.quote_notes ?? [])]
-    .sort(
-      (a: any, b: any) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-    )
+    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .map((note: any) => ({
       id: note.id,
       quoteId: note.quote_id,
@@ -82,10 +72,7 @@ const mapDetail = (row: any): QuoteDetail => ({
       createdAt: note.created_at,
     })),
   history: [...(row.history ?? [])]
-    .sort(
-      (a: any, b: any) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-    )
+    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .map((event: any) => ({
       id: event.id,
       fromStatus: event.from_status ?? null,
@@ -191,7 +178,7 @@ function buildQuoteRequest(order: {
 }): QuoteRequest {
   const lines: QuoteLineRequest[] = (order.items ?? []).map((item) => {
     const options = item.options ?? [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const tierIndexes = options
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((option: any) => option.tier_index)
@@ -412,9 +399,7 @@ export async function updateQuoteSettings(
       ...(values.status === "finalised" ? { finalised_at: new Date().toISOString() } : {}),
       ...(values.quoteDate ? { quote_date: values.quoteDate } : {}),
       ...(values.validUntil !== undefined ? { valid_until: values.validUntil } : {}),
-      ...(values.depositPercent !== undefined
-        ? { deposit_percent: values.depositPercent }
-        : {}),
+      ...(values.depositPercent !== undefined ? { deposit_percent: values.depositPercent } : {}),
       ...(values.notes !== undefined ? { notes: values.notes } : {}),
       ...(values.terms !== undefined ? { terms: values.terms } : {}),
       ...(values.internalNotes !== undefined ? { internal_notes: values.internalNotes } : {}),

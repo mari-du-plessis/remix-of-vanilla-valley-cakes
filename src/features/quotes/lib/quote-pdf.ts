@@ -179,10 +179,7 @@ export function buildQuotePdf(quote: QuoteDetail) {
     totalRow("Discount", `- ${formatCents(quote.discountCents, quote.currency)}`);
   totalRow("Total", formatCents(quote.totalCents, quote.currency), true);
   if (quote.depositCents > 0)
-    totalRow(
-      `Deposit (${quote.depositPercent}%)`,
-      formatCents(quote.depositCents, quote.currency),
-    );
+    totalRow(`Deposit (${quote.depositPercent}%)`, formatCents(quote.depositCents, quote.currency));
 
   /* notes and terms */
   const block = (title: string, body: string) => {
@@ -208,11 +205,7 @@ export function buildQuotePdf(quote: QuoteDetail) {
     doc.setPage(page);
     doc.setFontSize(8);
     doc.setTextColor(MUTED);
-    doc.text(
-      `${BRAND.legalName} · quotation ${quote.quoteNumber}`,
-      MARGIN,
-      pageHeight - 28,
-    );
+    doc.text(`${BRAND.legalName} · quotation ${quote.quoteNumber}`, MARGIN, pageHeight - 28);
     doc.text(`Page ${page} of ${pages}`, right, pageHeight - 28, { align: "right" });
   }
 

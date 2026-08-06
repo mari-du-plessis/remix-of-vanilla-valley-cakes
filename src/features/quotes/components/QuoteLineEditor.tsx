@@ -121,9 +121,7 @@ export function QuoteLineEditor({
                 if (label && label !== line.label) onUpdate(line.id, { label });
               }}
             />
-            {line.detail && (
-              <p className="px-1 text-xs text-muted-foreground">{line.detail}</p>
-            )}
+            {line.detail && <p className="px-1 text-xs text-muted-foreground">{line.detail}</p>}
           </div>
 
           <KindSelect

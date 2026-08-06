@@ -21,11 +21,7 @@ import {
   useUpdateQuoteLine,
 } from "@/features/quotes/hooks/useQuotes";
 import { downloadQuotePdf, openQuotePdf } from "@/features/quotes/lib/quote-pdf";
-import {
-  QUOTE_STATUS_FLOW,
-  QUOTE_STATUS_LABELS,
-  type QuoteStatus,
-} from "@/features/quotes/types";
+import { QUOTE_STATUS_FLOW, QUOTE_STATUS_LABELS, type QuoteStatus } from "@/features/quotes/types";
 
 function Section({
   title,
@@ -113,10 +109,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <Section
-            title="Line items"
-            action={<QuoteStatusBadge status={quote.status} />}
-          >
+          <Section title="Line items" action={<QuoteStatusBadge status={quote.status} />}>
             <QuoteLineEditor
               lines={quote.lines}
               currency={quote.currency}
@@ -143,9 +136,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
                 <dd>{formatCents(quote.totalCents, quote.currency)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">
-                  Deposit ({quote.depositPercent}%)
-                </dt>
+                <dt className="text-muted-foreground">Deposit ({quote.depositPercent}%)</dt>
                 <dd>{formatCents(quote.depositCents, quote.currency)}</dd>
               </div>
             </dl>
@@ -195,9 +186,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
               className="mt-3"
               size="sm"
               variant="outline"
-              disabled={
-                saveSettings.isPending || internalNotes === (quote.internalNotes ?? "")
-              }
+              disabled={saveSettings.isPending || internalNotes === (quote.internalNotes ?? "")}
               onClick={() => patch({ internalNotes: internalNotes || null })}
             >
               Save internal notes
@@ -262,21 +251,15 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
             <Input
               type="date"
               defaultValue={quote.quoteDate}
-              onBlur={(event) =>
-                event.target.value && patch({ quoteDate: event.target.value })
-              }
+              onBlur={(event) => event.target.value && patch({ quoteDate: event.target.value })}
             />
-            <label className="mb-1 mt-3 block text-xs text-muted-foreground">
-              Valid until
-            </label>
+            <label className="mb-1 mt-3 block text-xs text-muted-foreground">Valid until</label>
             <Input
               type="date"
               defaultValue={quote.validUntil ?? ""}
               onBlur={(event) => patch({ validUntil: event.target.value || null })}
             />
-            <label className="mb-1 mt-3 block text-xs text-muted-foreground">
-              Deposit %
-            </label>
+            <label className="mb-1 mt-3 block text-xs text-muted-foreground">Deposit %</label>
             <Input
               type="number"
               min={0}
