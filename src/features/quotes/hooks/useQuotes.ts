@@ -100,7 +100,21 @@ export function useDeleteQuoteLine() {
 
 export function useSaveQuoteSettings() {
   const mutate = useServerFn(saveQuoteSettings);
-  return useQuoteMutation((input: QuoteSettingsInput) => mutate({ data: input }), "Quote updated");
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: QuoteSettingsInput) => mutate({ data: input }),
+    onSuccess: (_result, input) => {
+      queryClient.invalidateQueries({ queryKey: quoteKeys.all });
+      // Accepting a quote confirms its order server-side — refresh order views.
+      if ((input as { values?: { status?: string } }).values?.status === "accepted") {
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        toast.success("Quote accepted — order marked as confirmed");
+        return;
+      }
+      toast.success("Quote updated");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 }
 
 export function useAddQuoteNote() {
