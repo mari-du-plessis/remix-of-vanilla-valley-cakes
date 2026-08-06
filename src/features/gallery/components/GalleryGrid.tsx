@@ -7,14 +7,17 @@ export function galleryPhotoUrl(path: string) {
 
 export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
   return (
-    <div className="grid grid-cols-2 gap-3 max-w-4xl mx-auto">
+    <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3">
       {photos.map((p) => (
-        <figure key={p.id} className="overflow-hidden rounded-lg bg-muted">
+        <figure
+          key={p.id}
+          className="lift-on-hover overflow-hidden rounded-2xl border border-border/60 bg-card"
+        >
           <img
             src={galleryPhotoUrl(p.image_path)}
             alt={p.caption ?? "Cake photo"}
             loading="lazy"
-            className="w-full h-auto object-cover aspect-square"
+            className="aspect-square h-auto w-full object-cover"
           />
           {p.caption && (
             <figcaption className="px-2 py-1.5 text-xs text-muted-foreground">

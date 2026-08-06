@@ -93,12 +93,15 @@ function Index() {
               </h1>
               <div className="gold-rule mx-auto mt-7 max-w-[10rem]" />
               <Lead className="animate-rise-in mx-auto mt-6 max-w-lg text-foreground/80">
-                Tell us the occasion and we will design a cake around it — quietly
-                luxurious, entirely yours.
+                Tell us the occasion and we will design a cake around it — quietly luxurious,
+                entirely yours.
               </Lead>
               <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link to="/order">
-                  <Button size="lg" className="h-14 rounded-full px-10 text-sm tracking-[0.18em] uppercase">
+                  <Button
+                    size="lg"
+                    className="h-14 rounded-full px-10 text-sm tracking-[0.18em] uppercase"
+                  >
                     Design your cake
                   </Button>
                 </Link>
@@ -175,7 +178,10 @@ function Index() {
             Share the details and we will reply on WhatsApp with a quotation.
           </Lead>
           <Link to="/order" className="mt-8 inline-block">
-            <Button size="lg" className="h-14 rounded-full px-12 text-sm tracking-[0.18em] uppercase">
+            <Button
+              size="lg"
+              className="h-14 rounded-full px-12 text-sm tracking-[0.18em] uppercase"
+            >
               Start your order
             </Button>
           </Link>

@@ -37,10 +37,7 @@ export function ThemeProvider({
       <div
         data-theme={theme}
         style={{ colorScheme: THEMES[theme].colorScheme }}
-        className={cn(
-          !bare && "min-h-screen bg-background text-foreground",
-          className,
-        )}
+        className={cn(!bare && "min-h-screen bg-background text-foreground", className)}
       >
         {children}
       </div>

@@ -70,7 +70,10 @@ function GalleryPage() {
 
         <div className="mt-14 text-center">
           <Link to="/order">
-            <Button size="lg" className="h-13 rounded-full px-10 text-sm tracking-[0.18em] uppercase">
+            <Button
+              size="lg"
+              className="h-13 rounded-full px-10 text-sm tracking-[0.18em] uppercase"
+            >
               Design your cake
             </Button>
           </Link>

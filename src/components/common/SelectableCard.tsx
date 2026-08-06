@@ -24,10 +24,10 @@ export function SelectableCard({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "rounded-2xl border text-left transition-all",
+        "rounded-2xl border text-left transition-all duration-300",
         selected
-          ? "border-primary bg-accent text-accent-foreground"
-          : "border-border bg-background hover:border-primary/40",
+          ? "border-primary bg-primary/10 text-foreground shadow-[var(--shadow-soft)]"
+          : "border-border bg-card/60 hover:border-primary/50 hover:bg-card",
         className,
       )}
     >

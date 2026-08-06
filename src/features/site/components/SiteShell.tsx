@@ -10,12 +10,8 @@ import { cn } from "@/lib/utils";
 export function SiteWordmark({ className }: { className?: string }) {
   return (
     <Link to="/" className={cn("group inline-flex flex-col items-center", className)}>
-      <span className="display-heading text-lg leading-none sm:text-xl">
-        {BRAND.name}
-      </span>
-      <span className="eyebrow mt-2 text-[0.6rem] text-muted-foreground">
-        {BRAND.tagline}
-      </span>
+      <span className="display-heading text-lg leading-none sm:text-xl">{BRAND.name}</span>
+      <span className="eyebrow mt-2 text-[0.6rem] text-muted-foreground">{BRAND.tagline}</span>
     </Link>
   );
 }
