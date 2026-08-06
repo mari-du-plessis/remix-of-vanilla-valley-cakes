@@ -2,6 +2,39 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Pricing module & typography system
+
+### Added
+- **Database**: `price_lists`, `price_list_items`, `pricing_rules` with enums
+  `price_target_type`, `price_unit`, `pricing_rule_type`,
+  `pricing_adjustment_type`. Admin-only RLS — pricing is never exposed publicly.
+  Seeded a default "Standard Price List".
+- **Feature layer** `src/features/pricing/`: domain types, Zod contracts,
+  `pricing.server.ts` data access, `pricing.functions.ts` admin server
+  functions (including `getPricingSnapshot`), `lib/money.ts` and a pure
+  `lib/pricing-engine.ts` (`calculateQuote`) that future quotations, PDFs,
+  invoices and payments reuse without duplicating logic.
+- **Hooks** `src/features/pricing/hooks/usePricing.ts`: `usePriceLists`,
+  `usePricingSnapshot` and create/update/delete mutations for lists, items
+  and rules.
+- **Admin** `/admin/pricing`: tabs for product/option/tier prices, delivery &
+  rush fees, pricing rules and price lists (`PricingManager`,
+  `PriceListsPanel`, `PriceItemsPanel`, `PricingRulesPanel`).
+- **Typography**: `src/components/common/Typography.tsx` (`PageTitle`,
+  `SectionTitle`, `SubTitle`, `Eyebrow`, `Lead`, `Body`, `Muted`) plus
+  `display-heading` and `eyebrow` utilities.
+
+### Changed
+- One heading font (`--font-heading`, the branding sans) now drives H1–H6 on
+  both the public site and admin; H1/H2 use the uppercase wide-tracked
+  treatment, H3–H6 continue with tighter tracking. Body copy, forms, nav,
+  buttons and labels stay in the readable sans.
+- Removed the decorative Cormorant Garamond display font (and its font
+  request); the script logo asset is unchanged. `admin-heading` is kept as an
+  alias of the shared treatment.
+
+
+
 ## Week View production schedule
 
 ### Changed
