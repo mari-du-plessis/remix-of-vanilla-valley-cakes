@@ -26,6 +26,7 @@ import { Route as AuthenticatedAdminCustomersCustomerIdRouteImport } from './rou
 import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin/orders/index'
 import { Route as AuthenticatedAdminOrdersOrderIdRouteImport } from './routes/_authenticated/admin/orders/$orderId'
 import { Route as AuthenticatedAdminQuotesIndexRouteImport } from './routes/_authenticated/admin/quotes/index'
+import { Route as AuthenticatedAdminQuotesQuoteIdRouteImport } from './routes/_authenticated/admin/quotes/$quoteId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -121,6 +122,12 @@ const AuthenticatedAdminQuotesIndexRoute =
     path: '/quotes/',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminQuotesQuoteIdRoute =
+  AuthenticatedAdminQuotesQuoteIdRouteImport.update({
+    id: '/quotes/$quoteId',
+    path: '/quotes/$quoteId',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/customers/$customerId': typeof AuthenticatedAdminCustomersCustomerIdRoute
   '/admin/orders/$orderId': typeof AuthenticatedAdminOrdersOrderIdRoute
+  '/admin/quotes/$quoteId': typeof AuthenticatedAdminQuotesQuoteIdRoute
   '/admin/customers/': typeof AuthenticatedAdminCustomersIndexRoute
   '/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
   '/admin/quotes/': typeof AuthenticatedAdminQuotesIndexRoute
@@ -153,6 +161,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/customers/$customerId': typeof AuthenticatedAdminCustomersCustomerIdRoute
   '/admin/orders/$orderId': typeof AuthenticatedAdminOrdersOrderIdRoute
+  '/admin/quotes/$quoteId': typeof AuthenticatedAdminQuotesQuoteIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersIndexRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersIndexRoute
   '/admin/quotes': typeof AuthenticatedAdminQuotesIndexRoute
@@ -173,6 +182,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/customers/$customerId': typeof AuthenticatedAdminCustomersCustomerIdRoute
   '/_authenticated/admin/orders/$orderId': typeof AuthenticatedAdminOrdersOrderIdRoute
+  '/_authenticated/admin/quotes/$quoteId': typeof AuthenticatedAdminQuotesQuoteIdRoute
   '/_authenticated/admin/customers/': typeof AuthenticatedAdminCustomersIndexRoute
   '/_authenticated/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
   '/_authenticated/admin/quotes/': typeof AuthenticatedAdminQuotesIndexRoute
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/customers/$customerId'
     | '/admin/orders/$orderId'
+    | '/admin/quotes/$quoteId'
     | '/admin/customers/'
     | '/admin/orders/'
     | '/admin/quotes/'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/customers/$customerId'
     | '/admin/orders/$orderId'
+    | '/admin/quotes/$quoteId'
     | '/admin/customers'
     | '/admin/orders'
     | '/admin/quotes'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/admin/customers/$customerId'
     | '/_authenticated/admin/orders/$orderId'
+    | '/_authenticated/admin/quotes/$quoteId'
     | '/_authenticated/admin/customers/'
     | '/_authenticated/admin/orders/'
     | '/_authenticated/admin/quotes/'
@@ -363,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminQuotesIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/quotes/$quoteId': {
+      id: '/_authenticated/admin/quotes/$quoteId'
+      path: '/quotes/$quoteId'
+      fullPath: '/admin/quotes/$quoteId'
+      preLoaderRoute: typeof AuthenticatedAdminQuotesQuoteIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
@@ -375,6 +395,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminCustomersCustomerIdRoute: typeof AuthenticatedAdminCustomersCustomerIdRoute
   AuthenticatedAdminOrdersOrderIdRoute: typeof AuthenticatedAdminOrdersOrderIdRoute
+  AuthenticatedAdminQuotesQuoteIdRoute: typeof AuthenticatedAdminQuotesQuoteIdRoute
   AuthenticatedAdminCustomersIndexRoute: typeof AuthenticatedAdminCustomersIndexRoute
   AuthenticatedAdminOrdersIndexRoute: typeof AuthenticatedAdminOrdersIndexRoute
   AuthenticatedAdminQuotesIndexRoute: typeof AuthenticatedAdminQuotesIndexRoute
@@ -391,6 +412,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminCustomersCustomerIdRoute:
       AuthenticatedAdminCustomersCustomerIdRoute,
     AuthenticatedAdminOrdersOrderIdRoute: AuthenticatedAdminOrdersOrderIdRoute,
+    AuthenticatedAdminQuotesQuoteIdRoute: AuthenticatedAdminQuotesQuoteIdRoute,
     AuthenticatedAdminCustomersIndexRoute:
       AuthenticatedAdminCustomersIndexRoute,
     AuthenticatedAdminOrdersIndexRoute: AuthenticatedAdminOrdersIndexRoute,
