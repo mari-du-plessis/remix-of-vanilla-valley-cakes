@@ -61,9 +61,7 @@ export function CustomerPickerField({
                 className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-muted"
               >
                 <span className="truncate">{customer.name}</span>
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {customer.phone}
-                </span>
+                <span className="shrink-0 text-xs text-muted-foreground">{customer.phone}</span>
               </button>
             ))
           )}

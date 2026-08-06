@@ -13,7 +13,6 @@ import type { PriceListInput } from "@/features/pricing/api/schema";
 
 const CURRENCIES = [{ value: "ZAR", label: "ZAR (R)" }];
 
-
 /** Manage the named price lists (standard, festive season, wholesale…). */
 export function PriceListsPanel({
   priceLists,
@@ -64,9 +63,7 @@ export function PriceListsPanel({
               {row.currency}
               {row.effectiveFrom ? ` · from ${row.effectiveFrom}` : ""}
               {row.effectiveTo ? ` · until ${row.effectiveTo}` : ""}
-              {selectedId === row.id && totalItems !== undefined
-                ? ` · ${totalItems} prices`
-                : ""}
+              {selectedId === row.id && totalItems !== undefined ? ` · ${totalItems} prices` : ""}
             </p>
           </div>
         )}
@@ -108,9 +105,7 @@ function PriceListForm({
   });
 
   const nameError = state.name.trim() ? null : "Name is required";
-  const slug = state.name.trim()
-    ? uniqueSlug(state.name, takenSlugs, row?.slug ?? null)
-    : "";
+  const slug = state.name.trim() ? uniqueSlug(state.name, takenSlugs, row?.slug ?? null) : "";
 
   return (
     <form
@@ -163,11 +158,7 @@ function PriceListForm({
         checked={state.isDefault}
         onChange={(v) => set("isDefault", v)}
       />
-      <ToggleField
-        label="Active"
-        checked={state.isActive}
-        onChange={(v) => set("isActive", v)}
-      />
+      <ToggleField label="Active" checked={state.isActive} onChange={(v) => set("isActive", v)} />
       <div className="sm:col-span-2">
         <FormActions onCancel={onCancel} saving={Boolean(nameError)} />
       </div>

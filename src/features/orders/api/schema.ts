@@ -17,13 +17,7 @@ export const orderStatusSchema = z.enum([
   "cancelled",
 ]);
 
-export const orderChannelSchema = z.enum([
-  "website",
-  "whatsapp",
-  "phone",
-  "instagram",
-  "walk_in",
-]);
+export const orderChannelSchema = z.enum(["website", "whatsapp", "phone", "instagram", "walk_in"]);
 
 export const orderOptionSchema = z.object({
   groupKey: trimmed(50).min(1),
@@ -54,9 +48,7 @@ export const createOrderSchema = z.object({
   }),
   channel: orderChannelSchema.default("website"),
   occasion: trimmed(100).optional(),
-  eventDate: z
-    .union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")])
-    .optional(),
+  eventDate: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]).optional(),
   customerNotes: trimmed(2000).optional(),
   inspirationUrl: z.union([z.string().url().max(1000), z.literal("")]).optional(),
   summary: trimmed(4000).optional(),
@@ -70,9 +62,6 @@ export const createAdminOrderSchema = createOrderSchema.extend({
   status: orderStatusSchema.default("enquiry"),
   internalNotes: trimmed(4000).optional(),
 });
-
-
-
 
 export const listOrdersSchema = z.object({
   status: z.union([orderStatusSchema, z.literal("all")]).default("all"),

@@ -84,7 +84,6 @@ export function PricingManager() {
         </div>
       )}
 
-
       <Tabs defaultValue="prices" className="mt-6">
         <TabsList>
           <TabsTrigger value="prices">Product &amp; option prices</TabsTrigger>

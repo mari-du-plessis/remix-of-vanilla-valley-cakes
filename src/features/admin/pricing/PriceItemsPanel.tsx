@@ -8,11 +8,7 @@ import {
   ToggleField,
   useFormState,
 } from "@/features/admin/catalog/fields";
-import {
-  useAllOptions,
-  useOptionGroups,
-  useProducts,
-} from "@/features/catalog/hooks/useCatalog";
+import { useAllOptions, useOptionGroups, useProducts } from "@/features/catalog/hooks/useCatalog";
 import { centsToAmount, formatCents, parseAmountToCents } from "@/features/pricing/lib/money";
 import {
   PRICE_TARGET_LABELS,
@@ -22,9 +18,10 @@ import {
 } from "@/features/pricing/types";
 import type { PriceListItemInput } from "@/features/pricing/api/schema";
 
-const TARGET_OPTIONS = (Object.keys(PRICE_TARGET_LABELS) as PriceTargetType[]).map(
-  (value) => ({ value, label: PRICE_TARGET_LABELS[value] }),
-);
+const TARGET_OPTIONS = (Object.keys(PRICE_TARGET_LABELS) as PriceTargetType[]).map((value) => ({
+  value,
+  label: PRICE_TARGET_LABELS[value],
+}));
 
 const UNIT_OPTIONS = Object.entries(PRICE_UNIT_LABELS).map(([value, label]) => ({
   value,
@@ -70,10 +67,7 @@ export function PriceItemsPanel({
   }, [optionGroups.data, options.data]);
 
   const rows = useMemo(
-    () =>
-      targetFilter
-        ? items.filter((item) => targetFilter.includes(item.targetType))
-        : items,
+    () => (targetFilter ? items.filter((item) => targetFilter.includes(item.targetType)) : items),
     [items, targetFilter],
   );
 
@@ -81,8 +75,7 @@ export function PriceItemsPanel({
     products.data?.find((product) => product.id === id)?.name ?? null;
   const optionName = (id: string | null) =>
     options.data?.find((option) => option.id === id)?.name ?? null;
-  const sizeName = (key: string) =>
-    sizeChoices.find((size) => size.key === key)?.name ?? key;
+  const sizeName = (key: string) => sizeChoices.find((size) => size.key === key)?.name ?? key;
 
   return (
     <AdminSection title={title} description={description}>
@@ -227,7 +220,6 @@ function PriceItemForm({
             onChange={(v) => set("sizeKey", v)}
             options={sizeOptions}
           />
-
         </>
       )}
       {state.targetType === "option" && (
@@ -253,11 +245,7 @@ function PriceItemForm({
         onChange={(v) => set("minQuantity", v)}
       />
       <TextField label="Notes" value={state.notes} onChange={(v) => set("notes", v)} />
-      <ToggleField
-        label="Active"
-        checked={state.isActive}
-        onChange={(v) => set("isActive", v)}
-      />
+      <ToggleField label="Active" checked={state.isActive} onChange={(v) => set("isActive", v)} />
       <div className="sm:col-span-2">
         <FormActions onCancel={onCancel} />
       </div>

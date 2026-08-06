@@ -51,11 +51,8 @@ export function OrdersManager() {
         open={creating}
         onOpenChange={setCreating}
         saving={createOrder.isPending}
-        onSubmit={(values) =>
-          createOrder.mutate(values, { onSuccess: () => setCreating(false) })
-        }
+        onSubmit={(values) => createOrder.mutate(values, { onSuccess: () => setCreating(false) })}
       />
     </>
   );
 }
-

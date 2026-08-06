@@ -21,9 +21,10 @@ import type { CreateAdminOrderInput } from "@/features/orders/api/schema";
 import type { OrderChannel, OrderStatus } from "@/features/orders/types";
 import type { Customer } from "@/features/customers/types";
 
-const CHANNEL_OPTIONS = (
-  Object.keys(ORDER_CHANNEL_LABELS) as OrderChannel[]
-).map((value) => ({ value, label: ORDER_CHANNEL_LABELS[value] }));
+const CHANNEL_OPTIONS = (Object.keys(ORDER_CHANNEL_LABELS) as OrderChannel[]).map((value) => ({
+  value,
+  label: ORDER_CHANNEL_LABELS[value],
+}));
 
 const STATUS_OPTIONS = ORDER_STATUSES.map((status) => ({
   value: status.value,
@@ -92,9 +93,7 @@ export function ManualOrderDialog({
         : null;
 
   const setItem = (index: number, key: keyof ItemDraft, value: string) =>
-    setItems((rows) =>
-      rows.map((row, i) => (i === index ? { ...row, [key]: value } : row)),
-    );
+    setItems((rows) => rows.map((row, i) => (i === index ? { ...row, [key]: value } : row)));
 
   const reset = () => {
     setCustomer(null);
@@ -166,16 +165,8 @@ export function ManualOrderDialog({
             <CustomerPickerField selected={customer} onSelect={setCustomer} />
             {!customer && (
               <div className="grid gap-3 sm:grid-cols-3">
-                <TextField
-                  label="Name"
-                  value={state.name}
-                  onChange={(v) => set("name", v)}
-                />
-                <TextField
-                  label="Phone"
-                  value={state.phone}
-                  onChange={(v) => set("phone", v)}
-                />
+                <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+                <TextField label="Phone" value={state.phone} onChange={(v) => set("phone", v)} />
                 <TextField
                   label="Email (optional)"
                   value={state.email}
@@ -214,9 +205,7 @@ export function ManualOrderDialog({
 
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs uppercase tracking-wide text-muted-foreground">
-                Items
-              </h3>
+              <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Items</h3>
               <Button
                 type="button"
                 variant="ghost"
@@ -263,9 +252,7 @@ export function ManualOrderDialog({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() =>
-                        setItems((rows) => rows.filter((_, i) => i !== index))
-                      }
+                      onClick={() => setItems((rows) => rows.filter((_, i) => i !== index))}
                     >
                       Remove
                     </Button>

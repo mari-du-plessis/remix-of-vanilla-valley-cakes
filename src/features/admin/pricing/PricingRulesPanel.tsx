@@ -16,15 +16,15 @@ import {
 } from "@/features/pricing/types";
 import type { PricingRuleInput } from "@/features/pricing/api/schema";
 
-const RULE_OPTIONS = (Object.keys(PRICING_RULE_LABELS) as PricingRuleType[]).map(
-  (value) => ({ value, label: PRICING_RULE_LABELS[value] }),
-);
+const RULE_OPTIONS = (Object.keys(PRICING_RULE_LABELS) as PricingRuleType[]).map((value) => ({
+  value,
+  label: PRICING_RULE_LABELS[value],
+}));
 
 const ADJUSTMENT_OPTIONS = [
   { value: "fixed", label: "Fixed amount" },
   { value: "percentage", label: "Percentage of subtotal" },
 ];
-
 
 /** Rush fees, delivery zones, surcharges, promotions and minimum order values. */
 export function PricingRulesPanel({
@@ -280,15 +280,10 @@ function PricingRuleForm({
           onChange={(v) => set("description", v)}
         />
       </div>
-      <ToggleField
-        label="Active"
-        checked={state.isActive}
-        onChange={(v) => set("isActive", v)}
-      />
+      <ToggleField label="Active" checked={state.isActive} onChange={(v) => set("isActive", v)} />
       <div className="sm:col-span-2">
         <FormActions onCancel={onCancel} saving={hasError} />
       </div>
     </form>
   );
 }
-
