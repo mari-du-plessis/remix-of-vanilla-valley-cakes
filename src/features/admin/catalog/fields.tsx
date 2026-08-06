@@ -9,18 +9,10 @@ import { Switch } from "@/components/ui/switch";
  * Small field primitives shared by the catalog editors so every form in the
  * admin panel looks and behaves identically.
  */
-export function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-        {label}
-      </Label>
+      <Label className="text-xs uppercase tracking-wide text-muted-foreground">{label}</Label>
       {children}
     </div>
   );
@@ -118,13 +110,7 @@ export function NativeSelectField({
   );
 }
 
-export function FormActions({
-  onCancel,
-  saving,
-}: {
-  onCancel: () => void;
-  saving?: boolean;
-}) {
+export function FormActions({ onCancel, saving }: { onCancel: () => void; saving?: boolean }) {
   return (
     <div className="flex justify-end gap-2 pt-2">
       <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
@@ -140,7 +126,6 @@ export function FormActions({
 /** Local form state helper: keeps editors tiny. */
 export function useFormState<T extends Record<string, unknown>>(initial: T) {
   const [state, setState] = useState<T>(initial);
-  const set = <K extends keyof T>(key: K, value: T[K]) =>
-    setState((s) => ({ ...s, [key]: value }));
+  const set = <K extends keyof T>(key: K, value: T[K]) => setState((s) => ({ ...s, [key]: value }));
   return { state, set };
 }

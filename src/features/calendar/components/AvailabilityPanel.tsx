@@ -116,8 +116,7 @@ export function AvailabilityPanel({
             <div>
               <p className="text-sm font-medium">
                 {formatOrderDate(block.startDate)}
-                {block.endDate !== block.startDate &&
-                  ` – ${formatOrderDate(block.endDate)}`}
+                {block.endDate !== block.startDate && ` – ${formatOrderDate(block.endDate)}`}
               </p>
               <p className="text-xs text-muted-foreground">
                 {getBlockTypeLabel(block.blockType)}

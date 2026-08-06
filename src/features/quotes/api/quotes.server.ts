@@ -414,11 +414,7 @@ export async function updateQuoteSettings(
   // Accepting a quote confirms the order it belongs to. The rest of the order
   // lifecycle is untouched; already-progressed orders are left alone.
   if (values.status === "accepted") {
-    const { data: quoteRow } = await client
-      .from("quotes")
-      .select("order_id")
-      .eq("id", id)
-      .single();
+    const { data: quoteRow } = await client.from("quotes").select("order_id").eq("id", id).single();
     if (quoteRow?.order_id) {
       await client
         .from("orders")
