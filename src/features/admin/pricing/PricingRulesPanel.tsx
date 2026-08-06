@@ -233,7 +233,7 @@ function PricingRuleForm({
         onChange={(v) => set("isActive", v)}
       />
       <div className="sm:col-span-2">
-        <FormActions onCancel={onCancel} saving={Boolean(conditionsError)} />
+        <FormActions onCancel={onCancel} saving={hasError} />
       </div>
     </form>
   );
