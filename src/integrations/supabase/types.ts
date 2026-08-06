@@ -566,6 +566,195 @@ export type Database = {
           },
         ]
       }
+      price_list_items: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          metadata: Json
+          min_quantity: number
+          notes: string | null
+          option_id: string | null
+          price_list_id: string
+          product_id: string | null
+          size_key: string | null
+          sort_order: number
+          target_type: Database["public"]["Enums"]["price_target_type"]
+          tier_count: number | null
+          unit: Database["public"]["Enums"]["price_unit"]
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          metadata?: Json
+          min_quantity?: number
+          notes?: string | null
+          option_id?: string | null
+          price_list_id: string
+          product_id?: string | null
+          size_key?: string | null
+          sort_order?: number
+          target_type: Database["public"]["Enums"]["price_target_type"]
+          tier_count?: number | null
+          unit?: Database["public"]["Enums"]["price_unit"]
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          metadata?: Json
+          min_quantity?: number
+          notes?: string | null
+          option_id?: string | null
+          price_list_id?: string
+          product_id?: string | null
+          size_key?: string | null
+          sort_order?: number
+          target_type?: Database["public"]["Enums"]["price_target_type"]
+          tier_count?: number | null
+          unit?: Database["public"]["Enums"]["price_unit"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_list_items_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "price_list_items_price_list_id_fkey"
+            columns: ["price_list_id"]
+            isOneToOne: false
+            referencedRelation: "price_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "price_list_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_lists: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string | null
+          effective_from: string | null
+          effective_to: string | null
+          id: string
+          is_active: boolean
+          is_default: boolean
+          metadata: Json
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          metadata?: Json
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          metadata?: Json
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pricing_rules: {
+        Row: {
+          adjustment_type: Database["public"]["Enums"]["pricing_adjustment_type"]
+          adjustment_value: number
+          conditions: Json
+          created_at: string
+          description: string | null
+          effective_from: string | null
+          effective_to: string | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          name: string
+          price_list_id: string | null
+          priority: number
+          rule_type: Database["public"]["Enums"]["pricing_rule_type"]
+          updated_at: string
+        }
+        Insert: {
+          adjustment_type?: Database["public"]["Enums"]["pricing_adjustment_type"]
+          adjustment_value?: number
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name: string
+          price_list_id?: string | null
+          priority?: number
+          rule_type: Database["public"]["Enums"]["pricing_rule_type"]
+          updated_at?: string
+        }
+        Update: {
+          adjustment_type?: Database["public"]["Enums"]["pricing_adjustment_type"]
+          adjustment_value?: number
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name?: string
+          price_list_id?: string | null
+          priority?: number
+          rule_type?: Database["public"]["Enums"]["pricing_rule_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_rules_price_list_id_fkey"
+            columns: ["price_list_id"]
+            isOneToOne: false
+            referencedRelation: "price_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_categories: {
         Row: {
           created_at: string
@@ -767,6 +956,30 @@ export type Database = {
         | "ready"
         | "completed"
         | "cancelled"
+      price_target_type:
+        | "product"
+        | "option"
+        | "tier"
+        | "delivery"
+        | "rush"
+        | "service"
+        | "custom"
+      price_unit:
+        | "flat"
+        | "per_serving"
+        | "per_tier"
+        | "per_km"
+        | "per_hour"
+        | "percentage"
+      pricing_adjustment_type: "fixed" | "percentage"
+      pricing_rule_type:
+        | "rush_order"
+        | "delivery_zone"
+        | "weekend_surcharge"
+        | "holiday_surcharge"
+        | "seasonal_promotion"
+        | "minimum_order"
+        | "custom"
       product_kind: "cake" | "baked_good" | "gift_card" | "service" | "delivery"
     }
     CompositeTypes: {
@@ -915,6 +1128,33 @@ export const Constants = {
         "ready",
         "completed",
         "cancelled",
+      ],
+      price_target_type: [
+        "product",
+        "option",
+        "tier",
+        "delivery",
+        "rush",
+        "service",
+        "custom",
+      ],
+      price_unit: [
+        "flat",
+        "per_serving",
+        "per_tier",
+        "per_km",
+        "per_hour",
+        "percentage",
+      ],
+      pricing_adjustment_type: ["fixed", "percentage"],
+      pricing_rule_type: [
+        "rush_order",
+        "delivery_zone",
+        "weekend_surcharge",
+        "holiday_surcharge",
+        "seasonal_promotion",
+        "minimum_order",
+        "custom",
       ],
       product_kind: ["cake", "baked_good", "gift_card", "service", "delivery"],
     },

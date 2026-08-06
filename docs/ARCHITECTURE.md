@@ -13,6 +13,7 @@ src/
     order/         Customer order wizard (types, lib, hooks, components)
     gallery/       Gallery domain (types, api, hooks, components) — shared by public + admin
     calendar/      Calendar & availability (types, api, lib, hooks, views)
+    pricing/       Internal pricing (types, api, hooks, money + pricing engine)
     auth/          useAuth, useIsAdmin, useSignOut
     admin/         Admin shell, page header, per-module managers
   lib/
@@ -70,6 +71,10 @@ Full schema design: `docs/DATA-MODEL.md`.
 2. **SVG cake builder** — `features/cake-builder`, driven by catalog ids; renders into the order wizard's Cake step.
 3. **Products & pricing** — move `config/catalog` into `products` / `option_groups` / `options` / `price_lists`; consumers keep the same getters. Products cover cakes, baked goods, gift cards, delivery and services.
 4. **Cake templates** — `cake_templates` (same JSONB shape as `cake_designs`): save, duplicate, categorise, start-from-template in the builder. Admin at `/admin/templates`.
+6. ~~**Pricing**~~ — done. `/admin/pricing`; `features/pricing/lib/pricing-engine.ts`
+   is the shared, side-effect-free quote calculator. Typography is centralised in
+   `src/components/common/Typography.tsx` + the `display-heading` utility.
+
 5. ~~**Calendar / availability**~~ — done. `/admin/calendar`; the wizard's date
    gating is wired behind `FEATURE_FLAGS.enforceOrderAvailability`.
 6. **PDF quotations** — quotes are orders in `quoted` status; `quotes` stores versioned documents only. Reuses `buildOrderMessage` as the shared quote model.
