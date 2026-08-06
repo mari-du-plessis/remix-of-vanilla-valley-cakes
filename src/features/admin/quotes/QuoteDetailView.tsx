@@ -8,6 +8,7 @@ import { EmptyState, LoadingState } from "@/components/common";
 import { buildWhatsAppLink } from "@/config/brand";
 import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
 import { formatOrderDate, formatOrderDateTime } from "@/features/orders/lib/format";
+import { usePricingSnapshot } from "@/features/pricing/hooks/usePricing";
 import { formatCents } from "@/features/pricing/lib/money";
 import { QuoteLineEditor } from "@/features/quotes/components/QuoteLineEditor";
 import type { QuoteLineEdit } from "@/features/quotes/components/QuoteLineEditor";
@@ -51,6 +52,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
   const deleteLine = useDeleteQuoteLine();
   const saveSettings = useSaveQuoteSettings();
   const addNote = useAddQuoteNote();
+  const { data: pricing } = usePricingSnapshot(quote?.priceListId ?? null);
 
   const [notes, setNotes] = useState("");
   const [terms, setTerms] = useState("");
@@ -113,6 +115,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
             <QuoteLineEditor
               lines={quote.lines}
               currency={quote.currency}
+              priceListItems={pricing?.items ?? []}
               readOnly={readOnly}
               busy={busy}
               onUpdate={(id, values: QuoteLineEdit) => updateLine.mutate({ id, values })}
