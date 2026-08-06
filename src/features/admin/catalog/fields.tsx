@@ -32,12 +32,16 @@ export function TextField({
   onChange,
   placeholder,
   type = "text",
+  min,
+  max,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  min?: string | number;
+  max?: string | number;
 }) {
   return (
     <Field label={label}>
@@ -45,6 +49,8 @@ export function TextField({
         type={type}
         value={value}
         placeholder={placeholder}
+        min={min}
+        max={max}
         onChange={(e) => onChange(e.target.value)}
       />
     </Field>

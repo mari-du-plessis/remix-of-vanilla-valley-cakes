@@ -254,7 +254,8 @@ function PricingRuleForm({
         label="Effective to"
         type="date"
         value={state.effectiveTo}
-        onChange={(v) => set("effectiveTo", v)}
+        min={state.effectiveFrom || undefined}
+        onChange={(v) => set("effectiveTo", clampRangeEnd(state.effectiveFrom, v))}
       />
       <ToggleField
         label="Applies to every price list"

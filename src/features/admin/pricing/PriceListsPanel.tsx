@@ -151,7 +151,8 @@ function PriceListForm({
         label="Effective to"
         type="date"
         value={state.effectiveTo}
-        onChange={(v) => set("effectiveTo", v)}
+        min={state.effectiveFrom || undefined}
+        onChange={(v) => set("effectiveTo", clampRangeEnd(state.effectiveFrom, v))}
       />
       <ToggleField
         label="Default list"
