@@ -1,5 +1,16 @@
 import type { Database } from "@/integrations/supabase/types";
 
+/** JSON-safe value: pricing rule conditions cross the server boundary. */
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+export type PricingConditions = Record<string, JsonValue>;
+
 export type PriceTargetType = Database["public"]["Enums"]["price_target_type"];
 export type PriceUnit = Database["public"]["Enums"]["price_unit"];
 export type PricingRuleType = Database["public"]["Enums"]["pricing_rule_type"];
@@ -51,7 +62,7 @@ export type PricingRule = {
   adjustmentType: PricingAdjustmentType;
   /** Cents when `fixed`, basis points-free percent (e.g. 15 = 15%) when `percentage`. */
   adjustmentValue: number;
-  conditions: Record<string, unknown>;
+  conditions: PricingConditions;
   priority: number;
   isActive: boolean;
   effectiveFrom: string | null;

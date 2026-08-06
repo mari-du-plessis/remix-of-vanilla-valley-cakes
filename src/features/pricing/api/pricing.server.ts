@@ -1,6 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import type { PriceList, PriceListItem, PricingRule } from "../types";
+import type {
+  PriceList,
+  PriceListItem,
+  PricingConditions,
+  PricingRule,
+} from "../types";
 import type { PriceListInput, PriceListItemInput, PricingRuleInput } from "./schema";
 
 type Client = SupabaseClient<Database>;
@@ -46,7 +51,7 @@ export const mapPricingRule = (row: any): PricingRule => ({
   description: row.description ?? null,
   adjustmentType: row.adjustment_type,
   adjustmentValue: row.adjustment_value,
-  conditions: (row.conditions ?? {}) as Record<string, unknown>,
+  conditions: (row.conditions ?? {}) as PricingConditions,
   priority: row.priority,
   isActive: row.is_active,
   effectiveFrom: row.effective_from ?? null,
