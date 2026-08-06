@@ -51,6 +51,8 @@ export const generateQuoteSchema = z.object({
 export const quoteLineInputSchema = z.object({
   quoteId: z.string().uuid(),
   kind: quoteLineKindSchema.default("custom"),
+  /** Links the line back to the price list entry it was taken from. */
+  priceListItemId: z.string().uuid().nullable().optional(),
   label: trimmed(160).min(1, "Label is required"),
   detail: trimmed(300).nullable().optional(),
   quantity: z.number().int().min(1).max(9999).default(1),
