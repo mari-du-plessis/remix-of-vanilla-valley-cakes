@@ -8,7 +8,11 @@ import {
   ToggleField,
   useFormState,
 } from "@/features/admin/catalog/fields";
-import { useAllOptions, useProducts } from "@/features/catalog/hooks/useCatalog";
+import {
+  useAllOptions,
+  useOptionGroups,
+  useProducts,
+} from "@/features/catalog/hooks/useCatalog";
 import { centsToAmount, formatCents, parseAmountToCents } from "@/features/pricing/lib/money";
 import {
   PRICE_TARGET_LABELS,
@@ -56,6 +60,14 @@ export function PriceItemsPanel({
 }) {
   const products = useProducts();
   const options = useAllOptions();
+  const optionGroups = useOptionGroups();
+
+  /** Sizes come from the catalog's "size" option group — never typed by hand. */
+  const sizeChoices = useMemo(() => {
+    const sizeGroupId = optionGroups.data?.find((g) => g.key === "size")?.id;
+    if (!sizeGroupId) return [];
+    return (options.data ?? []).filter((o) => o.group_id === sizeGroupId);
+  }, [optionGroups.data, options.data]);
 
   const rows = useMemo(
     () =>
@@ -109,6 +121,10 @@ export function PriceItemsPanel({
               { value: "", label: "— none —" },
               ...(options.data ?? []).map((o) => ({ value: o.id, label: o.name })),
             ]}
+            sizeOptions={[
+              { value: "", label: "All sizes" },
+              ...sizeChoices.map((o) => ({ value: o.key, label: o.name })),
+            ]}
             onCancel={close}
             onSubmit={(values) => {
               if (row) onUpdate(row.id, values);
@@ -128,6 +144,7 @@ function PriceItemForm({
   defaultTarget,
   productOptions,
   optionOptions,
+  sizeOptions,
   onSubmit,
   onCancel,
 }: {
@@ -136,6 +153,7 @@ function PriceItemForm({
   defaultTarget?: PriceTargetType;
   productOptions: { value: string; label: string }[];
   optionOptions: { value: string; label: string }[];
+  sizeOptions: { value: string; label: string }[];
   onSubmit: (values: PriceListItemInput) => void;
   onCancel: () => void;
 }) {
@@ -201,11 +219,13 @@ function PriceItemForm({
             onChange={(v) => set("productId", v)}
             options={productOptions}
           />
-          <TextField
-            label="Size key (optional)"
+          <NativeSelectField
+            label="Size (optional)"
             value={state.sizeKey}
             onChange={(v) => set("sizeKey", v)}
+            options={sizeOptions}
           />
+
         </>
       )}
       {state.targetType === "option" && (

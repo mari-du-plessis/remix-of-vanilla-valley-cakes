@@ -25,16 +25,6 @@ const ADJUSTMENT_OPTIONS = [
   { value: "percentage", label: "Percentage of subtotal" },
 ];
 
-/** Condition hints shown under the condition editor per rule type. */
-const CONDITION_HINTS: Record<PricingRuleType, string> = {
-  rush_order: '{"maxLeadTimeDays": 3}',
-  delivery_zone: '{"zoneKey": "cape-town-central"}',
-  weekend_surcharge: "No conditions needed — applies to Saturday and Sunday events.",
-  holiday_surcharge: "No conditions needed — applies to supplied public holidays.",
-  seasonal_promotion: "Use the effective dates to bound the promotion.",
-  minimum_order: "The amount below becomes the minimum order value.",
-  custom: '{"anything": "your future rule engine reads"}',
-};
 
 /** Rush fees, delivery zones, surcharges, promotions and minimum order values. */
 export function PricingRulesPanel({
@@ -104,6 +94,18 @@ export function PricingRulesPanel({
   );
 }
 
+/** Plain-English explanation shown above the guided condition fields. */
+const RULE_HELP: Record<PricingRuleType, string> = {
+  rush_order: "Adds a fee when the event date is close to the order date.",
+  delivery_zone: "Adds a fee when the delivery zone matches the one below.",
+  weekend_surcharge: "Adds a fee to every Saturday and Sunday event.",
+  holiday_surcharge: "Adds a fee to public holiday events.",
+  seasonal_promotion:
+    "Applies a discount or increase between the effective dates below. Use a negative amount for a discount.",
+  minimum_order: "Raises the quotation to this minimum order value.",
+  custom: "An advanced rule your future rule engine reads from the JSON below.",
+};
+
 function PricingRuleForm({
   row,
   priceListId,
@@ -115,6 +117,7 @@ function PricingRuleForm({
   onSubmit: (values: PricingRuleInput) => void;
   onCancel: () => void;
 }) {
+  const existing = (row?.conditions ?? {}) as Record<string, unknown>;
   const { state, set } = useFormState({
     ruleType: (row?.ruleType ?? "rush_order") as PricingRuleType,
     name: row?.name ?? "",
@@ -124,7 +127,9 @@ function PricingRuleForm({
       row?.adjustmentType === "percentage"
         ? String(row.adjustmentValue)
         : centsToAmount(row?.adjustmentValue ?? 0),
-    conditions: JSON.stringify(row?.conditions ?? {}, null, 0),
+    rushDays: String(existing["maxLeadTimeDays"] ?? 3),
+    zoneKey: typeof existing["zoneKey"] === "string" ? (existing["zoneKey"] as string) : "",
+    customJson: JSON.stringify(existing, null, 0),
     priority: String(row?.priority ?? 0),
     effectiveFrom: row?.effectiveFrom ?? "",
     effectiveTo: row?.effectiveTo ?? "",
@@ -132,15 +137,34 @@ function PricingRuleForm({
     global: row ? row.priceListId === null : false,
   });
 
-  let conditionsError: string | null = null;
-  try {
-    JSON.parse(state.conditions || "{}");
-  } catch {
-    conditionsError = "Conditions must be valid JSON";
+  let customError: string | null = null;
+  if (state.ruleType === "custom") {
+    try {
+      JSON.parse(state.customJson || "{}");
+    } catch {
+      customError = "Conditions must be valid JSON";
+    }
   }
 
   const nameError = state.name.trim() ? null : "Name is required";
-  const hasError = Boolean(conditionsError || nameError);
+  const zoneError =
+    state.ruleType === "delivery_zone" && !state.zoneKey.trim()
+      ? "Add the delivery zone this fee applies to"
+      : null;
+  const hasError = Boolean(customError || nameError || zoneError);
+
+  const buildConditions = (): Record<string, unknown> => {
+    switch (state.ruleType) {
+      case "rush_order":
+        return { maxLeadTimeDays: Number(state.rushDays) || 0 };
+      case "delivery_zone":
+        return { zoneKey: state.zoneKey.trim() };
+      case "custom":
+        return JSON.parse(state.customJson || "{}");
+      default:
+        return {};
+    }
+  };
 
   return (
     <form
@@ -158,7 +182,7 @@ function PricingRuleForm({
             state.adjustmentType === "percentage"
               ? Math.round(Number(state.value) || 0)
               : parseAmountToCents(state.value),
-          conditions: JSON.parse(state.conditions || "{}"),
+          conditions: buildConditions(),
           priority: Number(state.priority) || 0,
           effectiveFrom: state.effectiveFrom || null,
           effectiveTo: state.effectiveTo || null,
@@ -176,6 +200,11 @@ function PricingRuleForm({
         <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
         {nameError && <p className="mt-1 text-xs text-destructive">{nameError}</p>}
       </div>
+
+      <p className="sm:col-span-2 rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
+        {RULE_HELP[state.ruleType]}
+      </p>
+
       <NativeSelectField
         label="Adjustment"
         value={state.adjustmentType}
@@ -188,6 +217,27 @@ function PricingRuleForm({
         value={state.value}
         onChange={(v) => set("value", v)}
       />
+
+      {state.ruleType === "rush_order" && (
+        <TextField
+          label="Apply when the event is within (days)"
+          type="number"
+          value={state.rushDays}
+          onChange={(v) => set("rushDays", v)}
+        />
+      )}
+      {state.ruleType === "delivery_zone" && (
+        <div>
+          <TextField
+            label="Delivery zone"
+            value={state.zoneKey}
+            placeholder="cape-town-central"
+            onChange={(v) => set("zoneKey", v)}
+          />
+          {zoneError && <p className="mt-1 text-xs text-destructive">{zoneError}</p>}
+        </div>
+      )}
+
       <TextField
         label="Priority"
         type="number"
@@ -211,18 +261,18 @@ function PricingRuleForm({
         checked={state.global}
         onChange={(v) => set("global", v)}
       />
-      <div className="sm:col-span-2">
-        <AreaField
-          label="Conditions (JSON)"
-          value={state.conditions}
-          onChange={(v) => set("conditions", v)}
-        />
-        <p
-          className={`mt-1 text-xs ${conditionsError ? "text-destructive" : "text-muted-foreground"}`}
-        >
-          {conditionsError ?? CONDITION_HINTS[state.ruleType]}
-        </p>
-      </div>
+
+      {state.ruleType === "custom" && (
+        <div className="sm:col-span-2">
+          <AreaField
+            label="Conditions (JSON)"
+            value={state.customJson}
+            onChange={(v) => set("customJson", v)}
+          />
+          {customError && <p className="mt-1 text-xs text-destructive">{customError}</p>}
+        </div>
+      )}
+
       <div className="sm:col-span-2">
         <AreaField
           label="Description"
@@ -241,3 +291,4 @@ function PricingRuleForm({
     </form>
   );
 }
+
