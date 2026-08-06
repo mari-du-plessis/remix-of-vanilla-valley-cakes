@@ -1091,6 +1091,265 @@ export type Database = {
           },
         ]
       }
+      quote_line_items: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          detail: string | null
+          id: string
+          kind: Database["public"]["Enums"]["quote_line_kind"]
+          label: string
+          metadata: Json
+          option_id: string | null
+          position: number
+          price_list_item_id: string | null
+          pricing_rule_id: string | null
+          product_id: string | null
+          quantity: number
+          quote_id: string
+          unit_cents: number
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["quote_line_kind"]
+          label: string
+          metadata?: Json
+          option_id?: string | null
+          position?: number
+          price_list_item_id?: string | null
+          pricing_rule_id?: string | null
+          product_id?: string | null
+          quantity?: number
+          quote_id: string
+          unit_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["quote_line_kind"]
+          label?: string
+          metadata?: Json
+          option_id?: string | null
+          position?: number
+          price_list_item_id?: string | null
+          pricing_rule_id?: string | null
+          product_id?: string | null
+          quantity?: number
+          quote_id?: string
+          unit_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_line_items_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_line_items_price_list_item_id_fkey"
+            columns: ["price_list_item_id"]
+            isOneToOne: false
+            referencedRelation: "price_list_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_line_items_pricing_rule_id_fkey"
+            columns: ["pricing_rule_id"]
+            isOneToOne: false
+            referencedRelation: "pricing_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_line_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_line_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_notes: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+          quote_id: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          quote_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          quote_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_notes_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["quote_status"] | null
+          id: string
+          note: string | null
+          quote_id: string
+          to_status: Database["public"]["Enums"]["quote_status"]
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["quote_status"] | null
+          id?: string
+          note?: string | null
+          quote_id: string
+          to_status: Database["public"]["Enums"]["quote_status"]
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["quote_status"] | null
+          id?: string
+          note?: string | null
+          quote_id?: string
+          to_status?: Database["public"]["Enums"]["quote_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_status_history_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          deposit_cents: number
+          deposit_percent: number
+          discount_cents: number
+          finalised_at: string | null
+          id: string
+          internal_notes: string | null
+          metadata: Json
+          notes: string | null
+          order_id: string
+          price_list_id: string | null
+          quote_date: string
+          quote_number: string
+          revision: number
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal_cents: number
+          terms: string | null
+          total_cents: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deposit_cents?: number
+          deposit_percent?: number
+          discount_cents?: number
+          finalised_at?: string | null
+          id?: string
+          internal_notes?: string | null
+          metadata?: Json
+          notes?: string | null
+          order_id: string
+          price_list_id?: string | null
+          quote_date?: string
+          quote_number?: string
+          revision?: number
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal_cents?: number
+          terms?: string | null
+          total_cents?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deposit_cents?: number
+          deposit_percent?: number
+          discount_cents?: number
+          finalised_at?: string | null
+          id?: string
+          internal_notes?: string | null
+          metadata?: Json
+          notes?: string | null
+          order_id?: string
+          price_list_id?: string | null
+          quote_date?: string
+          quote_number?: string
+          revision?: number
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal_cents?: number
+          terms?: string | null
+          total_cents?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_price_list_id_fkey"
+            columns: ["price_list_id"]
+            isOneToOne: false
+            referencedRelation: "price_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1146,6 +1405,7 @@ export type Database = {
         Returns: boolean
       }
       next_order_number: { Args: never; Returns: string }
+      next_quote_number: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin"
@@ -1219,6 +1479,25 @@ export type Database = {
         | "minimum_order"
         | "custom"
       product_kind: "cake" | "baked_good" | "gift_card" | "service" | "delivery"
+      quote_line_kind:
+        | "product"
+        | "option"
+        | "tier"
+        | "service"
+        | "delivery"
+        | "rush"
+        | "rule"
+        | "discount"
+        | "charge"
+        | "custom"
+      quote_status:
+        | "draft"
+        | "finalised"
+        | "sent"
+        | "accepted"
+        | "declined"
+        | "expired"
+        | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1424,6 +1703,27 @@ export const Constants = {
         "custom",
       ],
       product_kind: ["cake", "baked_good", "gift_card", "service", "delivery"],
+      quote_line_kind: [
+        "product",
+        "option",
+        "tier",
+        "service",
+        "delivery",
+        "rush",
+        "rule",
+        "discount",
+        "charge",
+        "custom",
+      ],
+      quote_status: [
+        "draft",
+        "finalised",
+        "sent",
+        "accepted",
+        "declined",
+        "expired",
+        "archived",
+      ],
     },
   },
 } as const
