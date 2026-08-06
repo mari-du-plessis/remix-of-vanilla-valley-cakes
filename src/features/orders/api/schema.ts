@@ -43,21 +43,26 @@ export const orderItemSchema = z.object({
 });
 
 export const createOrderSchema = z.object({
+  /** Set when an admin picks an existing customer instead of capturing one. */
+  customerId: z.string().uuid().optional(),
   customer: z.object({
     name: trimmed(100).min(1, "Name is required"),
     phone: trimmed(30).min(6, "A valid phone number is required"),
     email: z.union([z.string().trim().email().max(255), z.literal("")]).optional(),
   }),
   channel: orderChannelSchema.default("website"),
+  status: orderStatusSchema.default("enquiry"),
   occasion: trimmed(100).optional(),
   eventDate: z
     .union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")])
     .optional(),
   customerNotes: trimmed(2000).optional(),
+  internalNotes: trimmed(4000).optional(),
   inspirationUrl: z.union([z.string().url().max(1000), z.literal("")]).optional(),
   summary: trimmed(4000).optional(),
   items: z.array(orderItemSchema).min(1).max(20),
 });
+
 
 export const listOrdersSchema = z.object({
   status: z.union([orderStatusSchema, z.literal("all")]).default("all"),
