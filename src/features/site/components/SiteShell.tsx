@@ -5,16 +5,43 @@ import { PUBLIC_NAV } from "@/config/navigation";
 import { DEFAULT_PUBLIC_THEME, type ThemeId } from "@/config/themes";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import { cn } from "@/lib/utils";
+import logoSrc from "@/assets/logo.jpg";
 
 /** Wordmark used across the customer-facing site. */
-export function SiteWordmark({ className }: { className?: string }) {
+export function SiteWordmark({
+  className,
+  align = "center",
+}: {
+  className?: string;
+  align?: "center" | "left";
+}) {
   return (
-    <Link to="/" className={cn("group inline-flex flex-col items-center", className)}>
-      <span className="display-heading text-lg leading-none sm:text-xl">{BRAND.name}</span>
-      <span className="eyebrow mt-2 text-[0.6rem] text-muted-foreground">{BRAND.tagline}</span>
+    <Link
+      to="/"
+      className={cn(
+        "group inline-flex items-center gap-3",
+        align === "center" ? "justify-center" : "justify-start",
+        className,
+      )}
+    >
+      <img
+        src={logoSrc}
+        alt={`${BRAND.name} logo`}
+        className="aspect-square h-full min-h-11 w-auto shrink-0 self-stretch rounded-md border border-border/60 object-cover"
+      />
+      <span
+        className={cn(
+          "flex flex-col",
+          align === "center" ? "items-center" : "items-start",
+        )}
+      >
+        <span className="display-heading text-lg leading-none sm:text-xl">{BRAND.name}</span>
+        <span className="eyebrow mt-2 text-[0.6rem] text-muted-foreground">{BRAND.tagline}</span>
+      </span>
     </Link>
   );
 }
+
 
 export function SiteHeader({ compact = false }: { compact?: boolean }) {
   return (
@@ -25,7 +52,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
       )}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6">
-        <SiteWordmark className="items-start text-left" />
+        <SiteWordmark align="left" className="self-stretch text-left" />
         <nav className="flex items-center gap-5">
           {PUBLIC_NAV.map((item) => (
             <Link
