@@ -31,7 +31,7 @@ function AdminLayout() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 text-center">
         <div>
-          <h1 className="text-xl font-semibold">No admin access</h1>
+          <h1 className="admin-heading text-lg">No admin access</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Your account exists but isn't an admin yet.
           </p>
