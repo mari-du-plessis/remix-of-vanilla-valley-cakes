@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
+import { ManualOrderDialog } from "@/features/admin/orders/ManualOrderDialog";
 import { OrderFiltersBar } from "@/features/orders/components/OrderFiltersBar";
 import { OrderList } from "@/features/orders/components/OrderList";
-import { useOrders } from "@/features/orders/hooks/useOrders";
+import { useCreateAdminOrder, useOrders } from "@/features/orders/hooks/useOrders";
 import type { OrderStatus } from "@/features/orders/types";
 
 /**
@@ -12,13 +14,20 @@ import type { OrderStatus } from "@/features/orders/types";
 export function OrdersManager() {
   const [status, setStatus] = useState<OrderStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const [creating, setCreating] = useState(false);
   const { data, isPending, error } = useOrders(status, search);
+  const createOrder = useCreateAdminOrder();
 
   return (
     <>
       <AdminPageHeader
         title="Orders"
         description="Every customer enquiry, quotation and confirmed order in one place."
+        action={
+          <Button size="sm" className="rounded-full" onClick={() => setCreating(true)}>
+            New order
+          </Button>
+        }
       />
       <div className="mt-6 space-y-6">
         <OrderFiltersBar
@@ -38,6 +47,15 @@ export function OrdersManager() {
           }
         />
       </div>
+      <ManualOrderDialog
+        open={creating}
+        onOpenChange={setCreating}
+        saving={createOrder.isPending}
+        onSubmit={(values) =>
+          createOrder.mutate(values, { onSuccess: () => setCreating(false) })
+        }
+      />
     </>
   );
 }
+
