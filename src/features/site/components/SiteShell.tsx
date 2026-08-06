@@ -8,13 +8,7 @@ import { cn } from "@/lib/utils";
 import logoSrc from "@/assets/logo.jpg";
 
 /** Wordmark used across the customer-facing site. */
-export function SiteWordmark({
-  className,
-  align = "center",
-}: {
-  className?: string;
-  align?: "center" | "left";
-}) {
+export function SiteWordmark({ className, align = "center" }: { className?: string; align?: "center" | "left" }) {
   return (
     <Link
       to="/"
@@ -27,14 +21,9 @@ export function SiteWordmark({
       <img
         src={logoSrc}
         alt={`${BRAND.name} logo`}
-        className="h-full w-auto shrink-0 self-stretch rounded-md border border-border/60 object-cover"
+        className="h-full w-auto shrink-0 rounded-md border border-border/60 object-cover"
       />
-      <span
-        className={cn(
-          "flex flex-col",
-          align === "center" ? "items-center" : "items-start",
-        )}
-      >
+      <span className={cn("flex flex-col", align === "center" ? "items-center" : "items-start")}>
         <span className="display-heading text-lg leading-none sm:text-xl">{BRAND.name}</span>
         <span className="eyebrow mt-2 text-[0.6rem] text-muted-foreground">{BRAND.tagline}</span>
       </span>
@@ -42,15 +31,9 @@ export function SiteWordmark({
   );
 }
 
-
 export function SiteHeader({ compact = false }: { compact?: boolean }) {
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-40 surface-veil border-x-0 border-t-0",
-        compact ? "py-3" : "py-4",
-      )}
-    >
+    <header className={cn("sticky top-0 z-40 surface-veil border-x-0 border-t-0", compact ? "py-3" : "py-4")}>
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6">
         <SiteWordmark align="left" className="self-stretch text-left" />
         <nav className="flex items-center gap-5">
