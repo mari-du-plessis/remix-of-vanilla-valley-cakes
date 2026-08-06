@@ -11,7 +11,7 @@ Status legend: ✅ done · 🚧 in progress · ⬜ planned
 | 4 | SVG cake builder (`features/cake-builder`, feeds the order wizard) | ⬜ |
 | 5 | Pricing (`price_lists`, `price_list_items`, `pricing_rules`) | ✅ |
 | 5b | Customers (profiles, addresses, notes, tags, order history) | ✅ |
-| 6 | PDF quotations (`quotes` versions on `quoted` orders) | ⬜ |
+| 6 | PDF quotations (`quotes` versions on `quoted` orders) | ✅ |
 | 7 | Cake templates (`cake_templates`, start-from-template) | ⬜ |
 | 8 | Staff (`staff_members` on profiles + roles) | ⬜ |
 | 9 | Production workflows (`workflow_templates`, `order_tasks`) | ⬜ |

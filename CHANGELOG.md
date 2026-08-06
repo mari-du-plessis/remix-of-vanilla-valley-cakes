@@ -2,6 +2,28 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Quote management module
+
+### Added
+- **Quotes schema**: `quotes` (numbered `VVQ-YYYY-####`, revisioned per order,
+  status, validity, deposit, totals, printed notes and terms),
+  `quote_line_items`, `quote_notes` and an automatic `quote_status_history`.
+  Admin-only RLS throughout; totals are always recalculated server-side.
+- **Automatic generation**: `Generate quote` on an order runs
+  `calculateQuote()` from the pricing engine against the active price list and
+  stores the result as an editable draft, moving the order to `quoted`. Running
+  it again creates the next revision.
+- **Quote editor** (`/admin/quotes/$quoteId`): rename, re-price, re-quantify,
+  retype, remove or add lines (including discounts and extra charges), edit
+  deposit %, validity dates, printed notes/terms, internal notes and a dated
+  note thread, plus status flow and history.
+- **Quotes hub** (`/admin/quotes`): status filters, search and outstanding value.
+- **Branded PDF**: `features/quotes/lib/quote-pdf.ts` renders preview and
+  download, filed as `Vanilla-Valley-Quote-<number>-<customer>.pdf`.
+- **Reusable components**: `QuoteStatusBadge`, `QuoteList`, `QuoteLineEditor`
+  and `OrderQuotesPanel`.
+
+
 ## Phase 1 usability improvements
 
 ### Added

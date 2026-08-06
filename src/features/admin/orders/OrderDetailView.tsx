@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { EmptyState, LoadingState } from "@/components/common";
 import { buildWhatsAppLink } from "@/config/brand";
 import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
+import { OrderQuotesPanel } from "@/features/admin/orders/OrderQuotesPanel";
 import { OrderItemsSummary } from "@/features/orders/components/OrderItemsSummary";
 import { OrderStatusSelect } from "@/features/orders/components/OrderStatusSelect";
 import { OrderTimeline } from "@/features/orders/components/OrderTimeline";
@@ -101,6 +102,10 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             >
               {notesMutation.isPending ? "Saving…" : "Save notes"}
             </Button>
+          </Section>
+
+          <Section title="Quotes">
+            <OrderQuotesPanel orderId={order.id} />
           </Section>
 
           <Section title="History">
