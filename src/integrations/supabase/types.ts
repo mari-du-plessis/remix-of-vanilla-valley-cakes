@@ -145,39 +145,157 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_addresses: {
+        Row: {
+          city: string | null
+          country: string
+          created_at: string
+          customer_id: string
+          delivery_notes: string | null
+          id: string
+          is_default: boolean
+          label: string
+          line1: string
+          line2: string | null
+          metadata: Json
+          phone: string | null
+          postal_code: string | null
+          province: string | null
+          recipient_name: string | null
+          suburb: string | null
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          country?: string
+          created_at?: string
+          customer_id: string
+          delivery_notes?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string
+          line1: string
+          line2?: string | null
+          metadata?: Json
+          phone?: string | null
+          postal_code?: string | null
+          province?: string | null
+          recipient_name?: string | null
+          suburb?: string | null
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          country?: string
+          created_at?: string
+          customer_id?: string
+          delivery_notes?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string
+          line1?: string
+          line2?: string | null
+          metadata?: Json
+          phone?: string | null
+          postal_code?: string | null
+          province?: string | null
+          recipient_name?: string | null
+          suburb?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_addresses_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_notes: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           created_at: string
           email: string | null
           id: string
+          marketing_opt_in: boolean
           metadata: Json
           name: string
           notes: string | null
           phone: string
+          preferred_channel: Database["public"]["Enums"]["contact_channel"]
           profile_id: string | null
+          status: Database["public"]["Enums"]["customer_status"]
+          tags: string[]
           updated_at: string
+          whatsapp_phone: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: string
+          marketing_opt_in?: boolean
           metadata?: Json
           name: string
           notes?: string | null
           phone: string
+          preferred_channel?: Database["public"]["Enums"]["contact_channel"]
           profile_id?: string | null
+          status?: Database["public"]["Enums"]["customer_status"]
+          tags?: string[]
           updated_at?: string
+          whatsapp_phone?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
+          marketing_opt_in?: boolean
           metadata?: Json
           name?: string
           notes?: string | null
           phone?: string
+          preferred_channel?: Database["public"]["Enums"]["contact_channel"]
           profile_id?: string | null
+          status?: Database["public"]["Enums"]["customer_status"]
+          tags?: string[]
           updated_at?: string
+          whatsapp_phone?: string | null
         }
         Relationships: []
       }
@@ -915,6 +1033,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      customer_summary: {
+        Args: never
+        Returns: {
+          customer_id: string
+          last_order_at: string
+          next_event_date: string
+          order_count: number
+        }[]
+      }
       day_availability: {
         Args: { _from: string; _to: string }
         Returns: {
@@ -945,6 +1072,8 @@ export type Database = {
         | "delivery"
         | "consultation"
         | "other"
+      contact_channel: "whatsapp" | "phone" | "email" | "instagram"
+      customer_status: "lead" | "active" | "vip" | "inactive" | "blocked"
       option_rule_type: "pairs_with" | "requires" | "excludes"
       option_select_type: "single" | "multi"
       order_channel: "website" | "whatsapp" | "phone" | "instagram" | "walk_in"
@@ -1117,6 +1246,8 @@ export const Constants = {
         "consultation",
         "other",
       ],
+      contact_channel: ["whatsapp", "phone", "email", "instagram"],
+      customer_status: ["lead", "active", "vip", "inactive", "blocked"],
       option_rule_type: ["pairs_with", "requires", "excludes"],
       option_select_type: ["single", "multi"],
       order_channel: ["website", "whatsapp", "phone", "instagram", "walk_in"],
