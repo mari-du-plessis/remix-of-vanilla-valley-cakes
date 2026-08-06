@@ -98,3 +98,30 @@ Full schema design: `docs/DATA-MODEL.md`.
 12. **Reviews, gift cards, payments** — gift cards are products; payments provider-agnostic.
 13. **Analytics & AI inspiration** — new `ADMIN_NAV` entries; shell renders them automatically.
 
+
+## Theming
+
+Themes are **presentation only** — no business logic, data access or routing
+depends on them.
+
+```
+src/config/themes.ts              theme registry (id, label, colour scheme, defaults)
+src/styles.css                    [data-theme="classic"], [data-theme="luxury"] token blocks
+src/features/theme/ThemeProvider  scopes tokens to a subtree + useTheme()
+src/features/site/SiteShell       public chrome (theme + nav + footer)
+```
+
+- `:root` holds the Classic tokens, so any surface rendered outside a
+  `ThemeProvider` (the admin panel) keeps its current look.
+- The customer-facing site wraps its pages in `SiteShell`, which applies
+  `DEFAULT_PUBLIC_THEME` (`luxury`).
+- Components must only use semantic tokens (`bg-card`, `text-primary`,
+  `border-border`) or the shared utilities (`surface-card`, `gold-rule`,
+  `hero-veil`, `lift-on-hover`). Never hardcode colours.
+
+**Adding a theme**: add a `[data-theme="<id>"]` block in `src/styles.css`, then
+register it in `src/config/themes.ts`. Nothing else changes.
+
+**Future extension points**: persist a theme choice per bakery tenant or per
+admin user, expose a theme switcher in the admin panel, seasonal campaign
+themes, and per-section theme nesting (`<ThemeProvider bare>`).

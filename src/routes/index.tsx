@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroCake from "@/assets/hero-cake.jpg";
-import logo from "@/assets/logo.jpg";
 import galleryCookie from "@/assets/gallery-cookie.jpg";
 import galleryOhBaby from "@/assets/gallery-ohbaby.jpg";
 import galleryGrinch from "@/assets/gallery-grinch.jpg";
@@ -13,9 +12,28 @@ import galleryCongrats from "@/assets/gallery-congrats.jpg";
 import galleryMinnie from "@/assets/gallery-minnie.jpg";
 import galleryBoago from "@/assets/gallery-boago.jpg";
 import { Button } from "@/components/ui/button";
-import { Cake, Heart, Sparkles } from "lucide-react";
+import { Eyebrow, Lead } from "@/components/common/Typography";
+import { SiteShell } from "@/features/site/components/SiteShell";
+import { Cake, Leaf, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Vanilla Valley — Bespoke Luxury Cakes, South Africa" },
+      {
+        name: "description",
+        content:
+          "Bespoke celebration and wedding cakes, crafted to order in South Africa. Design your cake in minutes and request a quotation on WhatsApp.",
+      },
+      { property: "og:title", content: "Vanilla Valley — Bespoke Luxury Cakes" },
+      {
+        property: "og:description",
+        content: "Bespoke celebration and wedding cakes, crafted to order in South Africa.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
@@ -33,75 +51,101 @@ const gallery = [
   { src: galleryBoago, alt: "Two-tier construction trucks themed birthday cake" },
 ];
 
+const craft = [
+  {
+    icon: Sparkles,
+    title: "Made to order",
+    copy: "Every cake is designed around your occasion — never off a shelf.",
+  },
+  {
+    icon: Leaf,
+    title: "Honest ingredients",
+    copy: "Real butter, real vanilla, fresh produce and nothing artificial.",
+  },
+  {
+    icon: Cake,
+    title: "Bespoke craftsmanship",
+    copy: "Hand-finished tiers, sculpted detail and considered proportion.",
+  },
+];
+
 function Index() {
   return (
-    <main className="min-h-screen">
-      {/* Header */}
-      <header className="px-6 pt-6 pb-2 flex flex-col items-center text-center">
-        <img
-          src={logo}
-          alt="Vanilla Valley bakery logo"
-          width={160}
-          height={160}
-          className="w-28 h-28 sm:w-32 sm:h-32 object-contain"
-        />
-        <p className="text-xs text-muted-foreground mt-1">Artisan Bakery · South Africa</p>
-      </header>
-
+    <SiteShell>
       {/* Hero */}
-      <section className="px-6 pt-4 pb-10">
-        <div className="relative rounded-3xl overflow-hidden shadow-[var(--shadow-soft)]">
-          <img
-            src={heroCake}
-            alt="Elegant tiered cake with blush florals"
-            width={1280}
-            height={1280}
-            className="w-full h-[60vh] object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent" />
-        </div>
-
-        <div className="text-center mt-8">
-          <h1 className="text-4xl sm:text-5xl leading-[1.1] text-foreground">
-            Cakes baked with<br /><em className="text-primary not-italic">love &amp; vanilla</em>
-          </h1>
-          <p className="mt-4 text-muted-foreground max-w-md mx-auto">
-            Custom cakes for life's sweetest moments. Tell us your dream — we'll bring it to the table.
-          </p>
-          <Link to="/order" className="block mt-7">
-            <Button size="lg" className="w-full sm:w-auto rounded-full px-10 h-14 text-base shadow-[var(--shadow-soft)]">
-              <Cake className="mr-2 h-5 w-5" />
-              Start Your Order
-            </Button>
-          </Link>
+      <section className="px-6 pt-10 pb-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="relative overflow-hidden rounded-[2rem] shadow-[var(--shadow-elevated)]">
+            <img
+              src={heroCake}
+              alt="Elegant tiered celebration cake finished by hand"
+              width={1280}
+              height={1280}
+              className="h-[72vh] w-full object-cover"
+            />
+            <div className="hero-veil absolute inset-0" />
+            <div className="absolute inset-x-0 bottom-0 p-8 text-center sm:p-14">
+              <Eyebrow className="animate-rise-in text-primary">
+                Bespoke cakes · South Africa
+              </Eyebrow>
+              <h1 className="animate-rise-in mt-5 text-balance">
+                Crafted for the <span className="gold-text">moments</span> that matter
+              </h1>
+              <div className="gold-rule mx-auto mt-7 max-w-[10rem]" />
+              <Lead className="animate-rise-in mx-auto mt-6 max-w-lg text-foreground/80">
+                Tell us the occasion and we will design a cake around it — quietly luxurious,
+                entirely yours.
+              </Lead>
+              <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Link to="/order">
+                  <Button
+                    size="lg"
+                    className="h-14 rounded-full px-10 text-sm tracking-[0.18em] uppercase"
+                  >
+                    Design your cake
+                  </Button>
+                </Link>
+                <Link to="/gallery">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-14 rounded-full px-10 text-sm tracking-[0.18em] uppercase"
+                  >
+                    View the gallery
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* Craft */}
       <section className="px-6 py-8">
-        <div className="grid grid-cols-3 gap-3 text-center">
-          {[
-            { icon: Heart, label: "Made to order" },
-            { icon: Sparkles, label: "Premium ingredients" },
-            { icon: Cake, label: "Bespoke designs" },
-          ].map(({ icon: Icon, label }) => (
-            <div key={label} className="bg-card rounded-2xl p-4 border border-border/60">
-              <Icon className="h-5 w-5 mx-auto text-primary" />
-              <p className="text-xs mt-2 text-muted-foreground leading-tight">{label}</p>
-            </div>
+        <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-3">
+          {craft.map(({ icon: Icon, title, copy }) => (
+            <article key={title} className="surface-card lift-on-hover rounded-2xl p-7">
+              <Icon className="h-5 w-5 text-primary" />
+              <h3 className="mt-5 text-sm tracking-[0.12em] uppercase">{title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{copy}</p>
+            </article>
           ))}
         </div>
       </section>
 
-      {/* Gallery — moving ribbon */}
-      <section className="py-10 overflow-hidden">
-        <h2 className="text-3xl text-center mb-6 px-6">Recent creations</h2>
-        <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-          <div className="flex w-max gap-4 animate-marquee">
+      {/* Gallery ribbon */}
+      <section className="overflow-hidden py-16">
+        <div className="px-6 text-center">
+          <Eyebrow className="text-primary">The portfolio</Eyebrow>
+          <h2 className="mt-4">Recent creations</h2>
+          <div className="gold-rule mx-auto mt-6 max-w-[8rem]" />
+        </div>
+        <div className="relative mt-10 w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+          <div className="flex w-max animate-marquee gap-5">
             {[...gallery, ...gallery].map((img, i) => (
-              <div
+              <figure
                 key={i}
-                className="w-64 h-64 sm:w-72 sm:h-72 rounded-2xl overflow-hidden shadow-[var(--shadow-soft)] shrink-0"
+                className="h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-border/60 shadow-[var(--shadow-soft)] sm:h-72 sm:w-72"
               >
                 <img
                   src={img.src}
@@ -109,37 +153,40 @@ function Index() {
                   loading="lazy"
                   width={512}
                   height={512}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                 />
-              </div>
+              </figure>
             ))}
           </div>
         </div>
-        <div className="text-center mt-6">
-          <Link to="/gallery" className="text-sm underline text-muted-foreground hover:text-foreground">
-            See full gallery →
+        <div className="mt-10 text-center">
+          <Link
+            to="/gallery"
+            className="eyebrow text-[0.65rem] text-muted-foreground transition-colors hover:text-primary"
+          >
+            See the full gallery →
           </Link>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="px-6 py-12 text-center">
-        <h2 className="text-3xl">Ready to design yours?</h2>
-        <p className="mt-3 text-muted-foreground">Send us your details — we reply on WhatsApp within 24 hours.</p>
-        <Link to="/order" className="block mt-6">
-          <Button size="lg" className="w-full rounded-full h-14">Start Your Order</Button>
-        </Link>
-      </section>
-
-      <footer className="px-6 py-8 text-center text-xs text-muted-foreground border-t border-border/60">
-        <p>© {new Date().getFullYear()} Vanilla Valley Bakery</p>
-        <p className="mt-1">Made with love in South Africa</p>
-        <p className="mt-3">
-          <Link to="/login" className="opacity-50 hover:opacity-100 transition-opacity">
-            Admin
+      <section className="px-6 pb-4">
+        <div className="mx-auto max-w-4xl rounded-[2rem] border border-border/70 bg-[image:var(--gradient-warm)] p-12 text-center shadow-[var(--shadow-soft)]">
+          <Eyebrow className="text-primary">Begin</Eyebrow>
+          <h2 className="mt-4">Ready to design yours?</h2>
+          <Lead className="mx-auto mt-4 max-w-md">
+            Share the details and we will reply on WhatsApp with a quotation.
+          </Lead>
+          <Link to="/order" className="mt-8 inline-block">
+            <Button
+              size="lg"
+              className="h-14 rounded-full px-12 text-sm tracking-[0.18em] uppercase"
+            >
+              Start your order
+            </Button>
           </Link>
-        </p>
-      </footer>
-    </main>
+        </div>
+      </section>
+    </SiteShell>
   );
 }

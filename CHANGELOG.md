@@ -2,6 +2,31 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Theming — Luxury identity
+
+### Added
+
+- **Theme system**: design tokens are now scoped per theme via
+  `[data-theme="…"]` blocks in `src/styles.css`, a registry in
+  `src/config/themes.ts` and `ThemeProvider` (`src/features/theme/`).
+  Two themes ship: **Classic** (the original warm/light identity, preserved
+  verbatim and still used by the admin panel) and **Luxury** (the new default
+  for the customer-facing website).
+- **Luxury theme**: matte black canvas, rich wood browns, fresh natural greens
+  and warm metallic gold, with deeper elevation shadows and gold hairlines.
+- **`SiteShell`** (`src/features/site/components/SiteShell.tsx`): shared public
+  chrome — theme scope, sticky navigation, wordmark and footer.
+- **Presentation utilities**: `surface-card`, `surface-veil`, `gold-text`,
+  `gold-rule`, `hero-veil`, `lift-on-hover` and the `rise-in` animation.
+
+### Changed
+
+- Home, Gallery and Order pages restyled on the Luxury theme (hero, nav,
+  buttons, cards, forms, gallery grid, CTA, footer). No workflow, data or
+  business-logic changes.
+- `SelectableCard`, `OptionPill`, `CategoryTabs` and `GalleryGrid` now derive
+  every colour from theme tokens instead of fixed palette classes.
+
 ## Phase 1 refinements
 
 ### Added

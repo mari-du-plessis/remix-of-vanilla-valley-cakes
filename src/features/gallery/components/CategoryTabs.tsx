@@ -13,10 +13,10 @@ export function CategoryTabs({ tabs, active, onChange }: CategoryTabsProps) {
             key={t}
             onClick={() => onChange(t)}
             className={
-              "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium border transition-colors " +
+              "whitespace-nowrap rounded-full border px-4 py-2 text-[0.65rem] uppercase tracking-[0.16em] transition-colors " +
               (active === t
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-border hover:text-foreground")
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-card/50 text-muted-foreground hover:border-primary/50 hover:text-foreground")
             }
           >
             {t}
