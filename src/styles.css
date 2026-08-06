@@ -64,9 +64,11 @@
   --color-status-nearly-full: var(--status-nearly-full);
   --color-status-full: var(--status-full);
   --color-status-closed: var(--status-closed);
+  --font-heading: var(--font-heading);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-admin: var(--font-admin);
+
 }
 
 :root {
