@@ -410,6 +410,24 @@ export async function updateQuoteSettings(
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
+
+  // Accepting a quote confirms the order it belongs to. The rest of the order
+  // lifecycle is untouched; already-progressed orders are left alone.
+  if (values.status === "accepted") {
+    const { data: quoteRow } = await client
+      .from("quotes")
+      .select("order_id")
+      .eq("id", id)
+      .single();
+    if (quoteRow?.order_id) {
+      await client
+        .from("orders")
+        .update({ status: "confirmed" })
+        .eq("id", quoteRow.order_id)
+        .in("status", ["enquiry", "quoted"]);
+    }
+  }
+
   if (values.depositPercent !== undefined) await recalculateQuote(client, id);
   return { id };
 }
