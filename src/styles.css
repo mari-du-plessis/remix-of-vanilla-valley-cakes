@@ -253,3 +253,146 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * Theme system
+ * ---------------------------------------------------------------------------
+ * Themes are pure presentation: each theme is a scoped block of design tokens
+ * applied via a `data-theme` attribute on a wrapper element (see
+ * src/features/theme/ThemeProvider.tsx and src/config/themes.ts).
+ *
+ *  - "classic" : the original warm/light identity (also the :root default, so
+ *                the admin panel and any unwrapped surface keep their look).
+ *  - "luxury"  : the new customer-facing identity — matte black, rich wood
+ *                brown, natural green and warm metallic gold.
+ *
+ * To add a future theme: add a token block below and register it in
+ * src/config/themes.ts. No business logic changes are required.
+ */
+
+[data-theme="classic"] {
+  --background: oklch(0.985 0.008 60);
+  --foreground: oklch(0.32 0.03 25);
+  --card: oklch(0.995 0.005 70);
+  --card-foreground: oklch(0.32 0.03 25);
+  --popover: oklch(0.995 0.005 70);
+  --popover-foreground: oklch(0.32 0.03 25);
+  --primary: oklch(0.55 0.07 20);
+  --primary-foreground: oklch(0.99 0.005 60);
+  --secondary: oklch(0.93 0.025 40);
+  --secondary-foreground: oklch(0.4 0.04 25);
+  --muted: oklch(0.95 0.015 60);
+  --muted-foreground: oklch(0.5 0.025 40);
+  --accent: oklch(0.88 0.04 25);
+  --accent-foreground: oklch(0.35 0.04 25);
+  --border: oklch(0.9 0.02 40);
+  --input: oklch(0.92 0.02 40);
+  --ring: oklch(0.7 0.05 25);
+  --gradient-soft: linear-gradient(180deg, oklch(0.97 0.018 50), oklch(0.93 0.03 25));
+  --gradient-warm: linear-gradient(135deg, oklch(0.95 0.025 40), oklch(0.88 0.045 20));
+  --gradient-hero-veil: linear-gradient(to top, oklch(0.32 0.03 25 / 0.45), transparent 60%);
+  --shadow-soft: 0 10px 40px -15px oklch(0.55 0.07 20 / 0.18);
+  --shadow-elevated: 0 24px 60px -30px oklch(0.55 0.07 20 / 0.28);
+  --surface-veil: oklch(0.995 0.005 70 / 0.7);
+}
+
+[data-theme="luxury"] {
+  /* Matte black canvas */
+  --background: oklch(0.16 0.006 90);
+  --foreground: oklch(0.95 0.008 85);
+  /* Charcoal card with a whisper of wood warmth */
+  --card: oklch(0.21 0.01 70);
+  --card-foreground: oklch(0.95 0.008 85);
+  --popover: oklch(0.21 0.01 70);
+  --popover-foreground: oklch(0.95 0.008 85);
+  /* Warm metallic gold */
+  --primary: oklch(0.79 0.105 88);
+  --primary-foreground: oklch(0.18 0.012 70);
+  /* Rich wood brown */
+  --secondary: oklch(0.34 0.042 55);
+  --secondary-foreground: oklch(0.94 0.012 85);
+  --muted: oklch(0.25 0.012 70);
+  --muted-foreground: oklch(0.74 0.014 85);
+  /* Fresh natural green */
+  --accent: oklch(0.48 0.075 148);
+  --accent-foreground: oklch(0.96 0.01 120);
+  --destructive: oklch(0.62 0.2 27);
+  --destructive-foreground: oklch(0.97 0.005 90);
+  --border: oklch(0.34 0.014 80 / 0.7);
+  --input: oklch(0.34 0.014 80 / 0.8);
+  --ring: oklch(0.79 0.105 88 / 0.6);
+
+  --gold: oklch(0.79 0.105 88);
+  --gold-soft: oklch(0.88 0.07 90);
+  --wood: oklch(0.34 0.042 55);
+  --foliage: oklch(0.48 0.075 148);
+
+  --gradient-soft: linear-gradient(180deg, oklch(0.17 0.008 80), oklch(0.13 0.006 90));
+  --gradient-warm: linear-gradient(135deg, oklch(0.26 0.03 60), oklch(0.18 0.012 80));
+  --gradient-gold: linear-gradient(120deg, oklch(0.72 0.09 78), oklch(0.9 0.075 92), oklch(0.72 0.09 78));
+  --gradient-hero-veil: linear-gradient(to top, oklch(0.12 0.006 90 / 0.92), oklch(0.12 0.006 90 / 0.35) 55%, transparent);
+  --shadow-soft: 0 18px 50px -24px oklch(0 0 0 / 0.75);
+  --shadow-elevated: 0 40px 90px -45px oklch(0 0 0 / 0.85);
+  --surface-veil: oklch(0.21 0.01 70 / 0.6);
+}
+
+/* Theme-aware presentation utilities (safe on every theme). */
+
+@utility surface-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+@utility surface-veil {
+  background-color: var(--surface-veil);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+}
+
+@utility gold-text {
+  background-image: var(--gradient-gold, none);
+  background-color: transparent;
+  color: var(--primary);
+  &:where([data-theme="luxury"] *) {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+}
+
+@utility gold-rule {
+  height: 1px;
+  width: 100%;
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in oklab, var(--primary) 70%, transparent),
+    transparent
+  );
+}
+
+@utility hero-veil {
+  background-image: var(--gradient-hero-veil);
+}
+
+@utility lift-on-hover {
+  transition:
+    transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elevated);
+  }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-rise-in {
+  animation: rise-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
