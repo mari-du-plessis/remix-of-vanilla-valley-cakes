@@ -7,16 +7,12 @@ import {
   ToggleField,
   useFormState,
 } from "@/features/admin/catalog/fields";
+import { uniqueSlug } from "@/features/catalog/lib/slug";
 import type { PriceList } from "@/features/pricing/types";
 import type { PriceListInput } from "@/features/pricing/api/schema";
 
 const CURRENCIES = [{ value: "ZAR", label: "ZAR (R)" }];
 
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
 
 /** Manage the named price lists (standard, festive season, wholesale…). */
 export function PriceListsPanel({
