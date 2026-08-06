@@ -166,24 +166,71 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4 {
-    font-family: var(--font-display);
+  /*
+   * Single typography hierarchy for the whole app (public site + admin).
+   * H1/H2 use the branding font in an uppercase, wide-tracked treatment;
+   * H3-H6 continue the same family with progressively tighter tracking so
+   * headings stay elegant without becoming decorative. Body copy, forms,
+   * navigation, buttons and labels stay in the readable sans (--font-body).
+   * The script logo font is applied locally by the logo component only.
+   */
+  h1, h2 {
+    font-family: var(--font-heading);
     font-weight: 600;
-    letter-spacing: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    line-height: 1.15;
   }
+
+  h1 {
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  }
+
+  h2 {
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  }
+
+  h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+
+  h3 { font-size: 1.125rem; }
+  h4 { font-size: 1rem; }
+  h5, h6 { font-size: 0.9375rem; }
 }
 
 /*
- * Admin portal headings. Mirrors the "Vanilla Valley" branding treatment in the
- * admin shell — clean uppercase sans with wide tracking — so every admin H1/H2
- * reads consistently regardless of module.
+ * Heading treatments as utilities so any future page can opt in explicitly
+ * instead of re-inventing sizes. `admin-heading` is kept for backwards
+ * compatibility and now resolves to the same shared treatment.
  */
+@utility display-heading {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
 @utility admin-heading {
-  font-family: var(--font-admin);
+  font-family: var(--font-heading);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-weight: 600;
 }
+
+@utility eyebrow {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+
 
 
 
