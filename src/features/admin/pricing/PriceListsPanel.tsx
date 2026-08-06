@@ -73,6 +73,7 @@ export function PriceListsPanel({
         renderForm={(row, close) => (
           <PriceListForm
             row={row}
+            takenSlugs={priceLists.map((list) => list.slug)}
             onCancel={close}
             onSubmit={(values) => {
               if (row) onUpdate(row.id, values);
@@ -88,16 +89,17 @@ export function PriceListsPanel({
 
 function PriceListForm({
   row,
+  takenSlugs,
   onSubmit,
   onCancel,
 }: {
   row: PriceList | null;
+  takenSlugs: string[];
   onSubmit: (values: PriceListInput) => void;
   onCancel: () => void;
 }) {
   const { state, set } = useFormState({
     name: row?.name ?? "",
-    slug: row?.slug ?? "",
     currency: row?.currency ?? "ZAR",
     effectiveFrom: row?.effectiveFrom ?? "",
     effectiveTo: row?.effectiveTo ?? "",
@@ -105,14 +107,20 @@ function PriceListForm({
     isActive: row?.isActive ?? true,
   });
 
+  const nameError = state.name.trim() ? null : "Name is required";
+  const slug = state.name.trim()
+    ? uniqueSlug(state.name, takenSlugs, row?.slug ?? null)
+    : "";
+
   return (
     <form
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={(event) => {
         event.preventDefault();
+        if (nameError) return;
         onSubmit({
           name: state.name,
-          slug: state.slug || slugify(state.name),
+          slug,
           currency: state.currency,
           effectiveFrom: state.effectiveFrom || null,
           effectiveTo: state.effectiveTo || null,
@@ -121,13 +129,17 @@ function PriceListForm({
         });
       }}
     >
-      <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
-      <TextField
-        label="Slug"
-        value={state.slug}
-        placeholder={slugify(state.name) || "standard"}
-        onChange={(v) => set("slug", v)}
-      />
+      <div>
+        <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+        <p className="mt-1 text-xs text-muted-foreground">
+          {nameError ? (
+            <span className="text-destructive">{nameError}</span>
+          ) : (
+            <>Reference: {slug}</>
+          )}
+        </p>
+      </div>
+
       <NativeSelectField
         label="Currency"
         value={state.currency}
