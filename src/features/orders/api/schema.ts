@@ -93,4 +93,5 @@ export const updateOrderNotesSchema = z.object({
 });
 
 export type CreateOrderInput = z.input<typeof createOrderSchema>;
+export type CreateAdminOrderInput = z.input<typeof createAdminOrderSchema>;
 export type ListOrdersInput = z.input<typeof listOrdersSchema>;
