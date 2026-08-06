@@ -1,5 +1,13 @@
 import type { LucideIcon } from "lucide-react";
-import { Cake, CalendarDays, ClipboardList, Images, LayoutDashboard } from "lucide-react";
+import {
+  Cake,
+  CalendarDays,
+  ClipboardList,
+  Images,
+  LayoutDashboard,
+  Tags,
+} from "lucide-react";
+
 
 
 export type NavItem = {
