@@ -10,6 +10,7 @@ Status legend: ✅ done · 🚧 in progress · ⬜ planned
 | 3 | Calendar & availability (events, blocks, capacity, workload) | ✅ |
 | 4 | SVG cake builder (`features/cake-builder`, feeds the order wizard) | ⬜ |
 | 5 | Pricing (`price_lists`, `price_list_items`, `pricing_rules`) | ✅ |
+| 5b | Customers (profiles, addresses, notes, tags, order history) | ✅ |
 | 6 | PDF quotations (`quotes` versions on `quoted` orders) | ⬜ |
 | 7 | Cake templates (`cake_templates`, start-from-template) | ⬜ |
 | 8 | Staff (`staff_members` on profiles + roles) | ⬜ |
@@ -28,6 +29,16 @@ delivery, rush and services; `pricing_rules` add conditional adjustments
 order, custom). `features/pricing/lib/pricing-engine.ts` is pure and is the
 single quote calculator for the coming quotation, PDF, invoice and payment
 modules. Customers still see no prices.
+
+## Customers (module 5b — done)
+
+Admin-only at `/admin/customers`. `customers` carries status, tags, WhatsApp
+number, preferred channel and marketing consent; `customer_addresses` stores
+delivery addresses and `customer_notes` the internal note timeline. Order
+counts, last order and next booking are derived from `orders` on read, so they
+can never drift. `profile_id` is already in place for customer accounts, and
+reviews, loyalty, gift cards and marketing all attach to `customers.id`
+instead of copying contact details.
 
 ## Next up (module 4 — cake builder)
 

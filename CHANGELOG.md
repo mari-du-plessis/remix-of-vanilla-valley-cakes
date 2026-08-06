@@ -2,6 +2,34 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Customer management module
+
+### Added
+- **Database**: extended `customers` with `status` (`customer_status` enum:
+  lead / active / vip / inactive / blocked), `tags text[]`, `whatsapp_phone`,
+  `preferred_channel` (`contact_channel` enum) and `marketing_opt_in`. New
+  tables `customer_addresses` (delivery addresses, default flag, delivery
+  notes) and `customer_notes` (internal note timeline), both admin-only RLS
+  with GRANTs and `updated_at` triggers. Added the admin-guarded
+  `customer_summary()` helper.
+- **Feature layer** `src/features/customers/`: domain types, Zod contracts,
+  `customers.server.ts` data access (order aggregates are always derived, never
+  stored) and `customers.functions.ts` admin server functions.
+- **Hooks** `useCustomers`, `useCustomer`, `useCustomerTags` plus create /
+  update / delete mutations for customers, addresses and notes.
+- **Components**: `CustomerStatusBadge`, `CustomerTagList`, `CustomerCard`,
+  `CustomerList`, `CustomerFiltersBar`, `CustomerForm`,
+  `CustomerAddressPanel`, `CustomerNotesPanel`, plus
+  `lib/customer-meta.ts` as the single source of status/channel presentation.
+- **Admin** `/admin/customers` (search, status/tag filters, four sort orders,
+  add customer) and `/admin/customers/$customerId` — the customer hub with
+  contact details, order history, upcoming bookings, delivery addresses,
+  internal notes and a placeholder for the future customer account link.
+
+### Changed
+- `ADMIN_NAV` gained a Customers entry. The public order wizard, order
+  persistence and WhatsApp flow are untouched.
+
 ## Pricing module & typography system
 
 ### Added

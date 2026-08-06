@@ -75,6 +75,13 @@ Full schema design: `docs/DATA-MODEL.md`.
    is the shared, side-effect-free quote calculator. Typography is centralised in
    `src/components/common/Typography.tsx` + the `display-heading` utility.
 
+5b. ~~**Customers**~~ — done. `/admin/customers` + `/admin/customers/$customerId`;
+   `customers` (status, tags, WhatsApp, preferred channel, marketing consent),
+   `customer_addresses`, `customer_notes`. Order stats are derived from
+   `orders`, never stored. Reviews, loyalty, gift cards, marketing and customer
+   accounts all reference `customers.id` (and `profile_id`) rather than
+   duplicating contact details.
+
 5. ~~**Calendar / availability**~~ — done. `/admin/calendar`; the wizard's date
    gating is wired behind `FEATURE_FLAGS.enforceOrderAvailability`.
 6. **PDF quotations** — quotes are orders in `quoted` status; `quotes` stores versioned documents only. Reuses `buildOrderMessage` as the shared quote model.
@@ -82,7 +89,7 @@ Full schema design: `docs/DATA-MODEL.md`.
 8. **Production workflows** — configurable `workflow_templates` per product; `order_tasks` + assignments hang off orders without changing them. `/admin/workflows`, `/admin/production`.
 9. **Recipes** — ingredients, quantities, units, instructions, yield, prep/bake time, notes, linked products and flavour options. `/admin/recipes`.
 10. **Ingredients & inventory** — suppliers, stock levels, movements, waste, shopping lists; costing and profit derived from recipes. `/admin/ingredients`, `/admin/inventory`.
-11. **Customer accounts** — routes under `_authenticated/account`, gate already in place.
+11. **Customer accounts** — routes under `_authenticated/account`, gate already in place; link `customers.profile_id` to the signed-in profile (the admin hub already surfaces this link).
 12. **Reviews, gift cards, payments** — gift cards are products; payments provider-agnostic.
 13. **Analytics & AI inspiration** — new `ADMIN_NAV` entries; shell renders them automatically.
 
