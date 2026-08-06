@@ -4,7 +4,18 @@ import { ArrowLeft, Download, Eye, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { EmptyState, LoadingState } from "@/components/common";
+import { clampRangeEnd, isPastDate, rangeEndMin } from "@/lib/date-range";
 import { buildWhatsAppLink } from "@/config/brand";
 import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
 import { formatOrderDate, formatOrderDateTime } from "@/features/orders/lib/format";
@@ -58,12 +69,17 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
   const [terms, setTerms] = useState("");
   const [internalNotes, setInternalNotes] = useState("");
   const [newNote, setNewNote] = useState("");
+  const [quoteDate, setQuoteDate] = useState("");
+  const [validUntil, setValidUntil] = useState("");
+  const [expiredConfirm, setExpiredConfirm] = useState(false);
 
   useEffect(() => {
     if (!quote) return;
     setNotes(quote.notes ?? "");
     setTerms(quote.terms ?? "");
     setInternalNotes(quote.internalNotes ?? "");
+    setQuoteDate(quote.quoteDate);
+    setValidUntil(quote.validUntil ?? "");
   }, [quote?.id]);
 
   if (isPending) return <LoadingState label="Loading quote…" />;
@@ -84,6 +100,17 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
 
   const patch = (values: Record<string, unknown>) =>
     saveSettings.mutate({ id: quote.id, values } as never);
+
+  const isExpired = isPastDate(quote.validUntil);
+
+  const changeStatus = (status: QuoteStatus) => {
+    // Expiry is a warning only — acceptance is never blocked.
+    if (status === "accepted" && isExpired) {
+      setExpiredConfirm(true);
+      return;
+    }
+    patch({ status });
+  };
 
   return (
     <>
@@ -233,7 +260,7 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
             <select
               value={quote.status}
               aria-label="Quote status"
-              onChange={(event) => patch({ status: event.target.value as QuoteStatus })}
+              onChange={(event) => changeStatus(event.target.value as QuoteStatus)}
               className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none"
             >
               {QUOTE_STATUS_FLOW.map((status) => (
@@ -242,6 +269,12 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
                 </option>
               ))}
             </select>
+            {isExpired && quote.status !== "accepted" && (
+              <p className="mt-2 text-xs text-destructive">
+                This quote expired on {formatOrderDate(quote.validUntil!)}. Accepting it is still
+                allowed, but the quoted prices may no longer be valid.
+              </p>
+            )}
             {readOnly && (
               <p className="mt-2 text-xs text-muted-foreground">
                 Accepted and archived quotes are locked. Move it back to draft to edit.
@@ -253,14 +286,20 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
             <label className="mb-1 block text-xs text-muted-foreground">Quote date</label>
             <Input
               type="date"
-              defaultValue={quote.quoteDate}
+              value={quoteDate}
+              onChange={(event) => {
+                setQuoteDate(event.target.value);
+                setValidUntil((current) => clampRangeEnd(event.target.value, current));
+              }}
               onBlur={(event) => event.target.value && patch({ quoteDate: event.target.value })}
             />
             <label className="mb-1 mt-3 block text-xs text-muted-foreground">Valid until</label>
             <Input
               type="date"
-              defaultValue={quote.validUntil ?? ""}
-              onBlur={(event) => patch({ validUntil: event.target.value || null })}
+              value={validUntil}
+              min={rangeEndMin(quoteDate)}
+              onChange={(event) => setValidUntil(clampRangeEnd(quoteDate, event.target.value))}
+              onBlur={() => patch({ validUntil: validUntil || null })}
             />
             <label className="mb-1 mt-3 block text-xs text-muted-foreground">Deposit %</label>
             <Input
@@ -332,6 +371,32 @@ export function QuoteDetailView({ quoteId }: { quoteId: string }) {
           </Section>
         </div>
       </div>
+
+      <AlertDialog open={expiredConfirm} onOpenChange={setExpiredConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>This quote has expired</AlertDialogTitle>
+            <AlertDialogDescription>
+              {quote.validUntil
+                ? `Quote ${quote.quoteNumber} was valid until ${formatOrderDate(quote.validUntil)}.`
+                : `Quote ${quote.quoteNumber} is past its validity period.`}{" "}
+              The quoted prices may no longer be valid — review the line items against the current
+              price list before confirming. You can still accept it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setExpiredConfirm(false);
+                patch({ status: "accepted" });
+              }}
+            >
+              Accept anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
