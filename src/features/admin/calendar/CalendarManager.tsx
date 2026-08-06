@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { addDays, format } from "date-fns";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,18 @@ import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
 import { CalendarToolbar } from "@/features/calendar/components/CalendarToolbar";
 import { MonthView } from "@/features/calendar/components/MonthView";
 import { DayColumns } from "@/features/calendar/components/DayColumns";
+import { WeekSchedule } from "@/features/calendar/components/WeekSchedule";
 import { CalendarEventDialog } from "@/features/calendar/components/CalendarEventDialog";
 import { AvailabilityPanel } from "@/features/calendar/components/AvailabilityPanel";
 import { CapacityPanel } from "@/features/calendar/components/CapacityPanel";
 import { buildDayIndex } from "@/features/calendar/lib/day-index";
-import { shiftAnchor, viewDays, viewRange, viewTitle } from "@/features/calendar/lib/calendar-range";
+import {
+  shiftAnchor,
+  toKey,
+  viewDays,
+  viewRange,
+  viewTitle,
+} from "@/features/calendar/lib/calendar-range";
 import {
   useCalendarRange,
   useCapacitySettings,
@@ -39,6 +46,9 @@ export function CalendarManager() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dialogDate, setDialogDate] = useState(new Date());
+  // Per-day expand/collapse state for the week schedule. Reset whenever a new
+  // week is opened so the default collapsed behaviour is preserved.
+  const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
 
   const range = viewRange(view, anchor);
   const days = useMemo(() => viewDays(view, anchor), [view, anchor]);
@@ -49,6 +59,13 @@ export function CalendarManager() {
   const today = new Date();
   const settings = useCalendarRange(key(today), key(addDays(today, 365)));
   const capacity = useCapacitySettings();
+
+  useEffect(() => {
+    setExpandedDays({});
+  }, [view, toKey(range.start)]);
+
+  const setAllDays = (value: boolean) =>
+    setExpandedDays(Object.fromEntries(days.map((day) => [toKey(day), value])));
 
   const createEvent = useCreateCalendarEvent();
   const updateEvent = useUpdateCalendarEvent();
@@ -90,9 +107,21 @@ export function CalendarManager() {
             onNext={() => setAnchor((current) => shiftAnchor(view, current, 1))}
             onToday={() => setAnchor(new Date())}
             action={
-              <Button size="sm" onClick={() => openNew(anchor)}>
-                <Plus className="mr-1 h-4 w-4" /> New event
-              </Button>
+              <div className="flex items-center gap-2">
+                {view === "week" && (
+                  <div className="hidden items-center gap-1 sm:flex">
+                    <Button variant="ghost" size="sm" onClick={() => setAllDays(true)}>
+                      Expand all
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setAllDays(false)}>
+                      Collapse all
+                    </Button>
+                  </div>
+                )}
+                <Button size="sm" onClick={() => openNew(anchor)}>
+                  <Plus className="mr-1 h-4 w-4" /> New event
+                </Button>
+              </div>
             }
           />
 
@@ -113,6 +142,21 @@ export function CalendarManager() {
                   setEditingId(id);
                   setDialogOpen(true);
                 }}
+              />
+            ) : view === "week" ? (
+              <WeekSchedule
+                days={days}
+                dayIndex={dayIndex}
+                expanded={expandedDays}
+                onToggleDay={(key) =>
+                  setExpandedDays((current) => ({ ...current, [key]: !current[key] }))
+                }
+                onSelectDay={openNew}
+                onEditEvent={(id) => {
+                  setEditingId(id);
+                  setDialogOpen(true);
+                }}
+                onDeleteEvent={(id) => deleteEvent.mutate(id)}
               />
             ) : (
               <DayColumns
