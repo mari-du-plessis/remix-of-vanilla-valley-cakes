@@ -93,11 +93,16 @@
   --gradient-soft: linear-gradient(180deg, oklch(0.97 0.018 50), oklch(0.93 0.03 25));
   --gradient-warm: linear-gradient(135deg, oklch(0.95 0.025 40), oklch(0.88 0.045 20));
   --shadow-soft: 0 10px 40px -15px oklch(0.55 0.07 20 / 0.18);
-  /* Customer-facing headings: a timeless, highly readable serif. */
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  /*
+   * One heading font for the whole application (public site and admin):
+   * the "Vanilla Valley" branding sans. --font-display is kept as an alias so
+   * existing references stay valid; the script logo font is separate.
+   */
+  --font-heading: 'Inter', sans-serif;
+  --font-display: var(--font-heading);
+  --font-admin: var(--font-heading);
   --font-body: 'Inter', sans-serif;
-  /* Admin portal headings: the clean uppercase branding font. */
-  --font-admin: 'Inter', sans-serif;
+
   /* Workload / availability signal colours. */
   --status-available: oklch(0.62 0.13 150);
   --status-busy: oklch(0.75 0.14 80);
