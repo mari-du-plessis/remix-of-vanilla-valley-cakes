@@ -139,16 +139,19 @@ function PricingRuleForm({
     conditionsError = "Conditions must be valid JSON";
   }
 
+  const nameError = state.name.trim() ? null : "Name is required";
+  const hasError = Boolean(conditionsError || nameError);
+
   return (
     <form
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={(event) => {
         event.preventDefault();
-        if (conditionsError) return;
+        if (hasError) return;
         onSubmit({
           priceListId: state.global ? null : priceListId,
           ruleType: state.ruleType,
-          name: state.name,
+          name: state.name.trim(),
           description: state.description || null,
           adjustmentType: state.adjustmentType,
           adjustmentValue:
@@ -169,7 +172,10 @@ function PricingRuleForm({
         onChange={(v) => set("ruleType", v as PricingRuleType)}
         options={RULE_OPTIONS}
       />
-      <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+      <div>
+        <TextField label="Name" value={state.name} onChange={(v) => set("name", v)} />
+        {nameError && <p className="mt-1 text-xs text-destructive">{nameError}</p>}
+      </div>
       <NativeSelectField
         label="Adjustment"
         value={state.adjustmentType}
@@ -230,7 +236,7 @@ function PricingRuleForm({
         onChange={(v) => set("isActive", v)}
       />
       <div className="sm:col-span-2">
-        <FormActions onCancel={onCancel} saving={Boolean(conditionsError)} />
+        <FormActions onCancel={onCancel} saving={hasError} />
       </div>
     </form>
   );
