@@ -20,20 +20,30 @@ export type TierBox = {
 /** Shapes that only ever make sense as a single tier. */
 const SINGLE_TIER_SHAPES = new Set(["shape-heart", "shape-number", "shape-sheet"]);
 
+/** The tallest cake the builder, the catalog and the renderer all support. */
+export const MAX_TIERS = 6;
+
 export function buildTierBoxes(tierCount: number, shapeKey: string): TierBox[] {
   const single = SINGLE_TIER_SHAPES.has(shapeKey);
-  const count = single ? 1 : Math.min(4, Math.max(1, tierCount));
+  const count = single ? 1 : Math.min(MAX_TIERS, Math.max(1, tierCount));
 
   const baseWidth = shapeKey === "shape-sheet" ? 268 : shapeKey === "shape-number" ? 210 : 224;
-  const inset = 42;
   const baseHeight = shapeKey === "shape-sheet" ? 92 : shapeKey === "shape-number" ? 170 : 82;
+
+  /**
+   * Tall cakes are scaled down rather than clipped: the stack always fits the
+   * canvas, so six tiers read as a statement cake instead of running off frame.
+   */
+  const inset = count > 4 ? 26 : 42;
+  const heightScale = count > 4 ? 0.62 : count > 3 ? 0.82 : 1;
+  const widthScale = count > 4 ? 0.9 : 1;
 
   const boxes: TierBox[] = [];
   let y = CANVAS.baseY;
 
   for (let i = 0; i < count; i += 1) {
-    const width = baseWidth - inset * i;
-    const height = Math.max(52, baseHeight - i * 8);
+    const width = (baseWidth - inset * i) * widthScale;
+    const height = Math.max(34, (baseHeight - i * 8) * heightScale);
     y -= height;
     boxes.push({ cx: CANVAS.width / 2, width, height, top: y });
   }
