@@ -60,7 +60,7 @@ export function buildInspirationInput(
     product: form.product ? pretty(form.product) : "Celebration cake",
     shape: form.shapeKey ? pretty(form.shapeKey) : "Round",
     size: form.size ? resolveSizeLabel(catalog, form.size) : "",
-    tierCount: Math.max(1, form.tiers.length || 1),
+    tierCount: clampTierCount(form.tiers.length || 1),
     flavours: flavours.filter(Boolean),
     fillings: fillings.filter(Boolean),
     icing: form.icingKey ? pretty(form.icingKey) : "",
