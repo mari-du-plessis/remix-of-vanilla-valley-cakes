@@ -111,7 +111,10 @@ export function AssetLibraryManager() {
         )}
       </AdminSection>
 
+      <MissingAssetsPanel assets={assets} />
+
       {assets.length > 0 && <PreviewLab assets={assets} />}
+
     </div>
   );
 }
