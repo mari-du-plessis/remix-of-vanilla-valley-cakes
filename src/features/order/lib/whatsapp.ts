@@ -31,11 +31,28 @@ export function whatsappUrl(
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
+/**
+ * Opening WhatsApp with `window.open` from inside an embedded preview makes the
+ * popup inherit the embedder's cross-origin isolation policy, which WhatsApp
+ * refuses (`ERR_BLOCKED_BY_RESPONSE`). A plain anchor click with
+ * `target="_blank" rel="noopener"` opens a clean top-level tab instead.
+ */
+function openInNewTab(url: string) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
 export function openWhatsApp(message: string, number: string = BRAND.whatsappNumber) {
   const url = whatsappUrl(message, number);
   if (isMobileDevice()) {
     window.location.href = url;
     return;
   }
-  window.open(url, "_blank", "noopener,noreferrer");
+  openInNewTab(url);
 }
