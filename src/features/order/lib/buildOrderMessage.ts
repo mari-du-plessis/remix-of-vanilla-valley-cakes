@@ -11,12 +11,23 @@ export function buildOrderMessage(
   form: OrderFormState,
   options: { photoLine?: string | null; sizeLabel?: string } = {},
 ): string {
+  /** Builder answers only appear when the customer actually made them. */
+  const pretty = (value: string) =>
+    value
+      .replace(/^(shape|icing|decor)-/, "")
+      .replace(/-/g, " ")
+      .replace(/^\w/, (c) => c.toUpperCase());
+
   return [
     `🎂 *New Cake Order — ${BRAND.name}*`,
     ``,
     `*Occasion:* ${form.occasion}`,
+    form.product ? `*Product:* ${pretty(form.product)}` : null,
+    form.shapeKey ? `*Shape:* ${pretty(form.shapeKey)}` : null,
     `*Size:* ${options.sizeLabel ?? form.size}`,
+    form.icingKey ? `*Finish:* ${pretty(form.icingKey)}` : null,
     ...(form.tiers.length > 0
+
       ? form.tiers.map(
           (t, i) => `*${tierLabel(i, form.tiers.length)}:* ${t.flavour} with ${t.filling}`,
         )
