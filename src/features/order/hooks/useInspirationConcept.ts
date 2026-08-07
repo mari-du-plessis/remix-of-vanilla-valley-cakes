@@ -32,15 +32,17 @@ export function useInspirationConcept() {
   const [status, setStatus] = useState<ConceptStatus>("idle");
   const [url, setUrl] = useState("");
   const [include, setInclude] = useState(true);
+  /** Reference photo upload, done early so the model can use it as a style guide. */
+  const [upload, setUpload] = useState<{ done: boolean; url: string | null; failed: boolean }>({
+    done: false,
+    url: null,
+    failed: false,
+  });
 
   /** In-flight run, so submission can await a late finish without blocking. */
   const runRef = useRef<Promise<Outcome> | null>(null);
   /** Guards against re-running for the same design when the step re-renders. */
   const startedRef = useRef(false);
-  const uploadRef = useRef<{ url: string | null; failed: boolean }>({
-    url: null,
-    failed: false,
-  });
 
   const start = useCallback(
     (form: OrderFormState, catalog: CakeCatalog) => {
@@ -58,7 +60,7 @@ export function useInspirationConcept() {
           if (result.ok) inspirationUrl = result.publicUrl;
           else uploadFailed = true;
         }
-        uploadRef.current = { url: inspirationUrl, failed: uploadFailed };
+        setUpload({ done: true, url: inspirationUrl, failed: uploadFailed });
 
         try {
           const input = buildInspirationInput(form, catalog, {
@@ -84,6 +86,7 @@ export function useInspirationConcept() {
   const retry = useCallback(
     (form: OrderFormState, catalog: CakeCatalog) => {
       startedRef.current = false;
+      setUpload({ done: false, url: null, failed: false });
       start(form, catalog);
     },
     [start],
@@ -112,12 +115,10 @@ export function useInspirationConcept() {
     include,
     setInclude,
     /** Reference photo URL when it was uploaded early, else null. */
-    inspirationUrl: uploadRef.current.url,
-    uploadFailed: uploadRef.current.failed,
-    /** True once the early upload path has run, so submit can skip re-uploading. */
-    get uploadHandled() {
-      return startedRef.current && runRef.current !== null;
-    },
+    inspirationUrl: upload.url,
+    uploadFailed: upload.failed,
+    /** True once the early upload finished, so submit can skip re-uploading. */
+    uploadHandled: upload.done,
     start,
     retry,
     attachWhenReady,
