@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { parseSvgAsset, viewBoxRatio } from "../lib/svg";
 import type { CakeAsset } from "../types";
 
@@ -5,8 +6,11 @@ import type { CakeAsset } from "../types";
  * Places one stored asset inside the cake illustration.
  * Nested `<svg>` gives us free scaling: the asset keeps its own coordinate
  * system and is fitted (or stretched, for tier bodies) into the given box.
+ *
+ * Memoised because a single design change re-renders the whole stack while
+ * most layers are unchanged.
  */
-export function AssetLayer({
+export const AssetLayer = memo(function AssetLayer({
   asset,
   x,
   y,
@@ -14,6 +18,7 @@ export function AssetLayer({
   height,
   stretch = false,
   opacity,
+  className,
 }: {
   asset: CakeAsset | undefined;
   x: number;
@@ -22,6 +27,7 @@ export function AssetLayer({
   height: number;
   stretch?: boolean;
   opacity?: number;
+  className?: string;
 }) {
   const parsed = asset ? parseSvgAsset(asset.svg_content) : null;
   if (!parsed) return null;
@@ -35,10 +41,12 @@ export function AssetLayer({
       preserveAspectRatio={stretch ? "none" : "xMidYMid meet"}
       opacity={opacity}
       overflow="visible"
+      className={className}
       dangerouslySetInnerHTML={{ __html: parsed.inner }}
     />
   );
-}
+});
+
 
 /** Standalone preview used by the admin asset library. */
 export function AssetPreview({

@@ -15,7 +15,9 @@ import {
   type CakeAssetCategory,
 } from "@/features/cake-builder/types";
 import { AssetEditor } from "./AssetEditor";
+import { MissingAssetsPanel } from "./MissingAssetsPanel";
 import { PreviewLab } from "./PreviewLab";
+
 
 /**
  * Cake builder asset library — the source of truth for every visual piece the
@@ -109,7 +111,10 @@ export function AssetLibraryManager() {
         )}
       </AdminSection>
 
+      <MissingAssetsPanel assets={assets} />
+
       {assets.length > 0 && <PreviewLab assets={assets} />}
+
     </div>
   );
 }

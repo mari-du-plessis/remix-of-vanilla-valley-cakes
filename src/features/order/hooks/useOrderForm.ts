@@ -69,7 +69,22 @@ export function useOrderForm(catalog: CakeCatalog) {
     [catalog],
   );
 
+  /**
+   * Tier count chosen in the guided builder. One tier is stored as an empty
+   * tier list, matching the single-flavour path the order summary already uses.
+   */
+  const setTierCount = useCallback((count: number) => {
+    setForm((f) => ({
+      ...f,
+      tiers:
+        count > 1
+          ? Array.from({ length: count }, (_, i) => f.tiers[i] ?? { flavour: "", filling: "" })
+          : [],
+    }));
+  }, []);
+
   const setTierField = useCallback((index: number, key: keyof CakeTier, value: string) => {
+
     setForm((f) => ({
       ...f,
       tiers: f.tiers.map((t, i) => (i === index ? { ...t, [key]: value } : t)),
@@ -125,6 +140,8 @@ export function useOrderForm(catalog: CakeCatalog) {
     toggleExtra,
     setInspirationFile,
     setSize,
+    setTierCount,
+
     setTierField,
     setTierFlavour,
     setFlavour,

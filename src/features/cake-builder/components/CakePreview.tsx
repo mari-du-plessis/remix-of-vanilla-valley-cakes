@@ -82,6 +82,8 @@ export function CakePreview({
         filter="url(#vv-cake-soft)"
       />
 
+      {/* keyed on the silhouette so a shape or tier change re-animates the stack */}
+      <g className="cake-stack" key={`stack-${design.shapeKey}-${design.tierCount}`}>
       {boxes.map((box, i) => {
         const tier = design.tiers[Math.min(i, design.tiers.length - 1)];
         const style = {
@@ -104,6 +106,7 @@ export function CakePreview({
             {finishes.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top}
@@ -116,6 +119,7 @@ export function CakePreview({
             {scatters.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top + box.height * 0.12}
@@ -124,9 +128,11 @@ export function CakePreview({
               />
             ))}
 
+
             {borders.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top + box.height - 6}
@@ -139,6 +145,7 @@ export function CakePreview({
             {drips.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top + 2}
@@ -154,6 +161,7 @@ export function CakePreview({
                   {clusters.map((asset) => (
                     <AssetLayer
                       key={`${asset.key}-${i}-${ai}`}
+                      className="cake-layer"
                       asset={asset}
                       x={anchor.x}
                       y={anchor.y}
@@ -166,6 +174,8 @@ export function CakePreview({
           </g>
         );
       })}
+      </g>
+
 
       {/* number / letter cakes show the age straight on the sculpted slab */}
       {design.shapeKey === "shape-number" && (
@@ -185,7 +195,9 @@ export function CakePreview({
       {toppers.map((asset, i) => (
         <AssetLayer
           key={asset.key}
+          className="cake-layer"
           asset={asset}
+
           x={topBox.cx - 42 + i * 6}
           y={topBox.top - 88}
           width={84}

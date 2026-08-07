@@ -2,6 +2,12 @@ export type CakeTier = { flavour: string; filling: string };
 
 export type OrderFormState = {
   occasion: string;
+  /** Product slug chosen in the cake builder (celebration cake, cupcakes…). */
+  product: string;
+  /** Asset key of the chosen silhouette, e.g. `shape-round`. */
+  shapeKey: string;
+  /** Asset key of the chosen finish, e.g. `icing-smooth`. */
+  icingKey: string;
   size: string;
   flavour: string;
   filling: string;
@@ -20,6 +26,9 @@ export type OrderFormState = {
 
 export const EMPTY_ORDER_FORM: OrderFormState = {
   occasion: "",
+  product: "",
+  shapeKey: "",
+  icingKey: "",
   size: "",
   flavour: "",
   filling: "",
@@ -34,6 +43,7 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   email: "",
   notes: "",
 };
+
 
 
 export const ORDER_STEPS = ["Occasion", "Cake", "Details", "Contact"] as const;
