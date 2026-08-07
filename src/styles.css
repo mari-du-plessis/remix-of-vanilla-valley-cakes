@@ -454,8 +454,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cake-layer,
+  .cake-tier,
   .cake-stack {
     animation: none;
     transition: none;
   }
 }
+
