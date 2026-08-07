@@ -10,6 +10,8 @@
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catalog";
 import type { OrderFormState } from "@/features/order/types";
+import { clampTierCount } from "./geometry";
+
 
 export type InspirationInput = {
   product: string;
