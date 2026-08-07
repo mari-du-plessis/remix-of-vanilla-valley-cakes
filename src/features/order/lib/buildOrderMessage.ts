@@ -26,6 +26,7 @@ export function buildOrderMessage(
     form.shapeKey ? `*Shape:* ${pretty(form.shapeKey)}` : null,
     `*Size:* ${options.sizeLabel ?? form.size}`,
     form.icingKey ? `*Finish:* ${pretty(form.icingKey)}` : null,
+    form.tiers.length > 1 ? `*Tiers:* ${form.tiers.length}` : null,
     ...(form.tiers.length > 0
 
       ? form.tiers.map(
@@ -36,6 +37,7 @@ export function buildOrderMessage(
     form.cakeText.trim() ? `*Message on cake:* ${form.cakeText.trim()}` : null,
 
     options.photoLine ?? null,
+    form.aiPreviewUrl ? `*Inspiration preview:* ${form.aiPreviewUrl}` : null,
     `*Event date:* ${form.eventDate}`,
     ``,
     ``,
