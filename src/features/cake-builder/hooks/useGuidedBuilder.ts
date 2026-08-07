@@ -58,7 +58,7 @@ export function useGuidedBuilder(
 
   const index = Math.min(stepIndex, Math.max(0, steps.length - 1));
   const step = steps[index];
-  const tierCount = Math.max(1, form.tiers.length || 1);
+  const tierCount = clampTierCount(form.tiers.length || 1);
 
   /** Current answer(s) for a step — per tier where the step asks per tier. */
   const valueOf = useCallback(
