@@ -1,34 +1,30 @@
 import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { BUCKETS, uploadToBucket } from "@/lib/supabase/storage";
-import { usesCakeRenderer } from "@/config/product-builders";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catalog";
-import { generateInspirationPreview } from "@/features/cake-builder/api/inspiration.functions";
-import { buildInspirationInput } from "@/features/cake-builder/lib/inspiration";
 import { buildOrderPayload } from "@/features/orders/lib/buildOrderPayload";
 import { useCreateOrder } from "@/features/orders/hooks/useOrders";
 import { buildOrderMessage } from "../lib/buildOrderMessage";
 import { openWhatsApp } from "../lib/whatsapp";
+import type { InspirationConcept } from "./useInspirationConcept";
 import type { OrderFormState } from "../types";
 
 /**
  * One-step submission. Pressing “Send via WhatsApp” runs the whole workflow:
  *
- *   validate → upload inspiration → save the order → generate the AI concept
- *   → build the message → open WhatsApp
+ *   validate → finish uploads → save the order → build the message → open WhatsApp
  *
- * Neither persistence nor AI generation may block the customer: a failure in
- * either step is reported quietly and WhatsApp still opens. A fallback link is
- * surfaced only when the browser genuinely refuses to open WhatsApp.
+ * The AI concept is generated earlier, in the background, while the customer
+ * fills in their details (see `useInspirationConcept`). Submission therefore
+ * never waits for the model: a concept that is still rendering is simply left
+ * out of this message and attached to the saved order when it finishes.
  */
-export function useSubmitOrder() {
+export function useSubmitOrder(concept?: InspirationConcept) {
   const [submitting, setSubmitting] = useState(false);
   const [fallbackMessage, setFallbackMessage] = useState<string | null>(null);
   const createOrder = useCreateOrder();
   const { catalog } = useCakeCatalog();
-  const generateConcept = useServerFn(generateInspirationPreview);
 
   const submit = async (form: OrderFormState) => {
     if (!form.name || !form.phone) {
@@ -38,55 +34,54 @@ export function useSubmitOrder() {
     setSubmitting(true);
     setFallbackMessage(null);
 
-    /* 1 — uploads */
-    let inspirationUrl: string | null = null;
-    let photoLine: string | null = null;
-    if (form.inspirationFile) {
+    /* 1 — uploads (usually already done alongside the background concept) */
+    let inspirationUrl: string | null = concept?.inspirationUrl ?? null;
+    let uploadFailed = concept?.uploadFailed ?? false;
+
+    if (form.inspirationFile && !concept?.uploadHandled) {
       const t = toast.loading("Uploading inspiration photo…");
       const result = await uploadToBucket(BUCKETS.inspiration, form.inspirationFile);
       toast.dismiss(t);
-      if (result.ok) {
-        inspirationUrl = result.publicUrl;
-        photoLine = `*Inspiration photo:* ${result.publicUrl}`;
-      } else {
-        photoLine = `*Inspiration photo:* ${form.inspirationFile.name} (upload failed — please send on WhatsApp)`;
-      }
+      if (result.ok) inspirationUrl = result.publicUrl;
+      else uploadFailed = true;
     }
 
-    /* 2 — AI concept, only for product families that have the cake builder */
-    let aiPreviewUrl = form.aiPreviewUrl;
-    if (usesCakeRenderer(form.product)) {
-      const t = toast.loading("Creating your concept artwork…");
-      try {
-        const input = buildInspirationInput(form, catalog, {
-          notes: form.notes,
-          inspirationImageUrl: inspirationUrl,
-        });
-        const result = await generateConcept({ data: input });
-        aiPreviewUrl = result.url;
-      } catch {
-        /* never blocks the order — the concept is simply omitted */
-      } finally {
-        toast.dismiss(t);
-      }
-    }
+    const photoLine = form.inspirationFile
+      ? inspirationUrl
+        ? `*Inspiration photo:* ${inspirationUrl}`
+        : uploadFailed
+          ? `*Inspiration photo:* ${form.inspirationFile.name} (upload failed — please send on WhatsApp)`
+          : null
+      : null;
+
+    /* 2 — AI concept: only whatever is ready right now */
+    const readyConceptUrl = concept?.status === "ready" ? concept.url : "";
+    const shareConcept = readyConceptUrl && concept?.include !== false;
 
     const sizeLabel = form.size ? resolveSizeLabel(catalog, form.size) : undefined;
-    const formWithConcept: OrderFormState = { ...form, aiPreviewUrl };
+    /* Saved with the order regardless of the sharing choice. */
+    const formWithConcept: OrderFormState = { ...form, aiPreviewUrl: readyConceptUrl };
+    /* The message only carries it when the customer left the box ticked. */
+    const formForMessage: OrderFormState = {
+      ...form,
+      aiPreviewUrl: shareConcept ? readyConceptUrl : "",
+    };
 
     /* 3 — persistence (first, so the reference number can head the message) */
     let orderNumber: string | null = null;
     try {
-      const draft = buildOrderMessage(formWithConcept, { photoLine, sizeLabel });
+      const draft = buildOrderMessage(formForMessage, { photoLine, sizeLabel });
       const saved = await createOrder.mutateAsync(
         buildOrderPayload(formWithConcept, { inspirationUrl, summary: draft, sizeLabel }),
       );
       orderNumber = saved.orderNumber;
+      /* A concept still rendering is attached to this order once it lands. */
+      if (!readyConceptUrl) concept?.attachWhenReady(saved.id);
     } catch {
       toast.error("We couldn't save your request — sending it on WhatsApp instead.");
     }
 
-    const finalMessage = buildOrderMessage(formWithConcept, {
+    const finalMessage = buildOrderMessage(formForMessage, {
       photoLine,
       sizeLabel,
       orderNumber,
@@ -100,9 +95,8 @@ export function useSubmitOrder() {
       toast.error("Your browser blocked WhatsApp — use the link below to continue.");
     }
 
-
     setSubmitting(false);
-    return aiPreviewUrl;
+    return readyConceptUrl;
   };
 
   return {

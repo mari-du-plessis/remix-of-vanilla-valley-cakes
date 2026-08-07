@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -10,6 +11,7 @@ import { ORDER_STEPS } from "@/features/order/types";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { useOrderForm } from "@/features/order/hooks/useOrderForm";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
+import { useInspirationConcept } from "@/features/order/hooks/useInspirationConcept";
 import { whatsappUrl } from "@/features/order/lib/whatsapp";
 import { useGuidedBuilder } from "@/features/cake-builder/hooks/useGuidedBuilder";
 import { GuidedCakeBuilder } from "@/features/cake-builder/components/GuidedCakeBuilder";
@@ -43,8 +45,20 @@ export const Route = createFileRoute("/order")({
 function OrderPage() {
   const { catalog } = useCakeCatalog();
   const order = useOrderForm(catalog);
-  const { submit, submitting, fallbackMessage } = useSubmitOrder();
+  const concept = useInspirationConcept();
+  const { submit, submitting, fallbackMessage } = useSubmitOrder(concept);
   const { form, step } = order;
+
+  /**
+   * The AI concept starts rendering the moment the customer reaches "Your
+   * details", so it is usually on screen before they send the enquiry. The
+   * hook itself guards against repeat runs.
+   */
+  const conceptStep = step === 3;
+  useEffect(() => {
+    if (conceptStep) concept.start(order.form, catalog);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conceptStep]);
 
   /**
    * The cake builder owns its own sub-steps; the wizard's Back/Continue simply
@@ -99,7 +113,9 @@ function OrderPage() {
             />
           )}
 
-          {step === 3 && <ContactStep form={form} onChange={order.update} />}
+          {step === 3 && (
+            <ContactStep form={form} onChange={order.update} concept={concept} />
+          )}
         </div>
 
         <div className="flex gap-3 mt-6">

@@ -85,3 +85,13 @@ export const updateOrderNotesSchema = z.object({
 export type CreateOrderInput = z.input<typeof createOrderSchema>;
 export type CreateAdminOrderInput = z.input<typeof createAdminOrderSchema>;
 export type ListOrdersInput = z.input<typeof listOrdersSchema>;
+
+/**
+ * Public: attaches a generated AI concept to an order created moments earlier.
+ * The write is only accepted while the order has no concept yet (see
+ * `attachOrderAiPreviewRecord`), so it cannot overwrite existing artwork.
+ */
+export const attachAiPreviewSchema = z.object({
+  orderId: z.string().uuid(),
+  aiPreviewUrl: z.string().url().max(1000),
+});

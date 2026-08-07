@@ -167,7 +167,18 @@ shared by the step model, the order form, validation and the AI prompt.
 
 ### Submission pipeline
 
-`useSubmitOrder` runs one uninterrupted flow: validate → upload inspiration
-photo → generate the AI concept (cake family only) → save the order → build the
-message → open WhatsApp. Persistence and AI never block the hand-off; a manual
-WhatsApp link appears only if the browser genuinely refuses to open it.
+The AI concept is generated **ahead of** submission: `useInspirationConcept`
+starts as soon as the customer reaches "Your details" (cake family only),
+uploading the reference photo and calling the inspiration server function in
+the background. The step shows a quiet loading line, then the artwork with an
+"include in my WhatsApp enquiry" checkbox (ticked by default) — unticking it
+only affects the message, never what is saved.
+
+`useSubmitOrder` then runs one uninterrupted flow: validate → finish uploads →
+save the order → build the message → open WhatsApp. It never waits for the
+model: a concept still rendering is omitted from that message and attached to
+the saved order afterwards through the public one-shot
+`attachOrderAiPreview` server function (it only fills an empty
+`ai_preview_url`). A manual WhatsApp link appears only if the browser genuinely
+refuses to open it.
+

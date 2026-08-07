@@ -224,3 +224,19 @@ export async function setOrderInternalNotes(
   if (error) throw new Error(error.message);
   return { ok: true as const };
 }
+
+/**
+ * Attaches an AI concept to an order that does not have one yet.
+ * Public intake writes this after the WhatsApp hand-off, so the update is
+ * deliberately one-shot: existing artwork is never replaced.
+ */
+export async function attachOrderAiPreviewRecord(orderId: string, aiPreviewUrl: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await supabaseAdmin
+    .from("orders")
+    .update({ ai_preview_url: aiPreviewUrl })
+    .eq("id", orderId)
+    .is("ai_preview_url", null);
+  if (error) throw new Error(error.message);
+  return { ok: true as const };
+}
