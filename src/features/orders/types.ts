@@ -51,6 +51,7 @@ export type OrderDetail = OrderListItem & {
   customerNotes: string | null;
   internalNotes: string | null;
   inspirationUrl: string | null;
+  aiPreviewUrl: string | null;
   summary: string | null;
   items: OrderItem[];
   history: OrderStatusEvent[];

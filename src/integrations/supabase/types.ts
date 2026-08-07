@@ -702,6 +702,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          ai_preview_url: string | null
           channel: Database["public"]["Enums"]["order_channel"]
           created_at: string
           currency: string
@@ -721,6 +722,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_preview_url?: string | null
           channel?: Database["public"]["Enums"]["order_channel"]
           created_at?: string
           currency?: string
@@ -740,6 +742,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_preview_url?: string | null
           channel?: Database["public"]["Enums"]["order_channel"]
           created_at?: string
           currency?: string

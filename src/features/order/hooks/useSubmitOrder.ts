@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { buildWhatsAppLink } from "@/config/brand";
 import { BUCKETS, uploadToBucket } from "@/lib/supabase/storage";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catalog";
 import { buildOrderPayload } from "@/features/orders/lib/buildOrderPayload";
 import { useCreateOrder } from "@/features/orders/hooks/useOrders";
 import { buildOrderMessage } from "../lib/buildOrderMessage";
+import { openWhatsApp } from "../lib/whatsapp";
 import type { OrderFormState } from "../types";
 
 /**
@@ -58,7 +58,7 @@ export function useSubmitOrder() {
     }
 
     const finalMessage = orderNumber ? `${message}\n\n*Reference:* ${orderNumber}` : message;
-    window.open(buildWhatsAppLink(finalMessage), "_blank");
+    openWhatsApp(finalMessage);
     toast.success("Opening WhatsApp…");
     setSubmitting(false);
   };

@@ -101,9 +101,7 @@ export function useGuidedBuilder(
         case "tiers":
           return actions.setTierCount(Number(id) || 1);
         case "flavour":
-          return form.tiers.length > 0
-            ? actions.setTierFlavour(tier, id)
-            : actions.setFlavour(id);
+          return form.tiers.length > 0 ? actions.setTierFlavour(tier, id) : actions.setFlavour(id);
         case "filling":
           return form.tiers.length > 0
             ? actions.setTierField(tier, "filling", id)

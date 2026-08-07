@@ -129,7 +129,6 @@ export type CakeDesign = {
   label: string;
 };
 
-
 export const cakeBuilderKeys = {
   all: ["cake-builder"] as const,
   assets: ["cake-builder", "assets"] as const,

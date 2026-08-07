@@ -15,6 +15,10 @@ export type OrderFormState = {
   extras: string[];
   /** Optional message piped / printed on the cake, shown live in the builder. */
   cakeText: string;
+  /** AI inspiration illustration generated on request in the builder. */
+  aiPreviewUrl: string;
+  /** Fingerprint of the design the AI preview was generated from. */
+  aiPreviewSignature: string;
   inspirationFile: File | null;
   inspirationPreview: string;
   eventDate: string;
@@ -35,6 +39,8 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   tiers: [],
   extras: [],
   cakeText: "",
+  aiPreviewUrl: "",
+  aiPreviewSignature: "",
   inspirationFile: null,
   inspirationPreview: "",
   eventDate: "",

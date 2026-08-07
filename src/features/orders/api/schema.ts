@@ -51,6 +51,7 @@ export const createOrderSchema = z.object({
   eventDate: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]).optional(),
   customerNotes: trimmed(2000).optional(),
   inspirationUrl: z.union([z.string().url().max(1000), z.literal("")]).optional(),
+  aiPreviewUrl: z.union([z.string().url().max(1000), z.literal("")]).optional(),
   summary: trimmed(4000).optional(),
   items: z.array(orderItemSchema).min(1).max(20),
 });

@@ -37,7 +37,10 @@ export function useAssetIndex(assets: CakeAsset[] | undefined) {
  * Live design derived from the wizard's form state. Purely additive: the order
  * flow keeps working exactly as before if the asset library is empty.
  */
-export function useCakeDesign(form: OrderFormState, catalog: CakeCatalog): {
+export function useCakeDesign(
+  form: OrderFormState,
+  catalog: CakeCatalog,
+): {
   design: CakeDesign;
   assets: CakeAsset[];
   isPending: boolean;
@@ -59,10 +62,7 @@ export function useCakeDesign(form: OrderFormState, catalog: CakeCatalog): {
     [assetsQuery.data, linksQuery.data, optionsQuery.data],
   );
 
-  const design = useMemo(
-    () => buildCakeDesign(form, catalog, sources),
-    [form, catalog, sources],
-  );
+  const design = useMemo(() => buildCakeDesign(form, catalog, sources), [form, catalog, sources]);
 
   return {
     design,

@@ -87,6 +87,7 @@ export function buildOrderPayload(
     eventDate: form.eventDate || "",
     customerNotes: form.notes || undefined,
     inspirationUrl: extra.inspirationUrl || "",
+    aiPreviewUrl: form.aiPreviewUrl || "",
     summary: extra.summary || undefined,
     items: [
       {

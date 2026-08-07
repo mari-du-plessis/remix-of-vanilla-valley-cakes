@@ -8,7 +8,7 @@ Status legend: ✅ done · 🚧 in progress · ⬜ planned
 | 1 | Orders (persistence, admin list + detail, WhatsApp flow) | ✅ |
 | 2 | Products & catalog (categories, products, option groups, options, rules) | ✅ |
 | 3 | Calendar & availability (events, blocks, capacity, workload) | ✅ |
-| 4 | SVG cake builder (`features/cake-builder`, feeds the order wizard) | ⬜ |
+| 4 | SVG cake builder (`features/cake-builder`, feeds the order wizard) | ✅ |
 | 5 | Pricing (`price_lists`, `price_list_items`, `pricing_rules`) | ✅ |
 | 5b | Customers (profiles, addresses, notes, tags, order history) | ✅ |
 | 6 | PDF quotations (`quotes` versions on `quoted` orders) | ✅ |
@@ -40,11 +40,16 @@ can never drift. `profile_id` is already in place for customer accounts, and
 reviews, loyalty, gift cards and marketing all attach to `customers.id`
 instead of copying contact details.
 
-## Next up (module 4 — cake builder)
+## Cake builder (module 4 — complete)
 
-The builder plugs into the existing order wizard's Cake step and reads the
-database-backed catalog. It stores JSONB design state (`cake_designs`), which
-the quotation and template modules reuse without schema changes.
+The guided builder plugs into the order wizard's Cake step and reads the
+database-backed catalog and SVG asset library. Renderer-enforced layer order,
+six-tier support, side-elevation artwork, platform-aware WhatsApp hand-off and
+the on-request AI Inspiration Preview are all in place.
+
+Remaining extension points: persisting JSONB design state (`cake_designs`) for
+saved templates, reusing the stored inspiration preview inside quote PDFs, and
+adding top / isometric renderers behind `CakeDesign.view`.
 
 ## Enabling availability for customers
 

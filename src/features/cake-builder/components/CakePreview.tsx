@@ -5,17 +5,18 @@ import type { CakeAsset, CakeDesign } from "../types";
 import { AssetLayer } from "./AssetLayer";
 
 /**
- * CakePreview — the live cake illustration.
+ * CakePreview — the single live cake illustration, shared by the customer
+ * builder and the admin preview lab.
  *
- * The cake is assembled from the asset library rather than drawn inline, so
- * every visual piece can be replaced or refined in the admin panel. Layers are
- * composed back to front:
+ * Painting order is enforced by the renderer rather than by the z-index stored
+ * on each asset, so an asset saved with the wrong number can never end up in
+ * front of the topper or behind the board:
  *
- *   board → tier bodies → icing / pattern finishes → base borders → drip →
- *   scatters → clusters (flowers, leaves, macarons…) → topper → text
+ *   board → base → tier 1…6 → icing → decorations → accessories → effects → topper
  *
- * Tier geometry is computed, so any tier count from 1–4 composes correctly and
- * a three-tier square cake really does render three square tiers.
+ * Only the side elevation is drawn today. Future viewpoints (top, isometric)
+ * plug in as another renderer keyed on `design.view` without any change to the
+ * design model or the asset library.
  */
 export function CakePreview({
   design,
@@ -57,6 +58,9 @@ export function CakePreview({
   const topBox = boxes[boxes.length - 1]!;
   const bottomBox = boxes[0]!;
 
+  /** Decorations may never dip into the board — the board only supports the cake. */
+  const aboveBoard = (y: number, height: number) => Math.min(y, CANVAS.baseY - height * 0.35);
+
   return (
     <svg
       viewBox={`0 0 ${CANVAS.width} ${CANVAS.height}`}
@@ -71,51 +75,73 @@ export function CakePreview({
         </filter>
       </defs>
 
-      {/* contact shadow */}
-      <ellipse
-        cx={CANVAS.width / 2}
-        cy={CANVAS.baseY + 26}
-        rx={150}
-        ry={16}
-        fill="var(--cake-shade)"
-        opacity={0.14}
-        filter="url(#vv-cake-soft)"
-      />
+      {/* 1 — board (always the lowest visual layer) */}
+      <g className="cake-board">
+        <ellipse
+          cx={CANVAS.width / 2}
+          cy={CANVAS.baseY + 26}
+          rx={150}
+          ry={16}
+          fill="var(--cake-shade)"
+          opacity={0.14}
+          filter="url(#vv-cake-soft)"
+        />
+        <AssetLayer
+          asset={board}
+          x={CANVAS.width / 2 - 155}
+          y={CANVAS.baseY - 12}
+          width={310}
+          height={72}
+        />
+      </g>
 
-      {/* keyed on the silhouette so a shape or tier change re-animates the stack */}
+      {/* 2 — cake base + tier bodies, keyed so a shape or tier change re-animates */}
       <g className="cake-stack" key={`stack-${design.shapeKey}-${design.tierCount}`}>
-      {boxes.map((box, i) => {
-        const tier = design.tiers[Math.min(i, design.tiers.length - 1)];
-        const style = {
-          "--cake-sponge": tier?.spongeColor,
-          "--cake-filling": tier?.fillingColor,
-        } as React.CSSProperties;
-        const bodyHeight = box.height + box.width * 0.12;
+        {boxes.map((box, i) => {
+          const tier = design.tiers[Math.min(i, design.tiers.length - 1)];
+          const style = {
+            "--cake-sponge": tier?.spongeColor,
+            "--cake-filling": tier?.fillingColor,
+          } as React.CSSProperties;
+          const bodyHeight = box.height + box.width * 0.12;
 
-        return (
-          <g key={`tier-${i}`} style={style}>
-            <AssetLayer
-              asset={shape}
-              x={box.cx - box.width / 2}
-              y={box.top}
-              width={box.width}
-              height={bodyHeight}
-              stretch
-            />
-
-            {finishes.map((asset) => (
+          return (
+            <g key={`tier-${i}`} style={style}>
               <AssetLayer
-                key={`${asset.key}-${i}`}
-                className="cake-layer"
-                asset={asset}
+                asset={shape}
                 x={box.cx - box.width / 2}
                 y={box.top}
                 width={box.width}
-                height={box.height}
+                height={bodyHeight}
                 stretch
               />
-            ))}
+            </g>
+          );
+        })}
+      </g>
 
+      {/* 3 — icing / finish overlays */}
+      <g className="cake-icing">
+        {boxes.map((box, i) =>
+          finishes.map((asset) => (
+            <AssetLayer
+              key={`${asset.key}-${i}`}
+              className="cake-layer"
+              asset={asset}
+              x={box.cx - box.width / 2}
+              y={box.top}
+              width={box.width}
+              height={box.height}
+              stretch
+            />
+          )),
+        )}
+      </g>
+
+      {/* 4 — decorations (scatters, borders, drips, clusters) */}
+      <g className="cake-decorations">
+        {boxes.map((box, i) => (
+          <g key={`decor-${i}`}>
             {scatters.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
@@ -128,14 +154,13 @@ export function CakePreview({
               />
             ))}
 
-
             {borders.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
                 className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
-                y={box.top + box.height - 6}
+                y={Math.min(box.top + box.height - 6, CANVAS.baseY - 13)}
                 width={box.width}
                 height={13}
                 stretch
@@ -164,7 +189,7 @@ export function CakePreview({
                       className="cake-layer"
                       asset={asset}
                       x={anchor.x}
-                      y={anchor.y}
+                      y={aboveBoard(anchor.y, anchor.size)}
                       width={anchor.size}
                       height={anchor.size}
                     />
@@ -172,72 +197,65 @@ export function CakePreview({
                 </g>
               ))}
           </g>
-        );
-      })}
+        ))}
       </g>
 
-
-      {/* number / letter cakes show the age straight on the sculpted slab */}
-      {design.shapeKey === "shape-number" && (
-        <text
-          x={bottomBox.cx}
-          y={bottomBox.top + bottomBox.height * 0.68}
-          textAnchor="middle"
-          fontSize={96}
-          fontWeight={600}
-          fill="var(--cake-gold)"
-          opacity={0.9}
-        >
-          {design.text.slice(0, 3) || "18"}
-        </text>
-      )}
-
-      {toppers.map((asset, i) => (
-        <AssetLayer
-          key={asset.key}
-          className="cake-layer"
-          asset={asset}
-
-          x={topBox.cx - 42 + i * 6}
-          y={topBox.top - 88}
-          width={84}
-          height={84}
-        />
-      ))}
-
-      {design.text && design.shapeKey !== "shape-number" && (
-        <g>
-          {plaque && (
-            <AssetLayer
-              asset={plaque}
-              x={bottomBox.cx - 78}
-              y={bottomBox.top + bottomBox.height * 0.32}
-              width={156}
-              height={44}
-              stretch
-            />
-          )}
+      {/* 5 — accessories (plaque + message, sculpted number) */}
+      <g className="cake-accessories">
+        {design.shapeKey === "shape-number" && (
           <text
             x={bottomBox.cx}
-            y={bottomBox.top + bottomBox.height * 0.32 + 29}
+            y={bottomBox.top + bottomBox.height * 0.68}
             textAnchor="middle"
-            fontSize={19}
-            fill="var(--cake-shade)"
-            opacity={0.85}
+            fontSize={96}
+            fontWeight={600}
+            fill="var(--cake-gold)"
+            opacity={0.9}
           >
-            {design.text.slice(0, 18)}
+            {design.text.slice(0, 3) || "18"}
           </text>
-        </g>
-      )}
+        )}
 
-      {/* the board is drawn last so tiers sit cleanly on its front lip */}
-      <AssetLayer
-        asset={board}
-        x={CANVAS.width / 2 - 155}
-        y={CANVAS.baseY - 12}
-        width={310}
-        height={72}
-      />
+        {design.text && design.shapeKey !== "shape-number" && (
+          <g className="cake-layer">
+            {plaque && (
+              <AssetLayer
+                asset={plaque}
+                x={bottomBox.cx - 78}
+                y={bottomBox.top + bottomBox.height * 0.32}
+                width={156}
+                height={44}
+                stretch
+              />
+            )}
+            <text
+              x={bottomBox.cx}
+              y={bottomBox.top + bottomBox.height * 0.32 + 29}
+              textAnchor="middle"
+              fontSize={19}
+              fill="var(--cake-shade)"
+              opacity={0.85}
+            >
+              {design.text.slice(0, 18)}
+            </text>
+          </g>
+        )}
+      </g>
+
+      {/* 6 — topper, always the highest layer */}
+      <g className="cake-topper">
+        {toppers.map((asset, i) => (
+          <AssetLayer
+            key={asset.key}
+            className="cake-layer"
+            asset={asset}
+            x={topBox.cx - 42 + i * 6}
+            y={topBox.top - 88}
+            width={84}
+            height={84}
+          />
+        ))}
+      </g>
     </svg>
   );
 }

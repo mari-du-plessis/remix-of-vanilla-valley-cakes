@@ -34,9 +34,7 @@ export async function fetchCakeAssets(): Promise<CakeAsset[]> {
 }
 
 export async function fetchCakeAssetLinks(): Promise<CakeAssetOptionLink[]> {
-  return unwrap(
-    await supabase.from("cake_builder_asset_options").select(CAKE_ASSET_LINK_COLUMNS),
-  );
+  return unwrap(await supabase.from("cake_builder_asset_options").select(CAKE_ASSET_LINK_COLUMNS));
 }
 
 export type CakeAssetInput = Partial<Omit<CakeAsset, "id">> & { name: string; key: string };

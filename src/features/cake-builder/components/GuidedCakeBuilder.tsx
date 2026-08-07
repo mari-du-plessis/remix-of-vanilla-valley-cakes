@@ -6,6 +6,9 @@ import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { tierLabel } from "@/features/order/lib/tiers";
 import type { OrderFormState } from "@/features/order/types";
 import { useCakeAssets } from "../hooks/useCakeBuilder";
+import { useInspirationPreview } from "../hooks/useInspirationPreview";
+import { buildInspirationInput, designSignature } from "../lib/inspiration";
+import { InspirationPreview } from "./InspirationPreview";
 import type { GuidedBuilder } from "../hooks/useGuidedBuilder";
 import { CakeStage } from "./CakeStage";
 import { ChoiceGrid } from "./ChoiceGrid";
@@ -23,14 +26,26 @@ export function GuidedCakeBuilder({
   catalog,
   builder,
   onCakeTextChange,
+  onInspirationGenerated,
 }: {
   form: OrderFormState;
   catalog: CakeCatalog;
   builder: GuidedBuilder;
   onCakeTextChange: (value: string) => void;
+  /** Stores the generated illustration (and the design it came from) on the order. */
+  onInspirationGenerated: (url: string, signature: string) => void;
 }) {
   const { data: assetRows = [] } = useCakeAssets();
   const assets = useMemo(() => new Map(assetRows.map((a) => [a.key, a])), [assetRows]);
+
+  const inspirationInput = useMemo(() => buildInspirationInput(form, catalog), [form, catalog]);
+  const signature = useMemo(() => designSignature(inspirationInput), [inspirationInput]);
+  const inspiration = useInspirationPreview();
+
+  const generateInspiration = () =>
+    inspiration.mutate(inspirationInput, {
+      onSuccess: (result) => onInspirationGenerated(result.url, signature),
+    });
 
   const { step, steps, stepIndex, setStepIndex, tierCount, valueOf, select } = builder;
   const tiers = Array.from({ length: tierCount }, (_, i) => i);
@@ -41,8 +56,24 @@ export function GuidedCakeBuilder({
         form={form}
         catalog={catalog}
         caption={form.size ? catalog.sizes.find((s) => s.id === form.size)?.label : undefined}
+        showDisclaimer={false}
         className="sticky top-2 z-10"
       />
+
+      <InspirationPreview
+        url={form.aiPreviewUrl}
+        stale={!!form.aiPreviewUrl && form.aiPreviewSignature !== signature}
+        pending={inspiration.isPending}
+        onGenerate={generateInspiration}
+      />
+
+      <p className="px-1 text-center text-[11px] leading-relaxed text-muted-foreground">
+        The SVG Preview shows the design you've configured using your selected options. The
+        Inspiration Preview is an AI-generated artistic interpretation of your design. Both are
+        intended to help visualise your cake and are not exact representations of the final
+        handcrafted product. Final colours, decorations and finishing details may vary. You can also
+        upload inspiration images and include additional notes to help us understand your vision.
+      </p>
 
       {/* step rail — a calm sense of place, and a way back to any answer */}
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
@@ -76,9 +107,7 @@ export function GuidedCakeBuilder({
                   key={tier}
                   className="space-y-3 rounded-2xl border border-border/70 bg-background/50 p-4"
                 >
-                  <p className="eyebrow text-[0.6rem] text-primary">
-                    {tierLabel(tier, tierCount)}
-                  </p>
+                  <p className="eyebrow text-[0.6rem] text-primary">{tierLabel(tier, tierCount)}</p>
                   <ChoiceGrid
                     choices={step.choices}
                     selected={valueOf(step, tier)}

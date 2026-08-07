@@ -15,7 +15,7 @@ const LIST_SELECT = `
 
 const DETAIL_SELECT = `
   id, order_number, status, channel, occasion, event_date, created_at,
-  customer_notes, internal_notes, inspiration_url, summary,
+  customer_notes, internal_notes, inspiration_url, ai_preview_url, summary,
   customer:customers (${CUSTOMER_SELECT}),
   items:order_items (
     id, name, size_label, quantity, position,
@@ -47,6 +47,7 @@ export const mapOrderDetail = (row: any): OrderDetail => ({
   customerNotes: row.customer_notes ?? null,
   internalNotes: row.internal_notes ?? null,
   inspirationUrl: row.inspiration_url ?? null,
+  aiPreviewUrl: row.ai_preview_url ?? null,
   summary: row.summary ?? null,
   items: [...(row.items ?? [])]
     .sort((a: any, b: any) => a.position - b.position)
@@ -118,6 +119,7 @@ export async function createOrderRecord(input: z.infer<typeof createAdminOrderSc
       customer_notes: input.customerNotes || null,
       internal_notes: input.internalNotes || null,
       inspiration_url: input.inspirationUrl || null,
+      ai_preview_url: input.aiPreviewUrl || null,
       summary: input.summary || null,
     })
     .select("id, order_number")

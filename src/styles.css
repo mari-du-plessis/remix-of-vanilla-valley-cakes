@@ -428,9 +428,25 @@
   animation: cake-stack-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Colour and finish changes ease rather than snap. */
+.cake-stack,
+.cake-icing,
+.cake-decorations,
+.cake-accessories,
+.cake-topper {
+  transition:
+    opacity 320ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cake-board {
+  transition: opacity 320ms ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cake-layer,
   .cake-stack {
     animation: none;
+    transition: none;
   }
 }

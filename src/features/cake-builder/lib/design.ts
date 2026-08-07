@@ -3,11 +3,7 @@ import type { CatalogOption } from "@/features/catalog/types";
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { tierCount as catalogTierCount, sizeLabel } from "@/features/catalog/lib/cake-catalog";
 import type { OrderFormState } from "@/features/order/types";
-import {
-  CAKE_COLOR_DEFAULTS,
-  fillingColour,
-  spongeColour,
-} from "@/config/cake-builder";
+import { CAKE_COLOR_DEFAULTS, fillingColour, spongeColour } from "@/config/cake-builder";
 import type { CakeAsset, CakeAssetOptionLink, CakeDesign, CakeTierDesign } from "../types";
 
 /**
@@ -80,8 +76,6 @@ export function buildCakeDesign(
     (sizeOption?.svg_token?.startsWith("shape-") ? sizeOption.svg_token : null) ??
     "shape-round";
 
-
-
   const tiers: CakeTierDesign[] =
     form.tiers.length > 0
       ? form.tiers.map((tier) => ({
@@ -120,8 +114,7 @@ export function buildCakeDesign(
   const icingColour = colourOf(extraOptions.find((o) => o?.svg_token?.startsWith("icing-")));
   if (icingColour) colors["--cake-icing"] = icingColour;
 
-  const layerCount =
-    typeof sizeMeta["layers"] === "number" ? (sizeMeta["layers"] as number) : 2;
+  const layerCount = typeof sizeMeta["layers"] === "number" ? (sizeMeta["layers"] as number) : 2;
 
   return {
     view: "side",
@@ -138,4 +131,3 @@ export function buildCakeDesign(
     label: form.size ? sizeLabel(catalog, form.size) : "Custom cake",
   };
 }
-
