@@ -84,6 +84,10 @@ function OrderPage() {
               catalog={catalog}
               builder={builder}
               onCakeTextChange={(v) => order.update("cakeText", v)}
+              onInspirationGenerated={(url, signature) => {
+                order.update("aiPreviewUrl", url);
+                order.update("aiPreviewSignature", signature);
+              }}
             />
           )}
 

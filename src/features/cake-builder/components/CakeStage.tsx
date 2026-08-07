@@ -15,12 +15,15 @@ export function CakeStage({
   form,
   catalog,
   caption,
+  showDisclaimer = true,
   className,
   children,
 }: {
   form: OrderFormState;
   catalog: CakeCatalog;
   caption?: string;
+  /** The shared disclaimer is hidden when the caller shows it under both previews. */
+  showDisclaimer?: boolean;
   className?: string;
   children?: ReactNode;
 }) {
@@ -39,11 +42,13 @@ export function CakeStage({
         <p className="px-5 pt-2 text-center text-sm text-foreground/80">{caption}</p>
       )}
 
+      {showDisclaimer && (
       <p className="px-5 pb-4 pt-2 text-center text-[11px] leading-relaxed text-muted-foreground">
         This illustration is intended to give an idea of your cake design. Final colours,
         decorations and handcrafted details may vary slightly. You can still upload
         inspiration photos and include additional notes to help us understand your vision.
       </p>
+      )}
 
       {children}
     </div>
