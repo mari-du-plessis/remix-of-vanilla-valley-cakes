@@ -15,6 +15,7 @@ import { GuidedCakeBuilder } from "@/features/cake-builder/components/GuidedCake
 import { OccasionStep } from "@/features/order/components/OccasionStep";
 import { DetailsStep } from "@/features/order/components/DetailsStep";
 import { ContactStep } from "@/features/order/components/ContactStep";
+import { WhatsAppHandoff } from "@/features/order/components/WhatsAppHandoff";
 
 
 export const Route = createFileRoute("/order")({
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/order")({
 function OrderPage() {
   const { catalog } = useCakeCatalog();
   const order = useOrderForm(catalog);
-  const { submit, submitting } = useSubmitOrder();
+  const { submit, submitting, handoffMessage, clearHandoff } = useSubmitOrder();
   const { form, step } = order;
 
   /**
@@ -71,8 +72,12 @@ function OrderPage() {
           <div className="gold-rule mx-auto mt-5 max-w-[7rem]" />
         </div>
 
-        <StepProgress steps={ORDER_STEPS} current={step} className="mb-8" />
+        {!handoffMessage && <StepProgress steps={ORDER_STEPS} current={step} className="mb-8" />}
 
+        {handoffMessage ? (
+          <WhatsAppHandoff message={handoffMessage} onEdit={clearHandoff} />
+        ) : (
+        <>
         <div className="surface-card rounded-3xl p-6 sm:p-8">
           {step === 0 && (
             <OccasionStep value={form.occasion} onChange={(o) => order.update("occasion", o)} />
@@ -138,6 +143,8 @@ function OrderPage() {
           <p className="text-xs text-center text-muted-foreground mt-4 flex items-center justify-center gap-1">
             <Check className="h-3 w-3" /> We'll reply within {BRAND.replyWindow} to confirm
           </p>
+        )}
+        </>
         )}
 
         <div className="mt-10 text-center">
