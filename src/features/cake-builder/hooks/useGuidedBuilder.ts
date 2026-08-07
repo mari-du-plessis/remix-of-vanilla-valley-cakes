@@ -6,6 +6,8 @@ import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import type { CakeTier, OrderFormState } from "@/features/order/types";
 import { useCakeAssets } from "./useCakeBuilder";
 import { buildBuilderSteps, type BuilderStep } from "../lib/steps";
+import { clampTierCount } from "../lib/geometry";
+
 
 const STALE = 5 * 60 * 1000;
 
