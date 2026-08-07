@@ -82,6 +82,8 @@ export function CakePreview({
         filter="url(#vv-cake-soft)"
       />
 
+      {/* keyed on the silhouette so a shape or tier change re-animates the stack */}
+      <g className="cake-stack" key={`stack-${design.shapeKey}-${design.tierCount}`}>
       {boxes.map((box, i) => {
         const tier = design.tiers[Math.min(i, design.tiers.length - 1)];
         const style = {
@@ -104,6 +106,7 @@ export function CakePreview({
             {finishes.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top}
@@ -116,6 +119,7 @@ export function CakePreview({
             {scatters.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top + box.height * 0.12}
@@ -123,6 +127,7 @@ export function CakePreview({
                 height={box.height * 0.8}
               />
             ))}
+
 
             {borders.map((asset) => (
               <AssetLayer
