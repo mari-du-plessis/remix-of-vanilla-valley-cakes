@@ -25,7 +25,9 @@ export function PreviewLab({ assets }: { assets: CakeAsset[] }) {
 
   const design: CakeDesign = useMemo(
     () => ({
+      view: "side",
       shapeKey,
+
       tierCount,
       layerCount: 2,
       icingKey: "icing-smooth",
