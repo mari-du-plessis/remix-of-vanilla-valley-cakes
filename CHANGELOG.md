@@ -2,6 +2,50 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Cake Builder refinements
+
+### Added
+
+- **AI Inspiration Preview** — an artistic, AI-generated PNG shown beside the
+  SVG preview. Generated only on request (`Generate inspiration preview`), it is
+  stored in the `inspiration-photos` bucket and saved against the order
+  (`orders.ai_preview_url`). A "the design has changed since this preview was
+  generated" notice plus a Regenerate action keeps the customer in control of
+  AI spend.
+  Files: `features/cake-builder/lib/inspiration.ts`,
+  `api/inspiration.server.ts`, `api/inspiration.functions.ts`,
+  `hooks/useInspirationPreview.ts`, `components/InspirationPreview.tsx`.
+  The prompt contract accepts cake information only — no customer, contact,
+  delivery, pricing, quote, calendar or internal data can reach the model.
+- **Platform-aware WhatsApp hand-off** (`features/order/lib/whatsapp.ts`):
+  mobile opens the installed app via `wa.me`, desktop opens WhatsApp Web in a
+  new tab (handing over to WhatsApp Desktop when installed). No iframes, no
+  dialogs, no embedded browsers.
+- **Shared preview disclaimer** under both previews explaining what each shows.
+
+### Changed
+
+- **Renderer enforces painting order** rather than trusting per-asset z-index:
+  board → base → tiers 1–6 → icing → decorations → accessories → topper.
+  Decorations are clamped so nothing intersects or sits under the cake board.
+- **Six tiers supported** end to end — geometry (`lib/geometry.ts`, `MAX_TIERS`),
+  guided builder choices and the admin preview lab. Tall stacks scale to fit
+  the canvas instead of clipping.
+- **Heart and Number artwork** redrawn as realistic side elevations
+  (height, tier proportions and decoration placement) instead of top-down
+  silhouettes.
+- **Animations**: layer groups now ease opacity and transform changes as well
+  as animating in, and reduced-motion users get neither.
+- WhatsApp summary includes tier count and the inspiration preview link.
+- Admin order detail shows the AI inspiration preview and the uploaded
+  inspiration photo side by side.
+
+### Future extension points
+
+- `CakeDesign.view` still drives a single side renderer; top and isometric
+  viewpoints plug in as additional renderers with no data-model change.
+- The stored inspiration preview URL is ready for reuse in quote PDFs.
+
 ## Theming — Luxury identity
 
 ### Added

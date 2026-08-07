@@ -68,7 +68,7 @@ Full schema design: `docs/DATA-MODEL.md`.
 ## Roadmap (each plugs in without rewrites)
 
 1. **Orders module** — `orders` + `order_items` + `order_status_history`; admin list at `/admin/orders`. `useSubmitOrder` is the single write point.
-2. **SVG cake builder** — `features/cake-builder`, driven by catalog ids; renders into the order wizard's Cake step.
+2. **SVG cake builder** — `features/cake-builder`, driven by catalog ids; renders into the order wizard's Cake step. The renderer enforces the painting order (board → tiers 1–6 → icing → decorations → accessories → topper) rather than trusting per-asset z-index, and `CakeDesign.view` leaves room for future top/isometric renderers. A second, on-request **AI Inspiration Preview** (`api/inspiration.*`) generates a PNG from cake-only data and stores it against the order.
 3. **Products & pricing** — move `config/catalog` into `products` / `option_groups` / `options` / `price_lists`; consumers keep the same getters. Products cover cakes, baked goods, gift cards, delivery and services.
 4. **Cake templates** — `cake_templates` (same JSONB shape as `cake_designs`): save, duplicate, categorise, start-from-template in the builder. Admin at `/admin/templates`.
 6. ~~**Pricing**~~ — done. `/admin/pricing`; `features/pricing/lib/pricing-engine.ts`
