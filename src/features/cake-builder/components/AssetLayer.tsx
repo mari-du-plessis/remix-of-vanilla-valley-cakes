@@ -47,7 +47,6 @@ export const AssetLayer = memo(function AssetLayer({
   );
 });
 
-
 /** Standalone preview used by the admin asset library. */
 export function AssetPreview({
   asset,

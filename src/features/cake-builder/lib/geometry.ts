@@ -53,9 +53,7 @@ export function buildTierBoxes(tierCount: number, shapeKey: string): TierBox[] {
 /** Where decorative clusters are tucked in for a given tier. */
 export function clusterAnchors(box: TierBox, index: number, total: number) {
   const size = Math.max(64, box.width * 0.46);
-  const anchors = [
-    { x: box.cx - box.width / 2 - size * 0.18, y: box.top - size * 0.36, size },
-  ];
+  const anchors = [{ x: box.cx - box.width / 2 - size * 0.18, y: box.top - size * 0.36, size }];
   if (index === total - 1) {
     anchors.push({
       x: box.cx + box.width / 2 - size * 0.62,

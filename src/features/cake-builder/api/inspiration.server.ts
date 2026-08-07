@@ -56,8 +56,7 @@ async function renderPng(input: InspirationRequest): Promise<Uint8Array> {
 
   if (response.status === 429)
     throw new Error("The inspiration studio is busy — please try again shortly.");
-  if (response.status === 402)
-    throw new Error("AI credits are exhausted for this workspace.");
+  if (response.status === 402) throw new Error("AI credits are exhausted for this workspace.");
   if (!response.ok) throw new Error(`Inspiration preview failed (${response.status})`);
 
   const payload = (await response.json()) as { data?: { b64_json?: string }[] };

@@ -59,8 +59,7 @@ export function CakePreview({
   const bottomBox = boxes[0]!;
 
   /** Decorations may never dip into the board — the board only supports the cake. */
-  const aboveBoard = (y: number, height: number) =>
-    Math.min(y, CANVAS.baseY - height * 0.35);
+  const aboveBoard = (y: number, height: number) => Math.min(y, CANVAS.baseY - height * 0.35);
 
   return (
     <svg

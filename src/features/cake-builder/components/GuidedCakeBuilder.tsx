@@ -38,10 +38,7 @@ export function GuidedCakeBuilder({
   const { data: assetRows = [] } = useCakeAssets();
   const assets = useMemo(() => new Map(assetRows.map((a) => [a.key, a])), [assetRows]);
 
-  const inspirationInput = useMemo(
-    () => buildInspirationInput(form, catalog),
-    [form, catalog],
-  );
+  const inspirationInput = useMemo(() => buildInspirationInput(form, catalog), [form, catalog]);
   const signature = useMemo(() => designSignature(inspirationInput), [inspirationInput]);
   const inspiration = useInspirationPreview();
 
@@ -74,9 +71,8 @@ export function GuidedCakeBuilder({
         The SVG Preview shows the design you've configured using your selected options. The
         Inspiration Preview is an AI-generated artistic interpretation of your design. Both are
         intended to help visualise your cake and are not exact representations of the final
-        handcrafted product. Final colours, decorations and finishing details may vary. You can
-        also upload inspiration images and include additional notes to help us understand your
-        vision.
+        handcrafted product. Final colours, decorations and finishing details may vary. You can also
+        upload inspiration images and include additional notes to help us understand your vision.
       </p>
 
       {/* step rail — a calm sense of place, and a way back to any answer */}
@@ -111,9 +107,7 @@ export function GuidedCakeBuilder({
                   key={tier}
                   className="space-y-3 rounded-2xl border border-border/70 bg-background/50 p-4"
                 >
-                  <p className="eyebrow text-[0.6rem] text-primary">
-                    {tierLabel(tier, tierCount)}
-                  </p>
+                  <p className="eyebrow text-[0.6rem] text-primary">{tierLabel(tier, tierCount)}</p>
                   <ChoiceGrid
                     choices={step.choices}
                     selected={valueOf(step, tier)}

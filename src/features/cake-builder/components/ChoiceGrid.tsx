@@ -24,12 +24,7 @@ export function ChoiceGrid({
   columns?: 2 | 3;
 }) {
   return (
-    <div
-      className={cn(
-        "grid gap-3",
-        columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2",
-      )}
-    >
+    <div className={cn("grid gap-3", columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2")}>
       {choices.map((choice) => {
         const isSelected = selected.includes(choice.id);
         const asset = choice.assetKey ? assets.get(choice.assetKey) : undefined;
