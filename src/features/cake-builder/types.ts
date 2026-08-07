@@ -104,11 +104,19 @@ export type CakeTierDesign = {
 };
 
 /**
+ * Viewpoint the illustration is drawn from. Only `side` is implemented today;
+ * the field exists so a future top or isometric view is a renderer addition
+ * rather than a data-model change.
+ */
+export type CakeView = "side" | "top" | "isometric";
+
+/**
  * Everything the renderer needs. Derived from catalog selections
  * (`lib/design.ts`) so the wizard, the admin preview lab and any future
  * template or quotation surface all draw from the same shape.
  */
 export type CakeDesign = {
+  view: CakeView;
   shapeKey: string;
   tierCount: number;
   layerCount: number;
@@ -120,6 +128,7 @@ export type CakeDesign = {
   text: string;
   label: string;
 };
+
 
 export const cakeBuilderKeys = {
   all: ["cake-builder"] as const,
