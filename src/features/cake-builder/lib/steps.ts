@@ -168,7 +168,10 @@ export function buildBuilderSteps(catalog: CakeCatalog, sources: StepSources): B
     kind: "size",
     title: "Choose a size",
     subtitle: "How many guests are we serving?",
-    choices: catalog.sizes.map((s) => ({ id: s.id, label: s.label, hint: s.serves })),
+    choices: catalog.sizes
+      .filter((s) => !NON_CAKE_SIZE.test(s.label))
+      .map((s) => ({ id: s.id, label: s.label, hint: s.serves })),
+
     perTier: false,
     multi: false,
     optional: false,
