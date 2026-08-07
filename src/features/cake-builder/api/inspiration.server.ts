@@ -33,10 +33,24 @@ function buildPrompt(input: InspirationRequest): string {
     input.icing ? `Finish: ${input.icing}` : null,
     input.decorations.length ? `Decorations: ${input.decorations.join(", ")}` : null,
     input.message ? `Short message piped on the cake: "${input.message}"` : null,
-    input.notes ? `Additional cake notes: ${input.notes}` : null,
+    input.notes ? `Additional appearance notes from the customer: ${input.notes}` : null,
   ].filter(Boolean);
 
   return `${STYLE}\n\nCake to illustrate:\n${lines.join("\n")}`;
+}
+
+/**
+ * Message content for the model. When the customer uploaded a reference photo
+ * it is passed alongside the written brief, so the concept follows the style
+ * they had in mind rather than the words alone.
+ */
+function buildContent(input: InspirationRequest) {
+  const text = buildPrompt(input);
+  if (!input.inspirationImageUrl) return text;
+  return [
+    { type: "text", text: `${text}\n\nUse the attached photo as a style reference only.` },
+    { type: "image_url", image_url: { url: input.inspirationImageUrl } },
+  ];
 }
 
 /** Calls the gateway and returns the raw PNG bytes. */
@@ -49,7 +63,7 @@ async function renderPng(input: InspirationRequest): Promise<Uint8Array> {
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "google/gemini-3-pro-image",
-      messages: [{ role: "user", content: buildPrompt(input) }],
+      messages: [{ role: "user", content: buildContent(input) }],
       modalities: ["image", "text"],
     }),
   });
