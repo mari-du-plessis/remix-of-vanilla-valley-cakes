@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Section } from "@/components/common/Typography";
+import { SectionTitle, Muted } from "@/components/common/Typography";
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { tierLabel } from "@/features/order/lib/tiers";
 import type { OrderFormState } from "@/features/order/types";
@@ -64,7 +64,10 @@ export function GuidedCakeBuilder({
 
       {step && (
         <div key={step.key} className="animate-rise-in space-y-5">
-          <Section title={step.title} description={step.subtitle} />
+          <div className="space-y-1">
+            <SectionTitle className="text-2xl">{step.title}</SectionTitle>
+            <Muted>{step.subtitle}</Muted>
+          </div>
 
           {step.perTier && tierCount > 1 ? (
             <div className="space-y-5">
