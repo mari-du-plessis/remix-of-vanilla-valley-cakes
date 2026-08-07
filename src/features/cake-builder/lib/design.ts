@@ -64,7 +64,7 @@ export function buildCakeDesign(
   const sizeOption = form.size ? byKey.get(form.size) : undefined;
   const sizeMeta = sizeOption?.metadata ?? {};
 
-  /** Shape resolution: linked shape asset → metadata → token → round. */
+  /** Shape resolution: explicit builder choice → linked asset → metadata → token → round. */
   const linkedShape = sizeOption
     ? sources.links
         .filter((l) => l.option_id === sizeOption.id)
@@ -74,10 +74,12 @@ export function buildCakeDesign(
   const shapeFromMeta =
     typeof sizeMeta["shape"] === "string" ? (sizeMeta["shape"] as string) : null;
   const shapeKey =
+    (form.shapeKey && assetKeys.has(form.shapeKey) ? form.shapeKey : null) ??
     linkedShape ??
     (shapeFromMeta && assetKeys.has(shapeFromMeta) ? shapeFromMeta : null) ??
     (sizeOption?.svg_token?.startsWith("shape-") ? sizeOption.svg_token : null) ??
     "shape-round";
+
 
 
   const tiers: CakeTierDesign[] =
