@@ -125,3 +125,49 @@ register it in `src/config/themes.ts`. Nothing else changes.
 **Future extension points**: persist a theme choice per bakery tenant or per
 admin user, expose a theme switcher in the admin panel, seasonal campaign
 themes, and per-section theme nesting (`<ThemeProvider bare>`).
+
+
+## Product builders & cake rendering
+
+Ordering is **product-family aware**. `src/config/product-builders.ts` is the
+single registry mapping a catalog product slug to its builder experience, its
+WhatsApp emoji and its noun.
+
+```
+custom-cake  → cake-svg   🎂   live SVG builder + AI concept
+cupcakes     → cupcake    🧁   plain wizard (builder pending)
+cheesecake   → cheesecake 🍰   plain wizard
+biscuits     → cookie     🍪   plain wizard
+tarts / cake cups / rusks   →   plain wizard
+```
+
+Only builders listed in `IMPLEMENTED_BUILDERS` mount a dedicated experience, so
+a new family ships by adding its entry and its component — no order, message or
+renderer code changes.
+
+### View-agnostic rendering
+
+The cake data model (`CakeDesign`) never encodes *how* a cake is drawn.
+
+```
+lib/renderers.ts                  registry: view id → renderer component
+components/CakePreview.tsx        thin dispatcher every screen uses
+components/renderers/SideElevationRenderer.tsx   the current side view
+```
+
+A future top-down or isometric view registers beside the side elevation without
+touching the builder, the admin preview lab or the order pipeline.
+
+Painting order is enforced by the renderer, not by stored `z_index`:
+**board → base → tiers 1-5 → icing → decorations → accessories → topper.** The
+board is always the foundation and decorations are clamped above it. Sculpted
+shapes (heart, number, sheet) are drawn as side elevations with visible height
+and layers. `MAX_TIERS` (5) in `lib/geometry.ts` is the single source of truth,
+shared by the step model, the order form, validation and the AI prompt.
+
+### Submission pipeline
+
+`useSubmitOrder` runs one uninterrupted flow: validate → upload inspiration
+photo → generate the AI concept (cake family only) → save the order → build the
+message → open WhatsApp. Persistence and AI never block the hand-off; a manual
+WhatsApp link appears only if the browser genuinely refuses to open it.

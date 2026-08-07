@@ -1,9 +1,9 @@
 import { BRAND } from "@/config/brand";
 
 /**
- * Canonical public hand-off. WhatsApp chooses Web, Desktop or the mobile app.
- * Use only when the site is a top-level page: WhatsApp refuses to render in a
- * sandboxed editor popup.
+ * Canonical public hand-off. WhatsApp decides for itself whether to continue
+ * into WhatsApp Desktop, WhatsApp Web or the installed mobile app, so one URL
+ * serves every platform.
  */
 export function whatsappUrl(
   message: string,
@@ -13,12 +13,30 @@ export function whatsappUrl(
 }
 
 /**
- * Installed-app hand-off for sandboxed previews. It avoids loading WhatsApp's
- * frame-protected web document inside a popup inherited from the editor.
+ * Opens WhatsApp immediately as part of the submission.
+ *
+ * Returns `false` only when the browser genuinely refused to open the tab
+ * (pop-up blockers, sandboxed embeds) — the caller then shows a fallback.
  */
-export function whatsappAppUrl(
-  message: string,
-  number: string = BRAND.whatsappNumber,
-): string {
-  return `whatsapp://send?phone=${number}&text=${encodeURIComponent(message)}`;
+export function openWhatsApp(message: string): boolean {
+  const url = whatsappUrl(message);
+  try {
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    if (opened) return true;
+  } catch {
+    /* fall through to the anchor attempt */
+  }
+
+  try {
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return true;
+  } catch {
+    return false;
+  }
 }

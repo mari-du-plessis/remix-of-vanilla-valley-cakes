@@ -2,78 +2,78 @@ import { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SectionTitle, Muted } from "@/components/common/Typography";
+import { productFamily, usesCakeRenderer } from "@/config/product-builders";
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { tierLabel } from "@/features/order/lib/tiers";
 import type { OrderFormState } from "@/features/order/types";
 import { useCakeAssets } from "../hooks/useCakeBuilder";
-import { useInspirationPreview } from "../hooks/useInspirationPreview";
-import { buildInspirationInput, designSignature } from "../lib/inspiration";
 import { InspirationPreview } from "./InspirationPreview";
 import type { GuidedBuilder } from "../hooks/useGuidedBuilder";
 import { CakeStage } from "./CakeStage";
 import { ChoiceGrid } from "./ChoiceGrid";
 
 /**
- * GuidedCakeBuilder — the customer-facing cake builder.
+ * GuidedCakeBuilder — the customer-facing builder.
  *
  * It is a presentation layer over the existing architecture: the steps come
  * from the catalog, the artwork from the asset library and every answer is
- * written straight back into the order form. One question is asked at a time,
- * with the live illustration always in view above it.
+ * written straight back into the order form.
+ *
+ * The live SVG illustration and the AI concept belong to the Custom Cake
+ * family only. Other product families (cupcakes, cheesecakes, biscuits, tarts,
+ * cake cups, rusks) use the same questions without a renderer until their own
+ * builders ship.
  */
 export function GuidedCakeBuilder({
   form,
   catalog,
   builder,
   onCakeTextChange,
-  onInspirationGenerated,
 }: {
   form: OrderFormState;
   catalog: CakeCatalog;
   builder: GuidedBuilder;
   onCakeTextChange: (value: string) => void;
-  /** Stores the generated illustration (and the design it came from) on the order. */
-  onInspirationGenerated: (url: string, signature: string) => void;
 }) {
   const { data: assetRows = [] } = useCakeAssets();
   const assets = useMemo(() => new Map(assetRows.map((a) => [a.key, a])), [assetRows]);
 
-  const inspirationInput = useMemo(() => buildInspirationInput(form, catalog), [form, catalog]);
-  const signature = useMemo(() => designSignature(inspirationInput), [inspirationInput]);
-  const inspiration = useInspirationPreview();
-
-  const generateInspiration = () =>
-    inspiration.mutate(inspirationInput, {
-      onSuccess: (result) => onInspirationGenerated(result.url, signature),
-    });
-
   const { step, steps, stepIndex, setStepIndex, tierCount, valueOf, select } = builder;
   const tiers = Array.from({ length: tierCount }, (_, i) => i);
 
+  const rendersCake = usesCakeRenderer(form.product);
+  const family = productFamily(form.product);
+
   return (
     <section className="space-y-6">
-      <CakeStage
-        form={form}
-        catalog={catalog}
-        caption={form.size ? catalog.sizes.find((s) => s.id === form.size)?.label : undefined}
-        showDisclaimer={false}
-        className="sticky top-2 z-10"
-      />
+      {rendersCake ? (
+        <>
+          <CakeStage
+            form={form}
+            catalog={catalog}
+            caption={form.size ? catalog.sizes.find((s) => s.id === form.size)?.label : undefined}
+            showDisclaimer={false}
+            className="sticky top-2 z-10"
+          />
 
-      <InspirationPreview
-        url={form.aiPreviewUrl}
-        stale={!!form.aiPreviewUrl && form.aiPreviewSignature !== signature}
-        pending={inspiration.isPending}
-        onGenerate={generateInspiration}
-      />
+          <InspirationPreview url={form.aiPreviewUrl} />
 
-      <p className="px-1 text-center text-[11px] leading-relaxed text-muted-foreground">
-        The SVG Preview shows the design you've configured using your selected options. The
-        Inspiration Preview is an AI-generated artistic interpretation of your design. Both are
-        intended to help visualise your cake and are not exact representations of the final
-        handcrafted product. Final colours, decorations and finishing details may vary. You can also
-        upload inspiration images and include additional notes to help us understand your vision.
-      </p>
+          <p className="px-1 text-center text-[11px] leading-relaxed text-muted-foreground">
+            The live preview shows the design you've configured using your selected options. When
+            you send your request we also create an AI concept illustration of the same design.
+            Both are intended to help visualise your cake and are not exact representations of the
+            final handcrafted product. Final colours, decorations and finishing details may vary.
+            You can also upload inspiration images and include additional notes to help us
+            understand your vision.
+          </p>
+        </>
+      ) : (
+        <p className="surface-card rounded-2xl px-5 py-4 text-center text-[11px] leading-relaxed text-muted-foreground">
+          {family.label} are handcrafted to order. A dedicated visual builder for this range is on
+          its way — for now, answer a few questions and upload any inspiration photos, and we'll
+          finish the detail with you on WhatsApp.
+        </p>
+      )}
 
       {/* step rail — a calm sense of place, and a way back to any answer */}
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">

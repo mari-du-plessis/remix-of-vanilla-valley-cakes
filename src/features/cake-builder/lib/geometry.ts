@@ -17,26 +17,37 @@ export type TierBox = {
   top: number;
 };
 
-/** Shapes that only ever make sense as a single tier. */
+/**
+ * Shapes that only ever make sense as a single sculpted cake. They are still
+ * drawn as a side elevation — the silhouette communicates height, layers and
+ * decoration rather than the outline of a heart or a numeral.
+ */
 const SINGLE_TIER_SHAPES = new Set(["shape-heart", "shape-number", "shape-sheet"]);
 
-/** The tallest cake the builder, the catalog and the renderer all support. */
-export const MAX_TIERS = 6;
+/**
+ * The tallest cake the bakery makes, and therefore the tallest cake the
+ * builder, the catalog, validation and the renderer all support.
+ */
+export const MAX_TIERS = 5;
+
+/** Clamp any tier count (form state, imported order, admin capture) to the supported range. */
+export const clampTierCount = (count: number) =>
+  Math.min(MAX_TIERS, Math.max(1, Math.floor(count) || 1));
 
 export function buildTierBoxes(tierCount: number, shapeKey: string): TierBox[] {
   const single = SINGLE_TIER_SHAPES.has(shapeKey);
-  const count = single ? 1 : Math.min(MAX_TIERS, Math.max(1, tierCount));
+  const count = single ? 1 : clampTierCount(tierCount);
 
-  const baseWidth = shapeKey === "shape-sheet" ? 268 : shapeKey === "shape-number" ? 210 : 224;
-  const baseHeight = shapeKey === "shape-sheet" ? 92 : shapeKey === "shape-number" ? 170 : 82;
+  const baseWidth = shapeKey === "shape-sheet" ? 268 : shapeKey === "shape-number" ? 232 : 224;
+  const baseHeight = shapeKey === "shape-sheet" ? 92 : shapeKey === "shape-number" ? 150 : 82;
 
   /**
    * Tall cakes are scaled down rather than clipped: the stack always fits the
-   * canvas, so six tiers read as a statement cake instead of running off frame.
+   * canvas, so five tiers read as a statement cake instead of running off frame.
    */
-  const inset = count > 4 ? 26 : 42;
-  const heightScale = count > 4 ? 0.62 : count > 3 ? 0.82 : 1;
-  const widthScale = count > 4 ? 0.9 : 1;
+  const inset = count > 3 ? 30 : 42;
+  const heightScale = count > 4 ? 0.7 : count > 3 ? 0.84 : 1;
+  const widthScale = count > 4 ? 0.94 : 1;
 
   const boxes: TierBox[] = [];
   let y = CANVAS.baseY;
@@ -49,6 +60,7 @@ export function buildTierBoxes(tierCount: number, shapeKey: string): TierBox[] {
   }
   return boxes;
 }
+
 
 /** Where decorative clusters are tucked in for a given tier. */
 export function clusterAnchors(box: TierBox, index: number, total: number) {

@@ -6,6 +6,8 @@ import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import type { CakeTier, OrderFormState } from "@/features/order/types";
 import { useCakeAssets } from "./useCakeBuilder";
 import { buildBuilderSteps, type BuilderStep } from "../lib/steps";
+import { clampTierCount } from "../lib/geometry";
+
 
 const STALE = 5 * 60 * 1000;
 
@@ -58,7 +60,7 @@ export function useGuidedBuilder(
 
   const index = Math.min(stepIndex, Math.max(0, steps.length - 1));
   const step = steps[index];
-  const tierCount = Math.max(1, form.tiers.length || 1);
+  const tierCount = clampTierCount(form.tiers.length || 1);
 
   /** Current answer(s) for a step — per tier where the step asks per tier. */
   const valueOf = useCallback(

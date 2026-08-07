@@ -1,27 +1,34 @@
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { BUCKETS, uploadToBucket } from "@/lib/supabase/storage";
+import { usesCakeRenderer } from "@/config/product-builders";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catalog";
+import { generateInspirationPreview } from "@/features/cake-builder/api/inspiration.functions";
+import { buildInspirationInput } from "@/features/cake-builder/lib/inspiration";
 import { buildOrderPayload } from "@/features/orders/lib/buildOrderPayload";
 import { useCreateOrder } from "@/features/orders/hooks/useOrders";
 import { buildOrderMessage } from "../lib/buildOrderMessage";
+import { openWhatsApp } from "../lib/whatsapp";
 import type { OrderFormState } from "../types";
 
 /**
- * Submits the order:
- *   1. uploads any inspiration photo
- *   2. persists the enquiry as an Order (source of truth)
- *   3. opens WhatsApp with the formatted summary
+ * One-step submission. Pressing “Send via WhatsApp” runs the whole workflow:
  *
- * Persistence never blocks WhatsApp — if the database write fails the
- * customer still reaches the bakery, and the failure is surfaced quietly.
+ *   validate → upload inspiration → save the order → generate the AI concept
+ *   → build the message → open WhatsApp
+ *
+ * Neither persistence nor AI generation may block the customer: a failure in
+ * either step is reported quietly and WhatsApp still opens. A fallback link is
+ * surfaced only when the browser genuinely refuses to open WhatsApp.
  */
 export function useSubmitOrder() {
   const [submitting, setSubmitting] = useState(false);
-  const [handoffMessage, setHandoffMessage] = useState<string | null>(null);
+  const [fallbackMessage, setFallbackMessage] = useState<string | null>(null);
   const createOrder = useCreateOrder();
   const { catalog } = useCakeCatalog();
+  const generateConcept = useServerFn(generateInspirationPreview);
 
   const submit = async (form: OrderFormState) => {
     if (!form.name || !form.phone) {
@@ -29,7 +36,9 @@ export function useSubmitOrder() {
       return;
     }
     setSubmitting(true);
+    setFallbackMessage(null);
 
+    /* 1 — uploads */
     let inspirationUrl: string | null = null;
     let photoLine: string | null = null;
     if (form.inspirationFile) {
@@ -44,28 +53,63 @@ export function useSubmitOrder() {
       }
     }
 
-    const sizeLabel = form.size ? resolveSizeLabel(catalog, form.size) : undefined;
-    const message = buildOrderMessage(form, { photoLine, sizeLabel });
+    /* 2 — AI concept, only for product families that have the cake builder */
+    let aiPreviewUrl = form.aiPreviewUrl;
+    if (usesCakeRenderer(form.product)) {
+      const t = toast.loading("Creating your concept artwork…");
+      try {
+        const input = buildInspirationInput(form, catalog, {
+          notes: form.notes,
+          inspirationImageUrl: inspirationUrl,
+        });
+        const result = await generateConcept({ data: input });
+        aiPreviewUrl = result.url;
+      } catch {
+        /* never blocks the order — the concept is simply omitted */
+      } finally {
+        toast.dismiss(t);
+      }
+    }
 
+    const sizeLabel = form.size ? resolveSizeLabel(catalog, form.size) : undefined;
+    const formWithConcept: OrderFormState = { ...form, aiPreviewUrl };
+
+    /* 3 — persistence (first, so the reference number can head the message) */
     let orderNumber: string | null = null;
     try {
+      const draft = buildOrderMessage(formWithConcept, { photoLine, sizeLabel });
       const saved = await createOrder.mutateAsync(
-        buildOrderPayload(form, { inspirationUrl, summary: message, sizeLabel }),
+        buildOrderPayload(formWithConcept, { inspirationUrl, summary: draft, sizeLabel }),
       );
       orderNumber = saved.orderNumber;
     } catch {
       toast.error("We couldn't save your request — sending it on WhatsApp instead.");
     }
 
-    const finalMessage = orderNumber ? `${message}\n\n*Reference:* ${orderNumber}` : message;
-    setHandoffMessage(finalMessage);
+    const finalMessage = buildOrderMessage(formWithConcept, {
+      photoLine,
+      sizeLabel,
+      orderNumber,
+    });
+
+    /* 4 — hand-off */
+    if (openWhatsApp(finalMessage)) {
+      toast.success("Opening WhatsApp with your request…");
+    } else {
+      setFallbackMessage(finalMessage);
+      toast.error("Your browser blocked WhatsApp — use the link below to continue.");
+    }
+
+
     setSubmitting(false);
+    return aiPreviewUrl;
   };
 
   return {
     submit,
     submitting,
-    handoffMessage,
-    clearHandoff: () => setHandoffMessage(null),
+    /** Set only when opening WhatsApp genuinely failed. */
+    fallbackMessage,
+    clearFallback: () => setFallbackMessage(null),
   };
 }

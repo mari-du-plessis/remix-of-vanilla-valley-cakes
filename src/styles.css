@@ -428,6 +428,15 @@
   animation: cake-stack-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Tiers build upward one after another, the way a cake is actually stacked. */
+.cake-tier {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: cake-layer-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--cake-tier-index, 0) * 90ms);
+}
+
+
 /* Colour and finish changes ease rather than snap. */
 .cake-stack,
 .cake-icing,
@@ -445,8 +454,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cake-layer,
+  .cake-tier,
   .cake-stack {
     animation: none;
     transition: none;
   }
 }
+

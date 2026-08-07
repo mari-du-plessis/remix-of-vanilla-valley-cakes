@@ -15,7 +15,9 @@
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import type { CatalogOption, OptionGroup, Product } from "@/features/catalog/types";
 import { spongeColour, fillingColour } from "@/config/cake-builder";
+import { MAX_TIERS } from "./geometry";
 import type { CakeAsset } from "../types";
+
 
 export type BuilderStepKind =
   | "product"
@@ -107,14 +109,21 @@ function visualChoices(
   }));
 }
 
+/** Tier choices stop at the bakery's real maximum, shared with the renderer. */
 const TIER_CHOICES: BuilderChoice[] = [
   { id: "1", label: "Single tier", hint: "Classic celebration cake" },
   { id: "2", label: "Two tiers", hint: "A little more presence" },
   { id: "3", label: "Three tiers", hint: "Weddings & large events" },
   { id: "4", label: "Four tiers", hint: "Statement centrepiece" },
-  { id: "5", label: "Five tiers", hint: "Grand celebration" },
-  { id: "6", label: "Six tiers", hint: "The full showpiece" },
-];
+  { id: "5", label: "Five tiers", hint: "The full showpiece" },
+].slice(0, MAX_TIERS);
+
+/**
+ * Sizes describe how many guests a cake serves. Product types that are their
+ * own product (cupcakes, cake cups) must never appear as a cake size.
+ */
+const NON_CAKE_SIZE = /cupcake|cup cake|cake cup|biscuit|cookie|rusk/i;
+
 
 /** Builds the guided conversation from whatever the bakery has configured. */
 export function buildBuilderSteps(catalog: CakeCatalog, sources: StepSources): BuilderStep[] {
@@ -159,7 +168,10 @@ export function buildBuilderSteps(catalog: CakeCatalog, sources: StepSources): B
     kind: "size",
     title: "Choose a size",
     subtitle: "How many guests are we serving?",
-    choices: catalog.sizes.map((s) => ({ id: s.id, label: s.label, hint: s.serves })),
+    choices: catalog.sizes
+      .filter((s) => !NON_CAKE_SIZE.test(s.label))
+      .map((s) => ({ id: s.id, label: s.label, hint: s.serves })),
+
     perTier: false,
     multi: false,
     optional: false,
