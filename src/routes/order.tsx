@@ -44,6 +44,24 @@ function OrderPage() {
   const { submit, submitting } = useSubmitOrder();
   const { form, step } = order;
 
+  /**
+   * The cake builder owns its own sub-steps; the wizard's Back/Continue simply
+   * drive them while the customer is designing, so there is only ever one set
+   * of navigation on screen.
+   */
+  const builder = useGuidedBuilder(form, catalog, order);
+  const designing = step === 1;
+  const canContinue = designing ? builder.canAdvance : order.canContinue();
+
+  const goBack = () =>
+    designing && !builder.atStart ? builder.back() : order.setStep(step - 1);
+
+  const goNext = () => {
+    if (!canContinue) return toast.error("Please complete this step");
+    if (designing && !builder.atEnd) return builder.next();
+    order.setStep(step + 1);
+  };
+
   return (
     <SiteShell footer={false}>
       <div className="mx-auto max-w-xl px-6 py-10">
@@ -60,16 +78,11 @@ function OrderPage() {
             <OccasionStep value={form.occasion} onChange={(o) => order.update("occasion", o)} />
           )}
 
-          {step === 1 && (
-            <CakeStep
+          {designing && (
+            <GuidedCakeBuilder
               form={form}
               catalog={catalog}
-              onSizeChange={order.setSize}
-              onFlavourChange={order.setFlavour}
-              onFillingChange={(v) => order.update("filling", v)}
-              onTierFlavourChange={order.setTierFlavour}
-              onTierFieldChange={order.setTierField}
-              onToggleExtra={order.toggleExtra}
+              builder={builder}
               onCakeTextChange={(v) => order.update("cakeText", v)}
             />
           )}
@@ -86,28 +99,26 @@ function OrderPage() {
         </div>
 
         <div className="flex gap-3 mt-6">
-          {step > 0 && (
+          {(step > 0 || !builder.atStart) && (
             <Button
               variant="outline"
-              onClick={() => order.setStep(step - 1)}
+              onClick={goBack}
               className="flex-1 h-12 rounded-full"
+              disabled={step === 0}
             >
               <ArrowLeft className="h-4 w-4 mr-1" /> Back
             </Button>
           )}
           {!order.isLastStep ? (
             <Button
-              onClick={() =>
-                order.canContinue()
-                  ? order.setStep(step + 1)
-                  : toast.error("Please complete this step")
-              }
+              onClick={goNext}
               className="flex-1 h-12 rounded-full"
-              disabled={!order.canContinue()}
+              disabled={!canContinue}
             >
               Continue <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           ) : (
+
             <Button
               onClick={() => submit(form)}
               className="flex-1 h-12 rounded-full"
