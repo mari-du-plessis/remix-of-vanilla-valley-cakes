@@ -134,7 +134,7 @@ export function buildBuilderSteps(
       choices: products.map((p) => ({
         id: p.slug,
         label: p.name,
-        hint: p.short_description ?? undefined,
+        hint: p.description ?? undefined,
       })),
       perTier: false,
       multi: false,
