@@ -73,20 +73,24 @@ export function useSubmitOrder() {
 
     const sizeLabel = form.size ? resolveSizeLabel(catalog, form.size) : undefined;
     const formWithConcept: OrderFormState = { ...form, aiPreviewUrl };
-    const message = buildOrderMessage(formWithConcept, { photoLine, sizeLabel });
 
-    /* 3 — persistence */
+    /* 3 — persistence (first, so the reference number can head the message) */
     let orderNumber: string | null = null;
     try {
+      const draft = buildOrderMessage(formWithConcept, { photoLine, sizeLabel });
       const saved = await createOrder.mutateAsync(
-        buildOrderPayload(formWithConcept, { inspirationUrl, summary: message, sizeLabel }),
+        buildOrderPayload(formWithConcept, { inspirationUrl, summary: draft, sizeLabel }),
       );
       orderNumber = saved.orderNumber;
     } catch {
       toast.error("We couldn't save your request — sending it on WhatsApp instead.");
     }
 
-    const finalMessage = orderNumber ? `${message}\n\n*Reference:* ${orderNumber}` : message;
+    const finalMessage = buildOrderMessage(formWithConcept, {
+      photoLine,
+      sizeLabel,
+      orderNumber,
+    });
 
     /* 4 — hand-off */
     if (openWhatsApp(finalMessage)) {
@@ -95,6 +99,7 @@ export function useSubmitOrder() {
       setFallbackMessage(finalMessage);
       toast.error("Your browser blocked WhatsApp — use the link below to continue.");
     }
+
 
     setSubmitting(false);
     return aiPreviewUrl;
