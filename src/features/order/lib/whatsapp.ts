@@ -17,16 +17,18 @@ const MOBILE_RE = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile Safari/i;
 export const isMobileDevice = () =>
   typeof navigator !== "undefined" && MOBILE_RE.test(navigator.userAgent);
 
-/** The URL that should be opened for this device. */
+/**
+ * `wa.me` is used on every platform: it is the only WhatsApp URL that is safe
+ * to open from an embedded/preview context. It redirects to the app on mobile
+ * and to WhatsApp Web/Desktop on computers. Linking straight to
+ * `web.whatsapp.com` is refused by the browser (ERR_BLOCKED_BY_RESPONSE).
+ */
 export function whatsappUrl(
   message: string,
   number: string = BRAND.whatsappNumber,
-  mobile = isMobileDevice(),
+  _mobile = isMobileDevice(),
 ): string {
-  const text = encodeURIComponent(message);
-  return mobile
-    ? `https://wa.me/${number}?text=${text}`
-    : `https://web.whatsapp.com/send?phone=${number}&text=${text}`;
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
 export function openWhatsApp(message: string, number: string = BRAND.whatsappNumber) {
