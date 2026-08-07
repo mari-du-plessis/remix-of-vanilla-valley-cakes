@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
+  attachOrderAiPreviewRecord,
   createOrderRecord,
   fetchOrder,
   fetchOrders,
@@ -8,6 +9,7 @@ import {
   setOrderStatus,
 } from "./orders.server";
 import {
+  attachAiPreviewSchema,
   createAdminOrderSchema,
   createOrderSchema,
   listOrdersSchema,
@@ -59,3 +61,11 @@ export const updateOrderNotes = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) =>
     setOrderInternalNotes(context.supabase, data.orderId, data.internalNotes),
   );
+
+/**
+ * Public: the customer wizard generates its AI concept in the background, so
+ * a concept that finishes after the order is saved is attached here.
+ */
+export const attachOrderAiPreview = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => attachAiPreviewSchema.parse(data))
+  .handler(async ({ data }) => attachOrderAiPreviewRecord(data.orderId, data.aiPreviewUrl));
