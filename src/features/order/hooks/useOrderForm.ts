@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
 import { flavourPairing, tierCount, type CakeCatalog } from "@/features/catalog/lib/cake-catalog";
+import { clampTierCount } from "@/features/cake-builder/lib/geometry";
+
 import { FEATURE_FLAGS } from "@/config/features";
 import { useAvailabilityWindow } from "@/features/calendar/hooks/useAvailability";
 import {
