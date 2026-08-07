@@ -87,7 +87,7 @@ function visualChoices(
 ): BuilderChoice[] {
   const assetKeys = new Set(sources.assets.filter((a) => a.is_active).map((a) => a.key));
   const fromCatalog = optionsOfGroup(sources, groupKey)
-    .map((option) => {
+    .map((option): BuilderChoice | null => {
       const assetKey =
         (option.svg_token && assetKeys.has(option.svg_token) && option.svg_token) ||
         (assetKeys.has(option.key) ? option.key : null);
@@ -95,7 +95,8 @@ function visualChoices(
         ? { id: assetKey, label: option.name, hint: option.description ?? undefined, assetKey }
         : null;
     })
-    .filter((c): c is BuilderChoice => !!c);
+    .filter((c): c is BuilderChoice => c !== null);
+
 
   if (fromCatalog.length > 0) return fromCatalog;
 
