@@ -10,12 +10,13 @@ import { ORDER_STEPS } from "@/features/order/types";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { useOrderForm } from "@/features/order/hooks/useOrderForm";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
+import { whatsappUrl } from "@/features/order/lib/whatsapp";
 import { useGuidedBuilder } from "@/features/cake-builder/hooks/useGuidedBuilder";
 import { GuidedCakeBuilder } from "@/features/cake-builder/components/GuidedCakeBuilder";
 import { OccasionStep } from "@/features/order/components/OccasionStep";
 import { DetailsStep } from "@/features/order/components/DetailsStep";
 import { ContactStep } from "@/features/order/components/ContactStep";
-import { WhatsAppHandoff } from "@/features/order/components/WhatsAppHandoff";
+
 
 
 export const Route = createFileRoute("/order")({
@@ -42,7 +43,7 @@ export const Route = createFileRoute("/order")({
 function OrderPage() {
   const { catalog } = useCakeCatalog();
   const order = useOrderForm(catalog);
-  const { submit, submitting, handoffMessage, clearHandoff } = useSubmitOrder();
+  const { submit, submitting, fallbackMessage } = useSubmitOrder();
   const { form, step } = order;
 
   /**
@@ -72,13 +73,10 @@ function OrderPage() {
           <div className="gold-rule mx-auto mt-5 max-w-[7rem]" />
         </div>
 
-        {!handoffMessage && <StepProgress steps={ORDER_STEPS} current={step} className="mb-8" />}
+        <StepProgress steps={ORDER_STEPS} current={step} className="mb-8" />
 
-        {handoffMessage ? (
-          <WhatsAppHandoff message={handoffMessage} onEdit={clearHandoff} />
-        ) : (
-        <>
         <div className="surface-card rounded-3xl p-6 sm:p-8">
+
           {step === 0 && (
             <OccasionStep value={form.occasion} onChange={(o) => order.update("occasion", o)} />
           )}
@@ -89,12 +87,9 @@ function OrderPage() {
               catalog={catalog}
               builder={builder}
               onCakeTextChange={(v) => order.update("cakeText", v)}
-              onInspirationGenerated={(url, signature) => {
-                order.update("aiPreviewUrl", url);
-                order.update("aiPreviewSignature", signature);
-              }}
             />
           )}
+
 
           {step === 2 && (
             <DetailsStep
@@ -139,13 +134,26 @@ function OrderPage() {
           )}
         </div>
 
-        {order.isLastStep && (
+        {order.isLastStep && !fallbackMessage && (
           <p className="text-xs text-center text-muted-foreground mt-4 flex items-center justify-center gap-1">
             <Check className="h-3 w-3" /> We'll reply within {BRAND.replyWindow} to confirm
           </p>
         )}
-        </>
+
+        {/* Shown only when the browser genuinely refused to open WhatsApp. */}
+        {fallbackMessage && (
+          <div className="surface-card mt-6 rounded-2xl p-5 text-center">
+            <p className="text-sm text-muted-foreground">
+              Your request was saved, but your browser blocked WhatsApp from opening.
+            </p>
+            <Button asChild className="mt-4 h-11 w-full rounded-full">
+              <a href={whatsappUrl(fallbackMessage)} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="mr-2 h-4 w-4" /> Open WhatsApp
+              </a>
+            </Button>
+          </div>
         )}
+
 
         <div className="mt-10 text-center">
           <Link
