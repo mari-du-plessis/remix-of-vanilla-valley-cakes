@@ -113,6 +113,8 @@ const TIER_CHOICES: BuilderChoice[] = [
   { id: "2", label: "Two tiers", hint: "A little more presence" },
   { id: "3", label: "Three tiers", hint: "Weddings & large events" },
   { id: "4", label: "Four tiers", hint: "Statement centrepiece" },
+  { id: "5", label: "Five tiers", hint: "Grand celebration" },
+  { id: "6", label: "Six tiers", hint: "The full showpiece" },
 ];
 
 /** Builds the guided conversation from whatever the bakery has configured. */
