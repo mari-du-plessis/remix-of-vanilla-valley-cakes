@@ -73,7 +73,9 @@ export function useOrderForm(catalog: CakeCatalog) {
    * Tier count chosen in the guided builder. One tier is stored as an empty
    * tier list, matching the single-flavour path the order summary already uses.
    */
-  const setTierCount = useCallback((count: number) => {
+  const setTierCount = useCallback((requested: number) => {
+    /** The bakery's maximum is enforced here as well as in the renderer. */
+    const count = clampTierCount(requested);
     setForm((f) => ({
       ...f,
       tiers:
@@ -82,6 +84,7 @@ export function useOrderForm(catalog: CakeCatalog) {
           : [],
     }));
   }, []);
+
 
   const setTierField = useCallback((index: number, key: keyof CakeTier, value: string) => {
 
