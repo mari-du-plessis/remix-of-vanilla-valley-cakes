@@ -132,6 +132,7 @@ export function CakePreview({
             {borders.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top + box.height - 6}
@@ -144,6 +145,7 @@ export function CakePreview({
             {drips.map((asset) => (
               <AssetLayer
                 key={`${asset.key}-${i}`}
+                className="cake-layer"
                 asset={asset}
                 x={box.cx - box.width / 2}
                 y={box.top + 2}
@@ -159,6 +161,7 @@ export function CakePreview({
                   {clusters.map((asset) => (
                     <AssetLayer
                       key={`${asset.key}-${i}-${ai}`}
+                      className="cake-layer"
                       asset={asset}
                       x={anchor.x}
                       y={anchor.y}
@@ -171,6 +174,8 @@ export function CakePreview({
           </g>
         );
       })}
+      </g>
+
 
       {/* number / letter cakes show the age straight on the sculpted slab */}
       {design.shapeKey === "shape-number" && (
