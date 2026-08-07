@@ -10,10 +10,12 @@ import { ORDER_STEPS } from "@/features/order/types";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { useOrderForm } from "@/features/order/hooks/useOrderForm";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
+import { useGuidedBuilder } from "@/features/cake-builder/hooks/useGuidedBuilder";
+import { GuidedCakeBuilder } from "@/features/cake-builder/components/GuidedCakeBuilder";
 import { OccasionStep } from "@/features/order/components/OccasionStep";
-import { CakeStep } from "@/features/order/components/CakeStep";
 import { DetailsStep } from "@/features/order/components/DetailsStep";
 import { ContactStep } from "@/features/order/components/ContactStep";
+
 
 export const Route = createFileRoute("/order")({
   head: () => ({
