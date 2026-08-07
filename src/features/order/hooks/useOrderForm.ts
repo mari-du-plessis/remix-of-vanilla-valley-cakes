@@ -140,6 +140,8 @@ export function useOrderForm(catalog: CakeCatalog) {
     toggleExtra,
     setInspirationFile,
     setSize,
+    setTierCount,
+
     setTierField,
     setTierFlavour,
     setFlavour,
