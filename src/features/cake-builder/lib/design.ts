@@ -112,6 +112,7 @@ export function buildCakeDesign(
     .filter((key): key is string => !!key);
 
   const icingKey =
+    (form.icingKey && assetKeys.has(form.icingKey) ? form.icingKey : null) ??
     extraKeys.find((key) => key.startsWith("icing-")) ??
     (assetKeys.has("icing-smooth") ? "icing-smooth" : "");
 
@@ -123,6 +124,7 @@ export function buildCakeDesign(
     typeof sizeMeta["layers"] === "number" ? (sizeMeta["layers"] as number) : 2;
 
   return {
+    view: "side",
     shapeKey,
     tierCount: form.tiers.length || Math.max(1, catalogTierCount(catalog, form.size) || 1),
     layerCount,
@@ -136,3 +138,4 @@ export function buildCakeDesign(
     label: form.size ? sizeLabel(catalog, form.size) : "Custom cake",
   };
 }
+
