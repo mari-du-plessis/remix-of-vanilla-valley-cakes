@@ -195,7 +195,9 @@ export function CakePreview({
       {toppers.map((asset, i) => (
         <AssetLayer
           key={asset.key}
+          className="cake-layer"
           asset={asset}
+
           x={topBox.cx - 42 + i * 6}
           y={topBox.top - 88}
           width={84}
