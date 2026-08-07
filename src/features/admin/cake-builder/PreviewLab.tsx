@@ -82,9 +82,9 @@ export function PreviewLab({ assets }: { assets: CakeAsset[] }) {
               <Input
                 type="number"
                 min={1}
-                max={4}
+                max={6}
                 value={tierCount}
-                onChange={(e) => setTierCount(Math.min(4, Math.max(1, Number(e.target.value))))}
+                onChange={(e) => setTierCount(Math.min(6, Math.max(1, Number(e.target.value))))}
               />
             </div>
             <div className="space-y-1.5">
