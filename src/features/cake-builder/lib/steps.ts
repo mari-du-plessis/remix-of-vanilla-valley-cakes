@@ -15,7 +15,9 @@
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import type { CatalogOption, OptionGroup, Product } from "@/features/catalog/types";
 import { spongeColour, fillingColour } from "@/config/cake-builder";
+import { MAX_TIERS } from "./geometry";
 import type { CakeAsset } from "../types";
+
 
 export type BuilderStepKind =
   | "product"
