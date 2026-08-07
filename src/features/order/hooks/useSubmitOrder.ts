@@ -6,7 +6,6 @@ import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catal
 import { buildOrderPayload } from "@/features/orders/lib/buildOrderPayload";
 import { useCreateOrder } from "@/features/orders/hooks/useOrders";
 import { buildOrderMessage } from "../lib/buildOrderMessage";
-import { openWhatsApp } from "../lib/whatsapp";
 import type { OrderFormState } from "../types";
 
 /**
@@ -20,6 +19,7 @@ import type { OrderFormState } from "../types";
  */
 export function useSubmitOrder() {
   const [submitting, setSubmitting] = useState(false);
+  const [handoffMessage, setHandoffMessage] = useState<string | null>(null);
   const createOrder = useCreateOrder();
   const { catalog } = useCakeCatalog();
 
@@ -58,10 +58,14 @@ export function useSubmitOrder() {
     }
 
     const finalMessage = orderNumber ? `${message}\n\n*Reference:* ${orderNumber}` : message;
-    openWhatsApp(finalMessage);
-    toast.success("Opening WhatsApp…");
+    setHandoffMessage(finalMessage);
     setSubmitting(false);
   };
 
-  return { submit, submitting };
+  return {
+    submit,
+    submitting,
+    handoffMessage,
+    clearHandoff: () => setHandoffMessage(null),
+  };
 }
