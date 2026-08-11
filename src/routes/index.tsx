@@ -1,19 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroCake from "@/assets/hero-cake.jpg";
-import galleryCookie from "@/assets/gallery-cookie.jpg";
-import galleryOhBaby from "@/assets/gallery-ohbaby.jpg";
-import galleryGrinch from "@/assets/gallery-grinch.jpg";
-import galleryFloral70 from "@/assets/gallery-floral70.jpg";
-import galleryConrad from "@/assets/gallery-conrad.jpg";
-import galleryPopArt from "@/assets/gallery-popart.jpg";
-import galleryLoanco from "@/assets/gallery-loanco.jpg";
-import galleryFastOne from "@/assets/gallery-fastone.jpg";
-import galleryCongrats from "@/assets/gallery-congrats.jpg";
-import galleryMinnie from "@/assets/gallery-minnie.jpg";
-import galleryBoago from "@/assets/gallery-boago.jpg";
 import { Button } from "@/components/ui/button";
 import { Eyebrow, Lead } from "@/components/common/Typography";
 import { SiteShell } from "@/features/site/components/SiteShell";
+import { GalleryRibbon } from "@/features/gallery/components/GalleryRibbon";
 import { Cake, Leaf, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -36,20 +26,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-const gallery = [
-  { src: galleryCookie, alt: "Cookies & milk first birthday cake" },
-  { src: galleryOhBaby, alt: "Oh Baby teddy bear baby shower cake" },
-  { src: galleryGrinch, alt: "Grinch Christmas themed cake" },
-  { src: galleryFloral70, alt: "Pink floral 70th birthday cake with cupcakes" },
-  { src: galleryConrad, alt: "Ferdinand the bull themed birthday cake" },
-  { src: galleryPopArt, alt: "Pop art comic book I Love You cake" },
-  { src: galleryLoanco, alt: "Blue puppy themed first birthday cake" },
-  { src: galleryFastOne, alt: "Fast One race car themed first birthday cake" },
-  { src: galleryCongrats, alt: "Black and gold graduation congrats cake" },
-  { src: galleryMinnie, alt: "Pink Minnie Mouse second birthday cake" },
-  { src: galleryBoago, alt: "Two-tier construction trucks themed birthday cake" },
-];
 
 const craft = [
   {
@@ -133,41 +109,8 @@ function Index() {
         </div>
       </section>
 
-      {/* Gallery ribbon */}
-      <section className="overflow-hidden py-16">
-        <div className="px-6 text-center">
-          <Eyebrow className="text-primary">The portfolio</Eyebrow>
-          <h2 className="mt-4">Recent creations</h2>
-          <div className="gold-rule mx-auto mt-6 max-w-[8rem]" />
-        </div>
-        <div className="relative mt-10 w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-          <div className="flex w-max animate-marquee gap-5">
-            {[...gallery, ...gallery].map((img, i) => (
-              <figure
-                key={i}
-                className="h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-border/60 shadow-[var(--shadow-soft)] sm:h-72 sm:w-72"
-              >
-                <img
-                  src={img.src}
-                  alt={img.alt}
-                  loading="lazy"
-                  width={512}
-                  height={512}
-                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-                />
-              </figure>
-            ))}
-          </div>
-        </div>
-        <div className="mt-10 text-center">
-          <Link
-            to="/gallery"
-            className="eyebrow text-[0.65rem] text-muted-foreground transition-colors hover:text-primary"
-          >
-            See the full gallery →
-          </Link>
-        </div>
-      </section>
+      {/* Gallery ribbon — curated from the admin-managed gallery */}
+      <GalleryRibbon />
 
       {/* CTA */}
       <section className="px-6 pb-4">
