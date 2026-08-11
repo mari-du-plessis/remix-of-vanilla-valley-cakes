@@ -1,3 +1,5 @@
+import type { ColourTreatment } from "./lib/appearance";
+
 /**
  * Cake builder domain types.
  *
@@ -101,6 +103,10 @@ export type CakeTierDesign = {
   filling: string;
   spongeColor: string;
   fillingColor: string;
+  /** Outside colour of this tier, resolved from the customer's own wording. */
+  icingColor: string;
+  /** The colour exactly as the customer described it, for captions and prompts. */
+  colourName: string;
 };
 
 /**
@@ -121,6 +127,12 @@ export type CakeDesign = {
   tierCount: number;
   layerCount: number;
   icingKey: string;
+  /**
+   * How colour is applied across the cake. `ombre` and `fault-line` are
+   * rendering extension points: the data model never changes when their
+   * treatment becomes richer.
+   */
+  treatment: ColourTreatment;
   tiers: CakeTierDesign[];
   /** Asset keys switched on by the customer's selections. */
   assetKeys: string[];
