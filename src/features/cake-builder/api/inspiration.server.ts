@@ -14,15 +14,32 @@ import type { InspirationRequest } from "./schema";
  * quote PDFs.
  */
 
+/**
+ * Deliberately illustrative. The concept must communicate a design idea, never
+ * read as a photograph the finished handcrafted cake could be measured against.
+ */
 const STYLE = [
-  "Elegant, luxury, minimal editorial illustration of a single handcrafted celebration cake.",
-  "Handmade artisan patisserie feel, soft natural light, matte black and warm neutral backdrop,",
-  "natural wood cake board, subtle warm gold accents, soft green foliage where flowers are used.",
-  "Centred product composition, generous negative space, no text, no lettering, no watermarks,",
-  "no people, no hands, no cartoon styling, no bright saturated colours.",
+  "A premium isometric 3D concept illustration of a single celebration cake,",
+  "stylised digital design artwork for a luxury bakery design tool.",
+  "Clean vector-like rendering, soft flat shading, gentle ambient occlusion, slightly simplified",
+  "geometry, elegant matte finish, warm neutral studio-free backdrop, natural wood cake board,",
+  "generous negative space, centred composition.",
+  "It must NOT be a photograph, photorealistic food photography, a studio product shot or a",
+  "hyper-realistic render. No shallow depth of field, no lens blur, no camera grain, no",
+  "photographic textures. No text, no lettering, no watermarks, no people, no hands.",
 ].join(" ");
 
+const TREATMENTS: Record<string, string> = {
+  solid: "Solid colour per tier",
+  ombre: "Ombre — colours blending progressively between shades, not one flat colour",
+  "fault-line": "Fault line — a revealed decorative band running around the cake",
+};
+
 function buildPrompt(input: InspirationRequest): string {
+  const tierColours = input.tierColours
+    .map((colour, i) => (colour ? `tier ${i + 1} (bottom-up): ${colour}` : null))
+    .filter(Boolean);
+
   const lines = [
     `Product: ${input.product || "celebration cake"}`,
     input.shape ? `Shape: ${input.shape}` : null,
@@ -31,12 +48,37 @@ function buildPrompt(input: InspirationRequest): string {
     input.flavours.length ? `Sponge flavours: ${input.flavours.join(", ")}` : null,
     input.fillings.length ? `Fillings: ${input.fillings.join(", ")}` : null,
     input.icing ? `Finish: ${input.icing}` : null,
+    `Colour treatment: ${TREATMENTS[input.colourTreatment] ?? TREATMENTS["solid"]}`,
+    tierColours.length ? `Per-tier colours: ${tierColours.join("; ")}` : null,
     input.decorations.length ? `Decorations: ${input.decorations.join(", ")}` : null,
+    input.decorationColours.length
+      ? `Decoration colours (independent of the cake colour): ${input.decorationColours
+          .map((c) => `${c.label}: ${c.value}`)
+          .join("; ")}`
+      : null,
+    input.topperStyle ? `Topper style: ${input.topperStyle}` : null,
+    input.topperColour ? `Topper colour: ${input.topperColour}` : null,
+    input.topperWording
+      ? `Topper wording (show as an approximate, unreadable stylised topper only): "${input.topperWording}"`
+      : null,
     input.message ? `Short message piped on the cake: "${input.message}"` : null,
     input.notes ? `Additional appearance notes from the customer: ${input.notes}` : null,
   ].filter(Boolean);
 
-  return `${STYLE}\n\nCake to illustrate:\n${lines.join("\n")}`;
+  /**
+   * Colour source priority. Stated colours win over the photo, so the concept
+   * can never invent a scheme the customer did not ask for.
+   */
+  const priority = [
+    "Colour rules, in strict priority order:",
+    "1. Use the stated per-tier colours exactly where they are given.",
+    "2. Use the stated decoration colours exactly; decorations never inherit the cake colour.",
+    "3. Where a colour is not stated, take it from the attached inspiration photo.",
+    "4. Otherwise follow the customer's appearance notes.",
+    "Never invent a different colour scheme from the one described.",
+  ].join("\n");
+
+  return `${STYLE}\n\nCake to illustrate:\n${lines.join("\n")}\n\n${priority}`;
 }
 
 /**
@@ -48,7 +90,10 @@ function buildContent(input: InspirationRequest) {
   const text = buildPrompt(input);
   if (!input.inspirationImageUrl) return text;
   return [
-    { type: "text", text: `${text}\n\nUse the attached photo as a style reference only.` },
+    {
+      type: "text",
+      text: `${text}\n\nUse the attached photo as a colour and styling reference for anything the brief does not state. Keep the result a stylised isometric concept illustration — do not copy it photographically.`,
+    },
     { type: "image_url", image_url: { url: input.inspirationImageUrl } },
   ];
 }
