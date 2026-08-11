@@ -76,6 +76,20 @@ export function SideElevationRenderer({
         <filter id="vv-cake-soft" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="9" />
         </filter>
+
+        {/* Ombre is a paint, not a new data shape: each tier gets a soft
+            vertical blend between its own colour and the tier above it. */}
+        {design.treatment === "ombre" &&
+          boxes.map((_, i) => {
+            const from = tierAt(i)?.icingColor ?? "var(--cake-icing)";
+            const to = tierAt(i + 1)?.icingColor ?? from;
+            return (
+              <linearGradient key={`ombre-${i}`} id={`vv-ombre-${i}`} x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stopColor={from} />
+                <stop offset="100%" stopColor={to} stopOpacity={0.85} />
+              </linearGradient>
+            );
+          })}
       </defs>
 
       {/* 1 — board (always the lowest visual layer) */}
@@ -101,16 +115,10 @@ export function SideElevationRenderer({
       {/* 2 — cake base + tier bodies, keyed so a shape or tier change re-animates */}
       <g className="cake-stack" key={`stack-${design.shapeKey}-${design.tierCount}`}>
         {boxes.map((box, i) => {
-          const tier = design.tiers[Math.min(i, design.tiers.length - 1)];
-          const style = {
-            "--cake-sponge": tier?.spongeColor,
-            "--cake-filling": tier?.fillingColor,
-            "--cake-tier-index": i,
-          } as React.CSSProperties;
           const bodyHeight = box.height + box.width * 0.12;
 
           return (
-            <g key={`tier-${i}`} className="cake-tier" style={style}>
+            <g key={`tier-${i}`} className="cake-tier" style={tierStyle(i)}>
               <AssetLayer
                 asset={shape}
                 x={box.cx - box.width / 2}
@@ -124,22 +132,38 @@ export function SideElevationRenderer({
         })}
       </g>
 
-      {/* 3 — icing / finish overlays */}
+      {/* 3 — icing / finish overlays, tinted with each tier's own colour */}
       <g className="cake-icing">
-        {boxes.map((box, i) =>
-          finishes.map((asset) => (
-            <AssetLayer
-              key={`${asset.key}-${i}`}
-              className="cake-layer"
-              asset={asset}
-              x={box.cx - box.width / 2}
-              y={box.top}
-              width={box.width}
-              height={box.height}
-              stretch
-            />
-          )),
-        )}
+        {boxes.map((box, i) => (
+          <g key={`finish-${i}`} style={tierStyle(i)}>
+            {finishes.map((asset) => (
+              <AssetLayer
+                key={`${asset.key}-${i}`}
+                className="cake-layer"
+                asset={asset}
+                x={box.cx - box.width / 2}
+                y={box.top}
+                width={box.width}
+                height={box.height}
+                stretch
+              />
+            ))}
+
+            {/* Fault line falls back to a simple revealed band when the asset
+                library has no artwork for it yet. */}
+            {design.treatment === "fault-line" && !hasFaultAsset && (
+              <rect
+                className="cake-layer"
+                x={box.cx - box.width / 2}
+                y={box.top + box.height * 0.42}
+                width={box.width}
+                height={Math.max(9, box.height * 0.2)}
+                fill="var(--cake-fault)"
+                opacity={0.85}
+              />
+            )}
+          </g>
+        ))}
       </g>
 
       {/* 4 — decorations (scatters, borders, drips, clusters), fading in after the cake */}
