@@ -101,6 +101,7 @@ function OrderPage() {
               catalog={catalog}
               builder={builder}
               onCakeTextChange={(v) => order.update("cakeText", v)}
+              onAppearanceChange={(v) => order.update("appearance", v)}
             />
           )}
 

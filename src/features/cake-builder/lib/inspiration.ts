@@ -11,6 +11,12 @@ import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catalog";
 import type { OrderFormState } from "@/features/order/types";
 import { clampTierCount } from "./geometry";
+import {
+  DECORATION_COLOUR_FIELDS,
+  decorationColour,
+  tierColour,
+  type CakeAppearance,
+} from "./appearance";
 
 
 export type InspirationInput = {
@@ -21,7 +27,16 @@ export type InspirationInput = {
   flavours: string[];
   fillings: string[];
   icing: string;
+  /** Solid, ombre or fault line. */
+  colourTreatment: string;
+  /** Colour per tier, bottom tier first; empty entries mean "follow the photo". */
+  tierColours: string[];
   decorations: string[];
+  /** Decoration colours that never inherit the cake colour. */
+  decorationColours: { label: string; value: string }[];
+  topperStyle: string;
+  topperColour: string;
+  topperWording: string;
   message: string;
   /** Free-text styling notes the customer typed about the cake itself. */
   notes: string;
@@ -58,6 +73,13 @@ export function buildInspirationInput(
   const flavours = form.tiers.length > 0 ? form.tiers.map((t) => t.flavour) : [form.flavour];
   const fillings = form.tiers.length > 0 ? form.tiers.map((t) => t.filling) : [form.filling];
 
+  const appearance: CakeAppearance = form.appearance;
+  const count = clampTierCount(form.tiers.length || 1);
+  const decorationColours = DECORATION_COLOUR_FIELDS.map((field) => ({
+    label: field.label,
+    value: decorationColour(appearance, field.key)?.name ?? "",
+  })).filter((entry) => entry.value);
+
   return {
     product: form.product ? pretty(form.product) : "Celebration cake",
     shape: form.shapeKey ? pretty(form.shapeKey) : "Round",
@@ -66,7 +88,16 @@ export function buildInspirationInput(
     flavours: flavours.filter(Boolean),
     fillings: fillings.filter(Boolean),
     icing: form.icingKey ? pretty(form.icingKey) : "",
+    colourTreatment: appearance.treatment,
+    tierColours: Array.from(
+      { length: count },
+      (_, i) => tierColour(appearance, i)?.name ?? "",
+    ),
     decorations: form.extras,
+    decorationColours,
+    topperStyle: appearance.topper.style.trim(),
+    topperColour: decorationColour(appearance, "topper")?.name ?? "",
+    topperWording: appearance.topper.wording.trim(),
     message: form.cakeText.trim().slice(0, 40),
     notes: appearanceNotes(extra.notes ?? ""),
     inspirationImageUrl: extra.inspirationImageUrl ?? "",
@@ -86,7 +117,13 @@ export function designSignature(input: InspirationInput): string {
     input.flavours,
     input.fillings,
     input.icing,
+    input.colourTreatment,
+    input.tierColours,
     [...input.decorations].sort(),
+    input.decorationColours,
+    input.topperStyle,
+    input.topperColour,
+    input.topperWording,
     input.message,
   ]);
 }

@@ -5,6 +5,13 @@ import { tierCount as catalogTierCount, sizeLabel } from "@/features/catalog/lib
 import type { OrderFormState } from "@/features/order/types";
 import { CAKE_COLOR_DEFAULTS, fillingColour, spongeColour } from "@/config/cake-builder";
 import type { CakeAsset, CakeAssetOptionLink, CakeDesign, CakeTierDesign } from "../types";
+import {
+  decorationColour,
+  icingHex,
+  resolveColourHex,
+  tierColour,
+  type CakeAppearance,
+} from "./appearance";
 
 /**
  * Pure projection: catalog selections -> a renderable cake design.
@@ -76,22 +83,27 @@ export function buildCakeDesign(
     (sizeOption?.svg_token?.startsWith("shape-") ? sizeOption.svg_token : null) ??
     "shape-round";
 
+  /**
+   * Appearance is authored per tier: a colour given for one tier never leaks
+   * onto the others (see `appearance.tierColour`).
+   */
+  const appearance: CakeAppearance = form.appearance;
+  const tierDesign = (flavour: string, filling: string, index: number): CakeTierDesign => {
+    const colour = tierColour(appearance, index);
+    return {
+      flavour,
+      filling,
+      spongeColor: colourOf(byName.get(norm(flavour))) ?? spongeColour(flavour),
+      fillingColor: colourOf(byName.get(norm(filling))) ?? fillingColour(filling),
+      icingColor: icingHex(colour),
+      colourName: colour?.name ?? "",
+    };
+  };
+
   const tiers: CakeTierDesign[] =
     form.tiers.length > 0
-      ? form.tiers.map((tier) => ({
-          flavour: tier.flavour,
-          filling: tier.filling,
-          spongeColor: colourOf(byName.get(norm(tier.flavour))) ?? spongeColour(tier.flavour),
-          fillingColor: colourOf(byName.get(norm(tier.filling))) ?? fillingColour(tier.filling),
-        }))
-      : [
-          {
-            flavour: form.flavour,
-            filling: form.filling,
-            spongeColor: colourOf(byName.get(norm(form.flavour))) ?? spongeColour(form.flavour),
-            fillingColor: colourOf(byName.get(norm(form.filling))) ?? fillingColour(form.filling),
-          },
-        ];
+      ? form.tiers.map((tier, i) => tierDesign(tier.flavour, tier.filling, i))
+      : [tierDesign(form.flavour, form.filling, 0)];
 
   /* Every selected extra contributes zero or one asset. */
   const extraOptions = form.extras.map((name) => byName.get(norm(name)));
@@ -114,6 +126,22 @@ export function buildCakeDesign(
   const icingColour = colourOf(extraOptions.find((o) => o?.svg_token?.startsWith("icing-")));
   if (icingColour) colors["--cake-icing"] = icingColour;
 
+  /* Decoration colours are independent of the cake colour and never inherit it. */
+  const decorColour = (key: Parameters<typeof decorationColour>[1], token: string) => {
+    const hex = resolveColourHex(decorationColour(appearance, key));
+    if (hex) colors[token] = hex;
+  };
+  decorColour("drip", "--cake-drip");
+  decorColour("macaron", "--cake-macaron");
+  decorColour("flower", "--cake-flower");
+  decorColour("metallic", "--cake-gold");
+  decorColour("topper", "--cake-topper");
+
+  /* The base tier colour also seeds the shared icing token, so assets that
+     paint with `var(--cake-icing)` outside a tier group stay in keeping. */
+  const baseColour = tiers[0]?.icingColor;
+  if (baseColour) colors["--cake-icing"] = baseColour;
+
   const layerCount = typeof sizeMeta["layers"] === "number" ? (sizeMeta["layers"] as number) : 2;
 
   return {
@@ -122,10 +150,23 @@ export function buildCakeDesign(
     tierCount: form.tiers.length || Math.max(1, catalogTierCount(catalog, form.size) || 1),
     layerCount,
     icingKey,
+    treatment: appearance.treatment,
     tiers,
-    assetKeys: Array.from(new Set(["board-wood", shapeKey, icingKey, ...extraKeys])).filter(
-      Boolean,
-    ),
+    /**
+     * A fault line is a finish in its own right: when the library has artwork
+     * for it the renderer picks it up here, exactly like any other asset.
+     */
+    assetKeys: Array.from(
+      new Set([
+        "board-wood",
+        shapeKey,
+        icingKey,
+        appearance.treatment === "fault-line" && assetKeys.has("icing-fault-line")
+          ? "icing-fault-line"
+          : "",
+        ...extraKeys,
+      ]),
+    ).filter(Boolean),
     colors,
     text: form.cakeText?.trim() ?? "",
     label: form.size ? sizeLabel(catalog, form.size) : "Custom cake",

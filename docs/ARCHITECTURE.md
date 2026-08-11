@@ -182,3 +182,27 @@ the saved order afterwards through the public one-shot
 `ai_preview_url`). A manual WhatsApp link appears only if the browser genuinely
 refuses to open it.
 
+### Custom cake appearance model
+
+Appearance is first-class data, not free text buried in notes:
+`features/cake-builder/lib/appearance.ts` owns `CakeAppearance` —
+colour treatment (solid / ombre / fault line), a colour per tier, colours for
+each decoration that does not inherit the cake colour (drip, macarons, flowers,
+sprinkles, metallic leaf, topper), and topper style plus wording.
+
+There is **no fixed bakery palette**. Colours are captured in the customer's
+own words and kept verbatim for the bakery, the WhatsApp enquiry and the AI
+brief; a separate lookup maps common names to an illustrative hex only so the
+SVG can approximate them. The inspiration photo stays the primary reference and
+is presented as *recommended*, never required.
+
+Priority when resolving a colour: stated per-tier colour → stated decoration
+colour → inspiration photo → appearance notes. The AI prompt states this order
+explicitly so a concept can never invent a scheme.
+
+Storage adds no tables: `buildOrderPayload` writes appearance as
+`order_item_options` rows under the `appearance` group key, so admin, quotes and
+any future template read it back through the existing order structure. The
+model applies to custom cakes only — other products have no builder and are
+untouched.
+

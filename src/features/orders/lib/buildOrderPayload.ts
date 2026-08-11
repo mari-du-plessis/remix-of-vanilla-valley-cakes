@@ -1,3 +1,4 @@
+import { appearanceLines } from "@/features/cake-builder/lib/appearance";
 import { tierLabel } from "@/features/order/lib/tiers";
 import type { OrderFormState } from "@/features/order/types";
 import type { CreateOrderInput } from "../api/schema";
@@ -62,6 +63,23 @@ export function buildOrderPayload(
       groupKey: "extra",
       groupLabel: "Extra",
       valueLabel: value,
+      tierIndex: null,
+    }),
+  );
+
+  /**
+   * Appearance is stored as ordinary option rows — no new tables. The group
+   * key keeps it queryable, so a future appearance report or template can read
+   * it back without a schema change.
+   */
+  appearanceLines(
+    form.appearance,
+    form.tiers.length > 0 ? form.tiers.map((_, i) => tierLabel(i, form.tiers.length)) : ["Cake"],
+  ).forEach((line) =>
+    options.push({
+      groupKey: "appearance",
+      groupLabel: line.label,
+      valueLabel: line.value,
       tierIndex: null,
     }),
   );

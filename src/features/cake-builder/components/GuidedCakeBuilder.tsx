@@ -9,6 +9,7 @@ import type { OrderFormState } from "@/features/order/types";
 import { useCakeAssets } from "../hooks/useCakeBuilder";
 import { InspirationPreview } from "./InspirationPreview";
 import type { GuidedBuilder } from "../hooks/useGuidedBuilder";
+import { AppearanceFields } from "./AppearanceFields";
 import { CakeStage } from "./CakeStage";
 import { ChoiceGrid } from "./ChoiceGrid";
 
@@ -29,11 +30,13 @@ export function GuidedCakeBuilder({
   catalog,
   builder,
   onCakeTextChange,
+  onAppearanceChange,
 }: {
   form: OrderFormState;
   catalog: CakeCatalog;
   builder: GuidedBuilder;
   onCakeTextChange: (value: string) => void;
+  onAppearanceChange: (value: OrderFormState["appearance"]) => void;
 }) {
   const { data: assetRows = [] } = useCakeAssets();
   const assets = useMemo(() => new Map(assetRows.map((a) => [a.key, a])), [assetRows]);
@@ -125,6 +128,15 @@ export function GuidedCakeBuilder({
               onSelect={(id) => select(step, id)}
               assets={assets}
               columns={step.kind === "flavour" || step.kind === "filling" ? 3 : 2}
+            />
+          )}
+
+          {step.kind === "appearance" && (
+            <AppearanceFields
+              appearance={form.appearance}
+              tierCount={tierCount}
+              extras={form.extras}
+              onChange={onAppearanceChange}
             />
           )}
 

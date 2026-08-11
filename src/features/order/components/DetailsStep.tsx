@@ -20,8 +20,13 @@ export function DetailsStep({
 
       <div>
         <Label htmlFor="inspiration" className="mb-2 block">
-          Inspiration photo (optional)
+          Add an inspiration photo (recommended)
         </Label>
+        <p className="mb-2 text-xs leading-relaxed text-muted-foreground">
+          A photo helps us understand your colour scheme, decoration style, overall look, flower
+          colours, finish, drip colour and any other visual details. You can continue without one
+          — we'll simply work from your choices and notes.
+        </p>
         <FileDropField
           id="inspiration"
           file={form.inspirationFile}

@@ -1,3 +1,5 @@
+import { EMPTY_APPEARANCE, type CakeAppearance } from "@/features/cake-builder/lib/appearance";
+
 export type CakeTier = { flavour: string; filling: string };
 
 export type OrderFormState = {
@@ -13,6 +15,12 @@ export type OrderFormState = {
   filling: string;
   tiers: CakeTier[];
   extras: string[];
+  /**
+   * Custom cake appearance: colour treatment, per-tier colours, decoration
+   * colours and topper detail. Structure and options stay in the fields above
+   * and in the catalog — see `features/cake-builder/lib/appearance.ts`.
+   */
+  appearance: CakeAppearance;
   /** Optional message piped / printed on the cake, shown live in the builder. */
   cakeText: string;
   /** AI inspiration illustration generated on request in the builder. */
@@ -38,6 +46,7 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   filling: "",
   tiers: [],
   extras: [],
+  appearance: EMPTY_APPEARANCE,
   cakeText: "",
   aiPreviewUrl: "",
   aiPreviewSignature: "",
