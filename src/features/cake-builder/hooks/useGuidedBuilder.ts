@@ -7,6 +7,7 @@ import type { CakeTier, OrderFormState } from "@/features/order/types";
 import { useCakeAssets } from "./useCakeBuilder";
 import { buildBuilderSteps, type BuilderStep } from "../lib/steps";
 import { clampTierCount } from "../lib/geometry";
+import { setTreatment, type ColourTreatment } from "../lib/appearance";
 
 
 const STALE = 5 * 60 * 1000;
@@ -86,6 +87,8 @@ export function useGuidedBuilder(
           return form.icingKey ? [form.icingKey] : [];
         case "decoration":
           return form.extras;
+        case "appearance":
+          return [form.appearance.treatment];
       }
     },
     [form, tierCount],
@@ -112,9 +115,14 @@ export function useGuidedBuilder(
           return actions.update("icingKey", id);
         case "decoration":
           return actions.toggleExtra(id);
+        case "appearance":
+          return actions.update(
+            "appearance",
+            setTreatment(form.appearance, id as ColourTreatment),
+          );
       }
     },
-    [actions, form.tiers.length],
+    [actions, form.appearance, form.tiers.length],
   );
 
   const isAnswered = useCallback(

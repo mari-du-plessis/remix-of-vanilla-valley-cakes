@@ -16,6 +16,7 @@ import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import type { CatalogOption, OptionGroup, Product } from "@/features/catalog/types";
 import { spongeColour, fillingColour } from "@/config/cake-builder";
 import { MAX_TIERS } from "./geometry";
+import { COLOUR_TREATMENTS } from "./appearance";
 import type { CakeAsset } from "../types";
 
 
@@ -27,7 +28,9 @@ export type BuilderStepKind =
   | "flavour"
   | "filling"
   | "icing"
-  | "decoration";
+  | "decoration"
+  /** Colour treatment plus the per-tier and per-decoration colour fields. */
+  | "appearance";
 
 export type BuilderChoice = {
   /** Stable value stored on the order form. */
@@ -241,6 +244,23 @@ export function buildBuilderSteps(catalog: CakeCatalog, sources: StepSources): B
     choices: catalog.extras.map((name) => ({ id: name, label: name })),
     perTier: false,
     multi: true,
+    optional: true,
+  });
+
+  /**
+   * Colours come last, once the shape, tiers and decorations are known: the
+   * step asks for a colour per tier and only for the decorations chosen.
+   * There is deliberately no fixed bakery palette — the customer describes the
+   * colours they want and the inspiration photo carries the rest.
+   */
+  steps.push({
+    key: "appearance",
+    kind: "appearance",
+    title: "Colours & finish",
+    subtitle: "Describe the colours you have in mind — an inspiration photo helps us match them.",
+    choices: COLOUR_TREATMENTS.map((t) => ({ id: t.id, label: t.label, hint: t.hint })),
+    perTier: false,
+    multi: false,
     optional: true,
   });
 
