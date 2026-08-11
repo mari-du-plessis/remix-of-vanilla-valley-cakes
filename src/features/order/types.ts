@@ -1,4 +1,5 @@
 import { EMPTY_APPEARANCE, type CakeAppearance } from "@/features/cake-builder/lib/appearance";
+import type { GalleryInspiration } from "@/features/gallery/lib/inspiration-reference";
 
 export type CakeTier = { flavour: string; filling: string };
 
@@ -29,6 +30,12 @@ export type OrderFormState = {
   aiPreviewSignature: string;
   inspirationFile: File | null;
   inspirationPreview: string;
+  /**
+   * A Vanilla Valley gallery photo the customer picked as a reference. Kept
+   * separate from `inspirationFile` so the bakery — and future Saved Designs —
+   * always know whether an image is ours or the customer's own.
+   */
+  galleryInspiration: GalleryInspiration | null;
   eventDate: string;
   name: string;
   phone: string;
@@ -52,6 +59,7 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   aiPreviewSignature: "",
   inspirationFile: null,
   inspirationPreview: "",
+  galleryInspiration: null,
   eventDate: "",
   name: "",
   phone: "",
