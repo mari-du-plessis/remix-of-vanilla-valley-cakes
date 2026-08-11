@@ -84,6 +84,20 @@ export function buildOrderPayload(
     }),
   );
 
+  /**
+   * A Vanilla Valley gallery photo used as a reference is recorded as its own
+   * option row so it stays distinguishable from the customer's own upload.
+   */
+  if (form.galleryInspiration) {
+    options.push({
+      groupKey: "gallery_inspiration",
+      groupLabel: "Gallery inspiration",
+      valueLabel:
+        form.galleryInspiration.caption?.trim() || form.galleryInspiration.url,
+      tierIndex: null,
+    });
+  }
+
   if (form.cakeText.trim()) {
     options.push({
       groupKey: "message",

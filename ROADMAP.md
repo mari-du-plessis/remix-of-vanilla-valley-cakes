@@ -11,6 +11,7 @@ Status legend: ✅ done · 🚧 in progress · ⬜ planned
 | 4 | SVG cake builder (`features/cake-builder`, feeds the order wizard) | ✅ |
 | 5 | Pricing (`price_lists`, `price_list_items`, `pricing_rules`) | ✅ |
 | 5b | Customers (profiles, addresses, notes, tags, order history) | ✅ |
+| 6a | Gallery improvements (masonry, lightbox, filters, inspiration hand-off) | ✅ |
 | 6 | PDF quotations (`quotes` versions on `quoted` orders) | ✅ |
 | 7 | Cake templates (`cake_templates`, start-from-template) | ⬜ |
 | 8 | Staff (`staff_members` on profiles + roles) | ⬜ |
@@ -39,6 +40,21 @@ counts, last order and next booking are derived from `orders` on read, so they
 can never drift. `profile_id` is already in place for customer accounts, and
 reviews, loyalty, gift cards and marketing all attach to `customers.id`
 instead of copying contact details.
+
+## Gallery (module 6a — done)
+
+`/gallery` is an editorial masonry grid (natural aspect ratios, lazy loading
+below the fold) with an accessible category filter driven by the shared
+`GALLERY_CATEGORIES` config, and a keyboard-navigable lightbox showing image,
+caption and category only. "Use as inspiration" parks a `GalleryInspiration`
+reference in session storage; the order wizard adopts it on mount and keeps it
+distinct from the customer's own upload in the WhatsApp enquiry, the saved
+order and the AI concept brief. The homepage ribbon now renders the first
+photos of the same admin-managed gallery — one source of truth.
+
+Extension points left open: favourites / inspiration boards and Saved Designs
+can attach to `GalleryInspiration.id`, and a curated `is_featured` flag can
+replace the "first N photos" homepage rule without changing components.
 
 ## Cake builder (module 4 — complete)
 

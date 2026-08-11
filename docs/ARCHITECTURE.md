@@ -26,7 +26,9 @@ Rule: routes compose, features own logic, config owns data, `components/common` 
 
 ## What exists
 
-- Public: `/` landing, `/gallery` (category filtered, DB-backed), `/order` (4-step wizard → WhatsApp).
+- Public: `/` landing (gallery ribbon reads `gallery_photos`), `/gallery`
+  (category filtered, masonry, lightbox, "use as inspiration"), `/order`
+  (4-step wizard → WhatsApp).
 - Auth: `/login` (email/password), `_authenticated` gate, admin role check via `user_roles`.
 - Admin: `/admin` overview, `/admin/gallery` (upload, caption, category, reorder, delete).
 - Admin: `/admin/orders`, `/admin/products`, `/admin/calendar` (month/week/day,
@@ -48,7 +50,12 @@ Rule: routes compose, features own logic, config owns data, `components/common` 
 
 ## Remaining technical debt
 
-- Homepage gallery strip uses bundled static images instead of `gallery_photos`.
+- Gallery images are served at their stored resolution (compressed to 1600px on
+  upload). No per-breakpoint derivatives / `srcset` yet — storage image
+  transformations would remove that gap without touching the feature code.
+- The gallery lightbox does not preload the neighbouring image, so the first
+  arrow press on a slow connection shows a brief blank.
+
 - Calendar availability/capacity tabs reuse the range query with a wide window;
   a dedicated list endpoint would be leaner once blocks grow.
 - `day_availability()` is a public SECURITY DEFINER function by design — it

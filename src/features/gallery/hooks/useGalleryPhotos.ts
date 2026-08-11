@@ -15,6 +15,20 @@ export function useGalleryPhotos() {
   });
 }
 
+/**
+ * Curated homepage subset — the first `limit` photos in the order Sonja set in
+ * the admin gallery. Shares the cache with the full gallery read, so the
+ * homepage never introduces a second source of truth or a second request.
+ */
+export function useFeaturedGalleryPhotos(limit = 12) {
+  return useQuery({
+    queryKey: galleryKeys.all,
+    queryFn: fetchGalleryPhotos,
+    select: (photos) => photos.slice(0, limit),
+  });
+}
+
+
 export function useGalleryMutations() {
   const queryClient = useQueryClient();
   const invalidate = () => queryClient.invalidateQueries({ queryKey: galleryKeys.all });

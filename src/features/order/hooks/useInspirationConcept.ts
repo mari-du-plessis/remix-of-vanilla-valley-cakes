@@ -65,7 +65,9 @@ export function useInspirationConcept() {
         try {
           const input = buildInspirationInput(form, catalog, {
             notes: form.notes,
-            inspirationImageUrl: inspirationUrl,
+            /* The customer's own photo wins; a gallery pick is the fallback
+               style reference. */
+            inspirationImageUrl: inspirationUrl ?? form.galleryInspiration?.url ?? null,
           });
           const result = await generate({ data: input });
           setUrl(result.url);

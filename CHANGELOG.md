@@ -2,6 +2,32 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Gallery improvements
+
+### Added
+
+- Editorial masonry gallery grid — natural aspect ratios (no cropping),
+  keyboard-accessible tiles, eager first screenful and lazy loading below.
+- `GalleryLightbox` — full-screen viewer with arrow-key / button navigation,
+  focus trapping, image counter, caption and category.
+- "Use as inspiration" hand-off (`features/gallery/lib/inspiration-reference.ts`)
+  — a chosen gallery photo travels to the cake builder via session storage and
+  is shown in the order wizard as a clearly-labelled Vanilla Valley reference,
+  removable at any time.
+- `useFeaturedGalleryPhotos` + `GalleryRibbon` for the homepage.
+
+### Changed
+
+- Homepage "recent creations" ribbon now reads `gallery_photos` instead of
+  bundled static images — the Admin Gallery Manager controls both surfaces.
+- Category filter pills gained `aria-pressed`, 44px tap targets and visible
+  focus rings; empty categories offer a "View all cakes" action.
+- Gallery inspiration is recorded on the saved order as its own option row and
+  used as the AI concept style reference when the customer uploaded no photo.
+
+Admin gallery management (upload, caption, category, reorder, delete), the
+gallery database, storage buckets and compression pipeline are unchanged.
+
 ## Custom cake appearance model
 
 ### Added

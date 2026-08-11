@@ -53,6 +53,9 @@ export function buildOrderMessage(
     ``,
     `*Event date:* ${form.eventDate}`,
     options.photoLine ?? null,
+    form.galleryInspiration
+      ? `*Gallery inspiration (${BRAND.name}):* ${form.galleryInspiration.url}`
+      : null,
     form.aiPreviewUrl ? `*AI concept:* ${form.aiPreviewUrl}` : null,
     ``,
     `*Name:* ${form.name}`,

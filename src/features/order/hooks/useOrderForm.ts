@@ -1,8 +1,12 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { flavourPairing, tierCount, type CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import { clampTierCount } from "@/features/cake-builder/lib/geometry";
 
 import { FEATURE_FLAGS } from "@/config/features";
+import {
+  clearGalleryInspiration,
+  readGalleryInspiration,
+} from "@/features/gallery/lib/inspiration-reference";
 import { useAvailabilityWindow } from "@/features/calendar/hooks/useAvailability";
 import {
   EMPTY_ORDER_FORM,
@@ -27,6 +31,22 @@ export function useOrderForm(catalog: CakeCatalog) {
    * unchanged until then.
    */
   const availability = useAvailabilityWindow();
+
+  /**
+   * A gallery photo chosen via "Use as inspiration" is parked in session
+   * storage by the gallery; the wizard adopts it once on mount. Reading it
+   * here keeps the hand-off inside the existing form state rather than adding
+   * a new global store.
+   */
+  useEffect(() => {
+    const reference = readGalleryInspiration();
+    if (reference) setForm((f) => ({ ...f, galleryInspiration: reference }));
+  }, []);
+
+  const clearGalleryReference = useCallback(() => {
+    clearGalleryInspiration();
+    setForm((f) => ({ ...f, galleryInspiration: null }));
+  }, []);
 
   const update = useCallback(
     <K extends keyof OrderFormState>(key: K, value: OrderFormState[K]) =>
@@ -144,6 +164,7 @@ export function useOrderForm(catalog: CakeCatalog) {
     update,
     toggleExtra,
     setInspirationFile,
+    clearGalleryReference,
     setSize,
     setTierCount,
 
