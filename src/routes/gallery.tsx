@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { GALLERY_ALL_TAB, GALLERY_CATEGORIES } from "@/config/occasions";
 import { CategoryTabs } from "@/features/gallery/components/CategoryTabs";
 import { GalleryGrid } from "@/features/gallery/components/GalleryGrid";
+import { GalleryLightbox } from "@/features/gallery/components/GalleryLightbox";
+
 import { useGalleryPhotos } from "@/features/gallery/hooks/useGalleryPhotos";
 import { SiteShell } from "@/features/site/components/SiteShell";
 
