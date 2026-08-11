@@ -152,9 +152,21 @@ export function buildCakeDesign(
     icingKey,
     treatment: appearance.treatment,
     tiers,
-    assetKeys: Array.from(new Set(["board-wood", shapeKey, icingKey, ...extraKeys])).filter(
-      Boolean,
-    ),
+    /**
+     * A fault line is a finish in its own right: when the library has artwork
+     * for it the renderer picks it up here, exactly like any other asset.
+     */
+    assetKeys: Array.from(
+      new Set([
+        "board-wood",
+        shapeKey,
+        icingKey,
+        appearance.treatment === "fault-line" && assetKeys.has("icing-fault-line")
+          ? "icing-fault-line"
+          : "",
+        ...extraKeys,
+      ]),
+    ).filter(Boolean),
     colors,
     text: form.cakeText?.trim() ?? "",
     label: form.size ? sizeLabel(catalog, form.size) : "Custom cake",
