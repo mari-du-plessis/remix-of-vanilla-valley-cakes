@@ -2,6 +2,34 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Custom cake appearance model
+
+### Added
+
+- **Structured appearance data** (`features/cake-builder/lib/appearance.ts`):
+  colour treatment (solid, ombre, fault line), per-tier colours, independent
+  decoration colours (drip, macarons, flowers, sprinkles, gold / rose gold /
+  silver leaf, topper) and topper style + wording. Free text rather than a fixed
+  palette, matching how the bakery actually works.
+- **Colours & finish step** in the guided builder
+  (`components/AppearanceFields.tsx`) — asks only about the decorations the
+  customer chose, in plain language.
+- Renderer support for per-tier icing colours, ombre gradients and fault lines
+  (`renderers/SideElevationRenderer.tsx`).
+
+### Changed
+
+- Inspiration photo is now presented as **recommended** with guidance on what it
+  helps us match, instead of "optional".
+- AI concept prompt carries the structured appearance, topper wording and an
+  explicit colour-priority rule; the style is now a premium isometric 3D concept
+  illustration — explicitly not photography, with no lens blur or depth of field.
+- WhatsApp enquiry and the saved order both include the appearance details
+  (stored as `appearance` option rows — no schema change).
+
+Custom cakes only; cupcakes, cheesecakes, biscuits, rusks, cake cups and tarts
+are unchanged.
+
 ## Cake Builder refinements
 
 ### Added

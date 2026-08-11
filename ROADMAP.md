@@ -58,3 +58,7 @@ Everything is already wired. Set
 refuse blocked, fully booked and inside-lead-time dates in the order wizard.
 The next UI step is surfacing the reason (`availability.unavailableReason`) and
 a `min` date on the event-date input.
+
+- [x] **Custom cake appearance model** — free-text colours, per-tier colours,
+      ombre and fault-line treatments, independent decoration colours, topper
+      style/colour/wording, and an appearance-aware AI concept brief.
