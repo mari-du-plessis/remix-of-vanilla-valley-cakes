@@ -111,6 +111,7 @@ function OrderPage() {
               form={form}
               onInspirationChange={order.setInspirationFile}
               onEventDateChange={(v) => order.update("eventDate", v)}
+              onClearGalleryInspiration={order.clearGalleryReference}
             />
           )}
 
