@@ -29,7 +29,19 @@ export const inspirationSchema = z.object({
   flavours: z.array(z.string().trim().max(80)).max(5).default([]),
   fillings: z.array(z.string().trim().max(80)).max(5).default([]),
   icing: z.string().trim().max(80).default(""),
+  /** Solid, ombre or fault line — how colour is applied across the cake. */
+  colourTreatment: z.enum(["solid", "ombre", "fault-line"]).default("solid"),
+  /** Colour per tier, bottom tier first; blanks mean "follow the photo". */
+  tierColours: z.array(z.string().trim().max(60)).max(5).default([]),
   decorations: z.array(z.string().trim().max(80)).max(20).default([]),
+  /** Decoration colours, captured independently of the cake colour. */
+  decorationColours: z
+    .array(z.object({ label: z.string().trim().max(60), value: z.string().trim().max(60) }))
+    .max(10)
+    .default([]),
+  topperStyle: z.string().trim().max(60).default(""),
+  topperColour: z.string().trim().max(60).default(""),
+  topperWording: z.string().trim().max(60).default(""),
   message: z.string().trim().max(40).default(""),
   notes: z.string().trim().max(400).default(""),
   /** Publicly readable URL of the customer's uploaded reference photo. */
