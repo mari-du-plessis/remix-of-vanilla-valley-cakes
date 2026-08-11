@@ -64,6 +64,23 @@ export function SideElevationRenderer({
   const boardTop = CANVAS.baseY - 4;
   const aboveBoard = (y: number, height: number) => Math.min(y, boardTop - height);
 
+  /** Appearance is per tier: colour never leaks from one tier to another. */
+  const tierAt = (i: number) => design.tiers[Math.min(i, design.tiers.length - 1)];
+  const hasFaultAsset = finishes.some((a) => a.key === "icing-fault-line");
+
+  const tierStyle = (i: number): React.CSSProperties => {
+    const tier = tierAt(i);
+    return {
+      "--cake-sponge": tier?.spongeColor,
+      "--cake-filling": tier?.fillingColor,
+      "--cake-icing":
+        design.treatment === "ombre" ? `url(#vv-ombre-${i})` : tier?.icingColor,
+      "--cake-tier-index": i,
+    } as React.CSSProperties;
+  };
+
+
+
   return (
     <svg
       viewBox={`0 0 ${CANVAS.width} ${CANVAS.height}`}
