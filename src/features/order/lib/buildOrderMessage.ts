@@ -1,5 +1,6 @@
 import { BRAND } from "@/config/brand";
 import { productFamily } from "@/config/product-builders";
+import { appearanceLines } from "@/features/cake-builder/lib/appearance";
 import { tierLabel } from "./tiers";
 import type { OrderFormState } from "../types";
 
@@ -42,6 +43,12 @@ export function buildOrderMessage(
         )
       : [`*Flavour:* ${form.flavour}`, `*Filling:* ${form.filling}`]),
     form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
+    ...appearanceLines(
+      form.appearance,
+      form.tiers.length > 0
+        ? form.tiers.map((_, i) => tierLabel(i, form.tiers.length))
+        : ["Cake"],
+    ).map((line) => `*${line.label}:* ${line.value}`),
     form.cakeText.trim() ? `*Message on cake:* ${form.cakeText.trim()}` : null,
     ``,
     `*Event date:* ${form.eventDate}`,
