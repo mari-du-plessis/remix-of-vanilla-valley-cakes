@@ -12,12 +12,11 @@ import { sizeLabel as resolveSizeLabel } from "@/features/catalog/lib/cake-catal
 import type { OrderFormState } from "@/features/order/types";
 import { clampTierCount } from "./geometry";
 import {
-  appearanceLines,
+  DECORATION_COLOUR_FIELDS,
   decorationColour,
   tierColour,
   type CakeAppearance,
 } from "./appearance";
-import { tierLabel } from "@/features/order/lib/tiers";
 
 
 export type InspirationInput = {
@@ -76,10 +75,10 @@ export function buildInspirationInput(
 
   const appearance: CakeAppearance = form.appearance;
   const count = clampTierCount(form.tiers.length || 1);
-  const decorationColours = appearanceLines(
-    { ...appearance, tiers: [], topper: { style: "", wording: "" }, treatment: "solid" },
-    [],
-  );
+  const decorationColours = DECORATION_COLOUR_FIELDS.map((field) => ({
+    label: field.label,
+    value: decorationColour(appearance, field.key)?.name ?? "",
+  })).filter((entry) => entry.value);
 
   return {
     product: form.product ? pretty(form.product) : "Celebration cake",
