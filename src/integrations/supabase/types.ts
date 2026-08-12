@@ -1353,6 +1353,104 @@ export type Database = {
           },
         ]
       }
+      saved_designs: {
+        Row: {
+          ai_preview_signature: string | null
+          ai_preview_url: string | null
+          created_at: string
+          customer_id: string | null
+          design: Json
+          gallery_photo_id: string | null
+          id: string
+          inspiration_image_url: string | null
+          last_opened_at: string
+          metadata: Json
+          name: string
+          owner_key: string
+          product_slug: string | null
+          profile_id: string | null
+          size_key: string | null
+          source_design_id: string | null
+          source_order_id: string | null
+          status: string
+          tier_count: number
+          updated_at: string
+        }
+        Insert: {
+          ai_preview_signature?: string | null
+          ai_preview_url?: string | null
+          created_at?: string
+          customer_id?: string | null
+          design?: Json
+          gallery_photo_id?: string | null
+          id?: string
+          inspiration_image_url?: string | null
+          last_opened_at?: string
+          metadata?: Json
+          name: string
+          owner_key: string
+          product_slug?: string | null
+          profile_id?: string | null
+          size_key?: string | null
+          source_design_id?: string | null
+          source_order_id?: string | null
+          status?: string
+          tier_count?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_preview_signature?: string | null
+          ai_preview_url?: string | null
+          created_at?: string
+          customer_id?: string | null
+          design?: Json
+          gallery_photo_id?: string | null
+          id?: string
+          inspiration_image_url?: string | null
+          last_opened_at?: string
+          metadata?: Json
+          name?: string
+          owner_key?: string
+          product_slug?: string | null
+          profile_id?: string | null
+          size_key?: string | null
+          source_design_id?: string | null
+          source_order_id?: string | null
+          status?: string
+          tier_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_designs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_designs_gallery_photo_id_fkey"
+            columns: ["gallery_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_designs_source_design_id_fkey"
+            columns: ["source_design_id"]
+            isOneToOne: false
+            referencedRelation: "saved_designs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_designs_source_order_id_fkey"
+            columns: ["source_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
