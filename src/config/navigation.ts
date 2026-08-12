@@ -24,6 +24,7 @@ export const PUBLIC_NAV: NavItem[] = [
   { label: "Home", to: "/" },
   { label: "Gallery", to: "/gallery" },
   { label: "Order", to: "/order" },
+  { label: "Saved designs", to: "/saved-designs" },
 ];
 
 /**
