@@ -2,6 +2,18 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Saved Designs
+
+- `saved_designs` table: structured cake configuration (jsonb snapshot) plus
+  gallery/upload inspiration references, preserved AI concept and an
+  active/archived state. Rows are closed to the public Data API; admins get
+  read access via RLS.
+- Anonymous ownership through an opaque device key (`features/saved-designs/lib/owner-key.ts`),
+  with `customer_id`/`profile_id` left open for future customer accounts.
+- Customer surfaces: "Save design" in the wizard, `/saved-designs` with live
+  re-rendered previews, plus "Edit design" (`/order?design=<id>&edit=true`) and
+  "Order this cake" (`/order?design=<id>`).
+
 ## Gallery improvements
 
 ### Added
