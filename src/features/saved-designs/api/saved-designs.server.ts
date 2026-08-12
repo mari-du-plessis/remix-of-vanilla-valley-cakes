@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Json } from "@/integrations/supabase/types";
 import type { SavedDesign, SavedDesignSnapshot } from "../types";
 import { SAVED_DESIGN_COLUMNS } from "../types";
 import type { z } from "zod";
@@ -88,7 +89,7 @@ export async function upsertSavedDesign(
     product_slug: design.product || null,
     size_key: design.size || null,
     tier_count: Math.max(1, design.tiers.length || 1),
-    design,
+    design: design as unknown as Json,
     gallery_photo_id: design.galleryInspiration?.id ?? null,
     inspiration_image_url: design.inspirationImageUrl || null,
     ai_preview_url: input.aiPreviewUrl || null,
