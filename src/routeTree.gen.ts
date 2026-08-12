@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrderRouteImport } from './routes/order'
+import { Route as SavedDesignsRouteImport } from './routes/saved-designs'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminCakeBuilderRouteImport } from './routes/_authenticated/admin/cake-builder'
@@ -50,6 +51,11 @@ const LoginRoute = LoginRouteImport.update({
 const OrderRoute = OrderRouteImport.update({
   id: '/order',
   path: '/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedDesignsRoute = SavedDesignsRouteImport.update({
+  id: '/saved-designs',
+  path: '/saved-designs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/saved-designs': typeof SavedDesignsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
   '/admin/calendar': typeof AuthenticatedAdminCalendarRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/saved-designs': typeof SavedDesignsRoute
   '/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
   '/admin/calendar': typeof AuthenticatedAdminCalendarRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/saved-designs': typeof SavedDesignsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
   '/_authenticated/admin/calendar': typeof AuthenticatedAdminCalendarRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/login'
     | '/order'
+    | '/saved-designs'
     | '/admin'
     | '/admin/cake-builder'
     | '/admin/calendar'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/login'
     | '/order'
+    | '/saved-designs'
     | '/admin/cake-builder'
     | '/admin/calendar'
     | '/admin/gallery'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/login'
     | '/order'
+    | '/saved-designs'
     | '/_authenticated/admin'
     | '/_authenticated/admin/cake-builder'
     | '/_authenticated/admin/calendar'
@@ -253,6 +265,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
   OrderRoute: typeof OrderRoute
+  SavedDesignsRoute: typeof SavedDesignsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -290,6 +303,13 @@ declare module '@tanstack/react-router' {
       path: '/order'
       fullPath: '/order'
       preLoaderRoute: typeof OrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved-designs': {
+      id: '/saved-designs'
+      path: '/saved-designs'
+      fullPath: '/saved-designs'
+      preLoaderRoute: typeof SavedDesignsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -441,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
   OrderRoute: OrderRoute,
+  SavedDesignsRoute: SavedDesignsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

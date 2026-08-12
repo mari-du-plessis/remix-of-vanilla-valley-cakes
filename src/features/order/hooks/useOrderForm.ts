@@ -48,6 +48,12 @@ export function useOrderForm(catalog: CakeCatalog) {
     setForm((f) => ({ ...f, galleryInspiration: null }));
   }, []);
 
+  /**
+   * Replaces the whole design in one go — used when a Saved Design is opened
+   * so the wizard resumes exactly as it was left.
+   */
+  const loadForm = useCallback((next: OrderFormState) => setForm(next), []);
+
   const update = useCallback(
     <K extends keyof OrderFormState>(key: K, value: OrderFormState[K]) =>
       setForm((f) => ({ ...f, [key]: value })),
@@ -161,6 +167,7 @@ export function useOrderForm(catalog: CakeCatalog) {
     setStep,
     isLastStep: step === ORDER_STEPS.length - 1,
     form,
+    loadForm,
     update,
     toggleExtra,
     setInspirationFile,

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -18,10 +18,22 @@ import { GuidedCakeBuilder } from "@/features/cake-builder/components/GuidedCake
 import { OccasionStep } from "@/features/order/components/OccasionStep";
 import { DetailsStep } from "@/features/order/components/DetailsStep";
 import { ContactStep } from "@/features/order/components/ContactStep";
+import { SaveDesignDialog } from "@/features/saved-designs/components/SaveDesignDialog";
+import { useSavedDesign } from "@/features/saved-designs/hooks/useSavedDesigns";
+import { snapshotToForm } from "@/features/saved-designs/lib/snapshot";
 
 
 
 export const Route = createFileRoute("/order")({
+  /**
+   * `?design=<id>` resumes a Saved Design. With `edit`, the wizard reopens the
+   * builder and saving updates that design; without it the customer continues
+   * straight to their enquiry.
+   */
+  validateSearch: (search: Record<string, unknown>) => ({
+    design: typeof search["design"] === "string" ? search["design"] : undefined,
+    edit: search["edit"] === true || search["edit"] === "true" ? true : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Order a Custom Cake — Vanilla Valley Bakery" },
@@ -44,10 +56,28 @@ export const Route = createFileRoute("/order")({
 
 function OrderPage() {
   const { catalog } = useCakeCatalog();
+  const { design: designId, edit } = Route.useSearch();
   const order = useOrderForm(catalog);
   const concept = useInspirationConcept();
   const { submit, submitting, fallbackMessage } = useSubmitOrder(concept);
   const { form, step } = order;
+
+  /* Saved Design hand-off: hydrate the wizard once the design arrives. */
+  const saved = useSavedDesign(designId ?? null);
+  const hydrated = useRef<string | null>(null);
+  useEffect(() => {
+    const record = saved.data;
+    if (!record || hydrated.current === record.id) return;
+    hydrated.current = record.id;
+    order.loadForm(
+      snapshotToForm(record.design, {
+        aiPreviewUrl: record.aiPreviewUrl,
+        aiPreviewSignature: record.aiPreviewSignature,
+      }),
+    );
+    order.setStep(edit ? 1 : 2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saved.data, edit]);
 
   /**
    * The AI concept starts rendering the moment the customer reaches "Your
@@ -151,6 +181,17 @@ function OrderPage() {
             </Button>
           )}
         </div>
+
+        {/* Saving keeps the design only — contact details stay with the enquiry. */}
+        {(step === 1 || step === 2) && (
+          <div className="mt-3 flex">
+            <SaveDesignDialog
+              form={form}
+              designId={edit ? (designId ?? null) : null}
+              suggestedName={form.occasion ? `${form.occasion} cake` : "My cake design"}
+            />
+          </div>
+        )}
 
         {order.isLastStep && !fallbackMessage && (
           <p className="text-xs text-center text-muted-foreground mt-4 flex items-center justify-center gap-1">
