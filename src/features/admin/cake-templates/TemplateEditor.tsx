@@ -27,6 +27,7 @@ import { EMPTY_ORDER_FORM } from "@/features/order/types";
 import { designSignature, snapshotToForm, toSnapshot } from "@/features/saved-designs/lib/snapshot";
 import { TEMPLATE_PRODUCT_SLUG, type CakeTemplate } from "@/features/cake-templates/types";
 import type { TemplateInput } from "@/features/cake-templates/api";
+import type { BuilderStepKind } from "@/features/cake-builder/lib/steps";
 
 /**
  * Admin template editor.
@@ -36,6 +37,9 @@ import type { TemplateInput } from "@/features/cake-templates/api";
  * same order-form state. Whatever Sonja can design here is exactly what a
  * customer can design, which is the point of a template.
  */
+/** Stable reference: the builder memoises its steps on this array. */
+const SKIP_KINDS = ["product"] as const satisfies readonly BuilderStepKind[];
+
 export function TemplateEditor({
   open,
   template,
@@ -82,7 +86,9 @@ export function TemplateEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, template?.id]);
 
-  const builder = useGuidedBuilder(order.form, catalog, order);
+  /* Templates are Custom Cakes only today, so the product question is hidden
+     and the family is fixed when the editor opens. */
+  const builder = useGuidedBuilder(order.form, catalog, order, { skipKinds: SKIP_KINDS });
 
   const snapshot = useMemo(() => toSnapshot(order.form), [order.form]);
   const signature = designSignature(snapshot);
@@ -123,7 +129,7 @@ export function TemplateEditor({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[92vh] w-[min(96vw,56rem)] max-w-none overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle className="admin-heading">
             {template ? "Edit template" : "New template"}
@@ -134,7 +140,7 @@ export function TemplateEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="template-name">Template name</Label>

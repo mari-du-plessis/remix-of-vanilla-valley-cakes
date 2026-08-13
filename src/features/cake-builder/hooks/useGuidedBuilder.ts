@@ -5,7 +5,7 @@ import { catalogKeys } from "@/features/catalog/types";
 import type { CakeCatalog } from "@/features/catalog/lib/cake-catalog";
 import type { CakeTier, OrderFormState } from "@/features/order/types";
 import { useCakeAssets } from "./useCakeBuilder";
-import { buildBuilderSteps, type BuilderStep } from "../lib/steps";
+import { buildBuilderSteps, type BuilderStep, type BuilderStepKind } from "../lib/steps";
 import { clampTierCount } from "../lib/geometry";
 import { setTreatment, type ColourTreatment } from "../lib/appearance";
 
@@ -34,6 +34,12 @@ export function useGuidedBuilder(
   form: OrderFormState,
   catalog: CakeCatalog,
   actions: BuilderActions,
+  /**
+   * Steps to leave out. Used where the answer is already decided by the
+   * surface itself — the admin template editor, for instance, only ever
+   * designs custom cakes, so it hides the product question.
+   */
+  options: { skipKinds?: BuilderStepKind[] } = {},
 ) {
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -48,16 +54,17 @@ export function useGuidedBuilder(
     queryFn: fetchOptionGroups,
     staleTime: STALE,
   });
-  const { data: options = [] } = useQuery({
+  const { data: optionRows = [] } = useQuery({
     queryKey: [...catalogKeys.all, "all-options"],
     queryFn: fetchAllOptions,
     staleTime: STALE,
   });
 
-  const steps = useMemo(
-    () => buildBuilderSteps(catalog, { products, groups, options, assets }),
-    [catalog, products, groups, options, assets],
-  );
+  const skipKinds = options.skipKinds;
+  const steps = useMemo(() => {
+    const all = buildBuilderSteps(catalog, { products, groups, options: optionRows, assets });
+    return skipKinds?.length ? all.filter((s) => !skipKinds.includes(s.kind)) : all;
+  }, [catalog, products, groups, optionRows, assets, skipKinds]);
 
   const index = Math.min(stepIndex, Math.max(0, steps.length - 1));
   const step = steps[index];
