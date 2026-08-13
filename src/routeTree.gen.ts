@@ -16,8 +16,11 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as SavedDesignsRouteImport } from './routes/saved-designs'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as CakeTemplatesIndexRouteImport } from './routes/cake-templates/index'
+import { Route as CakeTemplatesSlugRouteImport } from './routes/cake-templates/$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminCakeBuilderRouteImport } from './routes/_authenticated/admin/cake-builder'
+import { Route as AuthenticatedAdminCakeTemplatesRouteImport } from './routes/_authenticated/admin/cake-templates'
 import { Route as AuthenticatedAdminCalendarRouteImport } from './routes/_authenticated/admin/calendar'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin/gallery'
 import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authenticated/admin/pricing'
@@ -63,6 +66,16 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const CakeTemplatesIndexRoute = CakeTemplatesIndexRouteImport.update({
+  id: '/cake-templates/',
+  path: '/cake-templates/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CakeTemplatesSlugRoute = CakeTemplatesSlugRouteImport.update({
+  id: '/cake-templates/$slug',
+  path: '/cake-templates/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -72,6 +85,12 @@ const AuthenticatedAdminCakeBuilderRoute =
   AuthenticatedAdminCakeBuilderRouteImport.update({
     id: '/cake-builder',
     path: '/cake-builder',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminCakeTemplatesRoute =
+  AuthenticatedAdminCakeTemplatesRouteImport.update({
+    id: '/cake-templates',
+    path: '/cake-templates',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminCalendarRoute =
@@ -142,7 +161,10 @@ export interface FileRoutesByFullPath {
   '/order': typeof OrderRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
+  '/cake-templates/': typeof CakeTemplatesIndexRoute
   '/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
+  '/admin/cake-templates': typeof AuthenticatedAdminCakeTemplatesRoute
   '/admin/calendar': typeof AuthenticatedAdminCalendarRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/pricing': typeof AuthenticatedAdminPricingRoute
@@ -161,7 +183,10 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
   '/saved-designs': typeof SavedDesignsRoute
+  '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
+  '/cake-templates': typeof CakeTemplatesIndexRoute
   '/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
+  '/admin/cake-templates': typeof AuthenticatedAdminCakeTemplatesRoute
   '/admin/calendar': typeof AuthenticatedAdminCalendarRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/pricing': typeof AuthenticatedAdminPricingRoute
@@ -183,7 +208,10 @@ export interface FileRoutesById {
   '/order': typeof OrderRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
+  '/cake-templates/': typeof CakeTemplatesIndexRoute
   '/_authenticated/admin/cake-builder': typeof AuthenticatedAdminCakeBuilderRoute
+  '/_authenticated/admin/cake-templates': typeof AuthenticatedAdminCakeTemplatesRoute
   '/_authenticated/admin/calendar': typeof AuthenticatedAdminCalendarRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRoute
@@ -205,7 +233,10 @@ export interface FileRouteTypes {
     | '/order'
     | '/saved-designs'
     | '/admin'
+    | '/cake-templates/$slug'
+    | '/cake-templates/'
     | '/admin/cake-builder'
+    | '/admin/cake-templates'
     | '/admin/calendar'
     | '/admin/gallery'
     | '/admin/pricing'
@@ -224,7 +255,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/order'
     | '/saved-designs'
+    | '/cake-templates/$slug'
+    | '/cake-templates'
     | '/admin/cake-builder'
+    | '/admin/cake-templates'
     | '/admin/calendar'
     | '/admin/gallery'
     | '/admin/pricing'
@@ -245,7 +279,10 @@ export interface FileRouteTypes {
     | '/order'
     | '/saved-designs'
     | '/_authenticated/admin'
+    | '/cake-templates/$slug'
+    | '/cake-templates/'
     | '/_authenticated/admin/cake-builder'
+    | '/_authenticated/admin/cake-templates'
     | '/_authenticated/admin/calendar'
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/pricing'
@@ -266,6 +303,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OrderRoute: typeof OrderRoute
   SavedDesignsRoute: typeof SavedDesignsRoute
+  CakeTemplatesSlugRoute: typeof CakeTemplatesSlugRoute
+  CakeTemplatesIndexRoute: typeof CakeTemplatesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -319,6 +358,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/cake-templates/': {
+      id: '/cake-templates/'
+      path: '/cake-templates'
+      fullPath: '/cake-templates/'
+      preLoaderRoute: typeof CakeTemplatesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cake-templates/$slug': {
+      id: '/cake-templates/$slug'
+      path: '/cake-templates/$slug'
+      fullPath: '/cake-templates/$slug'
+      preLoaderRoute: typeof CakeTemplatesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -331,6 +384,13 @@ declare module '@tanstack/react-router' {
       path: '/cake-builder'
       fullPath: '/admin/cake-builder'
       preLoaderRoute: typeof AuthenticatedAdminCakeBuilderRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/cake-templates': {
+      id: '/_authenticated/admin/cake-templates'
+      path: '/cake-templates'
+      fullPath: '/admin/cake-templates'
+      preLoaderRoute: typeof AuthenticatedAdminCakeTemplatesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/calendar': {
@@ -408,6 +468,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminCakeBuilderRoute: typeof AuthenticatedAdminCakeBuilderRoute
+  AuthenticatedAdminCakeTemplatesRoute: typeof AuthenticatedAdminCakeTemplatesRoute
   AuthenticatedAdminCalendarRoute: typeof AuthenticatedAdminCalendarRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRoute
@@ -424,6 +485,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminCakeBuilderRoute: AuthenticatedAdminCakeBuilderRoute,
+    AuthenticatedAdminCakeTemplatesRoute: AuthenticatedAdminCakeTemplatesRoute,
     AuthenticatedAdminCalendarRoute: AuthenticatedAdminCalendarRoute,
     AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
     AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRoute,
@@ -462,7 +524,19 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OrderRoute: OrderRoute,
   SavedDesignsRoute: SavedDesignsRoute,
+  CakeTemplatesSlugRoute: CakeTemplatesSlugRoute,
+  CakeTemplatesIndexRoute: CakeTemplatesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

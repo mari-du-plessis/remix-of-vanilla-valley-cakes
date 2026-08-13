@@ -5,6 +5,7 @@ import {
   ClipboardList,
   FileText,
   Images,
+  LayoutTemplate,
   LayoutDashboard,
   Palette,
   Tags,
@@ -23,6 +24,7 @@ export type NavItem = {
 export const PUBLIC_NAV: NavItem[] = [
   { label: "Home", to: "/" },
   { label: "Gallery", to: "/gallery" },
+  { label: "Templates", to: "/cake-templates" },
   { label: "Order", to: "/order" },
   { label: "Saved designs", to: "/saved-designs" },
 ];
@@ -38,6 +40,7 @@ export const ADMIN_NAV: NavItem[] = [
   { label: "Calendar", to: "/admin/calendar", icon: CalendarDays },
   { label: "Products", to: "/admin/products", icon: Cake },
   { label: "Cake builder", to: "/admin/cake-builder", icon: Palette },
+  { label: "Cake templates", to: "/admin/cake-templates", icon: LayoutTemplate },
 
   { label: "Quotes", to: "/admin/quotes", icon: FileText },
 

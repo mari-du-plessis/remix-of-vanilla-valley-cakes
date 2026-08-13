@@ -2,7 +2,27 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Cake Templates
+
+- `cake_templates` table: bakery-owned starting designs stored as the same
+  structured cake configuration used everywhere else (jsonb), plus name, slug,
+  description, category, optional AI concept illustration, visibility,
+  featured flag and sort order. Public read is limited to visible templates;
+  managing them is admin-only.
+- Customer surfaces: `/cake-templates` (browse, filter by category) and
+  `/cake-templates/$slug` (live-rendered preview and design summary) with
+  "Customise this cake" opening the builder at `/order?template=<slug>`.
+  The customer always works on a copy — the template itself never changes.
+- Admin: `/admin/cake-templates` — create, edit, duplicate, reorder, feature,
+  show/hide and delete. The editor reuses the guided cake builder (custom
+  cakes only) and can generate an optional AI concept illustration.
+- Templates flow through to the existing WhatsApp hand-off and saved order as
+  the customer's resulting configuration, with the originating template
+  recorded for the bakery's records. Orders and saved designs never depend on
+  a template continuing to exist.
+
 ## Saved Designs
+
 
 - `saved_designs` table: structured cake configuration (jsonb snapshot) plus
   gallery/upload inspiration references, preserved AI concept and an

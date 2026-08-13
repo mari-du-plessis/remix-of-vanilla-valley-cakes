@@ -98,6 +98,20 @@ export function buildOrderPayload(
     });
   }
 
+  /**
+   * A Vanilla Valley template the customer started from is recorded as its own
+   * option row: useful context for the bakery, never a substitute for the
+   * structured configuration, and safe if the template is later deleted.
+   */
+  if (form.templateRef) {
+    options.push({
+      groupKey: "template",
+      groupLabel: "Started from template",
+      valueLabel: form.templateRef.name,
+      tierIndex: null,
+    });
+  }
+
   if (form.cakeText.trim()) {
     options.push({
       groupKey: "message",

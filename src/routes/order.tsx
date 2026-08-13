@@ -21,6 +21,8 @@ import { ContactStep } from "@/features/order/components/ContactStep";
 import { SaveDesignDialog } from "@/features/saved-designs/components/SaveDesignDialog";
 import { useSavedDesign } from "@/features/saved-designs/hooks/useSavedDesigns";
 import { snapshotToForm } from "@/features/saved-designs/lib/snapshot";
+import { useCakeTemplate } from "@/features/cake-templates/hooks/useCakeTemplates";
+import { templateReference } from "@/features/cake-templates/types";
 
 
 
@@ -28,12 +30,21 @@ export const Route = createFileRoute("/order")({
   /**
    * `?design=<id>` resumes a Saved Design. With `edit`, the wizard reopens the
    * builder and saving updates that design; without it the customer continues
-   * straight to their enquiry.
+   * straight to their enquiry. `?template=<slug>` starts from a Vanilla Valley
+   * cake template — the template itself is never modified.
+   *
+   * Every parameter is optional, so plain `<Link to="/order" />` stays valid.
    */
-  validateSearch: (search: Record<string, unknown>) => ({
-    design: typeof search["design"] === "string" ? search["design"] : undefined,
-    edit: search["edit"] === true || search["edit"] === "true" ? true : undefined,
-  }),
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { design?: string; edit?: boolean; template?: string } => {
+    const parsed: { design?: string; edit?: boolean; template?: string } = {};
+    if (typeof search["design"] === "string") parsed.design = search["design"];
+    if (typeof search["template"] === "string") parsed.template = search["template"];
+    if (search["edit"] === true || search["edit"] === "true") parsed.edit = true;
+    return parsed;
+  },
+
   head: () => ({
     meta: [
       { title: "Order a Custom Cake — Vanilla Valley Bakery" },
@@ -56,7 +67,7 @@ export const Route = createFileRoute("/order")({
 
 function OrderPage() {
   const { catalog } = useCakeCatalog();
-  const { design: designId, edit } = Route.useSearch();
+  const { design: designId, edit, template: templateSlug } = Route.useSearch();
   const order = useOrderForm(catalog);
   const concept = useInspirationConcept();
   const { submit, submitting, fallbackMessage } = useSubmitOrder(concept);
@@ -78,6 +89,27 @@ function OrderPage() {
     order.setStep(edit ? 1 : 2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saved.data, edit]);
+
+  /**
+   * Template hand-off: the template's configuration is *copied* into the
+   * customer's working design and only its identity is kept as a reference.
+   * The template record itself is never modified, and anything the customer
+   * changes from here belongs to them.
+   */
+  const template = useCakeTemplate(designId ? null : templateSlug);
+  useEffect(() => {
+    const record = template.data;
+    if (!record || hydrated.current === record.id) return;
+    hydrated.current = record.id;
+    order.loadForm({
+      ...snapshotToForm(record.design),
+      templateRef: templateReference(record),
+    });
+    /* Straight into the builder, so it reads as "a design to adjust". */
+    order.setStep(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [template.data]);
+
 
   /**
    * The AI concept starts rendering the moment the customer reaches "Your

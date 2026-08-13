@@ -1,5 +1,6 @@
 import { EMPTY_APPEARANCE, type CakeAppearance } from "@/features/cake-builder/lib/appearance";
 import type { GalleryInspiration } from "@/features/gallery/lib/inspiration-reference";
+import type { TemplateReference } from "@/features/cake-templates/lib/reference";
 
 export type CakeTier = { flavour: string; filling: string };
 
@@ -36,6 +37,12 @@ export type OrderFormState = {
    * always know whether an image is ours or the customer's own.
    */
   galleryInspiration: GalleryInspiration | null;
+  /**
+   * The Vanilla Valley template this design started from, when any. Identity
+   * only — the configuration above is the customer's own copy, so editing it
+   * never touches the template and deleting the template never affects them.
+   */
+  templateRef: TemplateReference | null;
   eventDate: string;
   name: string;
   phone: string;
@@ -60,6 +67,7 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   inspirationFile: null,
   inspirationPreview: "",
   galleryInspiration: null,
+  templateRef: null,
   eventDate: "",
   name: "",
   phone: "",

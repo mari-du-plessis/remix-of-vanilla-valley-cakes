@@ -23,6 +23,10 @@ const appearanceSchema = z
   })
   .passthrough();
 
+const templateReferenceSchema = z
+  .object({ id: z.string().uuid(), slug: trimmed(160), name: trimmed(120) })
+  .nullable();
+
 const galleryInspirationSchema = z
   .object({
     id: z.string(),
@@ -50,6 +54,7 @@ export const designSnapshotSchema = z.object({
   appearance: appearanceSchema,
   cakeText: trimmed(200).default(""),
   galleryInspiration: galleryInspirationSchema.default(null),
+  templateRef: templateReferenceSchema.default(null),
   inspirationImageUrl: trimmed(600).default(""),
 });
 
@@ -72,6 +77,7 @@ export const saveDesignSchema = z.object({
   aiPreviewUrl: trimmed(600).nullable().optional(),
   aiPreviewSignature: trimmed(2000).nullable().optional(),
   sourceOrderId: z.string().uuid().nullable().optional(),
+  sourceTemplateId: z.string().uuid().nullable().optional(),
 });
 
 export const renameSavedDesignSchema = savedDesignIdSchema.extend({

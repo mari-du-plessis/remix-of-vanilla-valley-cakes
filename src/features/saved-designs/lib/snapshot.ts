@@ -24,6 +24,7 @@ export function toSnapshot(form: OrderFormState, inspirationImageUrl = ""): Save
     appearance: form.appearance,
     cakeText: form.cakeText,
     galleryInspiration: form.galleryInspiration,
+    templateRef: form.templateRef,
     inspirationImageUrl: inspirationImageUrl || "",
   };
 }
@@ -47,6 +48,7 @@ export function snapshotToForm(
     appearance: snapshot.appearance ?? EMPTY_ORDER_FORM.appearance,
     cakeText: snapshot.cakeText ?? "",
     galleryInspiration: snapshot.galleryInspiration ?? null,
+    templateRef: snapshot.templateRef ?? null,
     aiPreviewUrl: extras?.aiPreviewUrl ?? "",
     aiPreviewSignature: extras?.aiPreviewSignature ?? "",
   };
@@ -57,7 +59,12 @@ export function snapshotToForm(
  * concept is only reused while it still matches the configuration.
  */
 export function designSignature(snapshot: SavedDesignSnapshot): string {
-  const { galleryInspiration: _gallery, inspirationImageUrl: _url, ...design } = snapshot;
+  const {
+    galleryInspiration: _gallery,
+    inspirationImageUrl: _url,
+    templateRef: _template,
+    ...design
+  } = snapshot;
   return JSON.stringify(design);
 }
 
