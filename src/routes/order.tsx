@@ -65,7 +65,7 @@ export const Route = createFileRoute("/order")({
 
 function OrderPage() {
   const { catalog } = useCakeCatalog();
-  const { design: designId, edit } = Route.useSearch();
+  const { design: designId, edit, template: templateSlug } = Route.useSearch();
   const order = useOrderForm(catalog);
   const concept = useInspirationConcept();
   const { submit, submitting, fallbackMessage } = useSubmitOrder(concept);
@@ -87,6 +87,27 @@ function OrderPage() {
     order.setStep(edit ? 1 : 2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saved.data, edit]);
+
+  /**
+   * Template hand-off: the template's configuration is *copied* into the
+   * customer's working design and only its identity is kept as a reference.
+   * The template record itself is never modified, and anything the customer
+   * changes from here belongs to them.
+   */
+  const template = useCakeTemplate(designId ? null : templateSlug);
+  useEffect(() => {
+    const record = template.data;
+    if (!record || hydrated.current === record.id) return;
+    hydrated.current = record.id;
+    order.loadForm({
+      ...snapshotToForm(record.design),
+      templateRef: templateReference(record),
+    });
+    /* Straight into the builder, so it reads as "a design to adjust". */
+    order.setStep(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [template.data]);
+
 
   /**
    * The AI concept starts rendering the moment the customer reaches "Your
