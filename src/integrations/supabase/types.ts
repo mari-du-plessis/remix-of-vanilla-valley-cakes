@@ -134,6 +134,86 @@ export type Database = {
         }
         Relationships: []
       }
+      cake_templates: {
+        Row: {
+          ai_preview_signature: string | null
+          ai_preview_url: string | null
+          category: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          design: Json
+          gallery_photo_id: string | null
+          id: string
+          inspiration_image_url: string | null
+          is_active: boolean
+          is_featured: boolean
+          metadata: Json
+          name: string
+          product_slug: string
+          size_key: string | null
+          slug: string
+          sort_order: number
+          status: string
+          tier_count: number
+          updated_at: string
+        }
+        Insert: {
+          ai_preview_signature?: string | null
+          ai_preview_url?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          design?: Json
+          gallery_photo_id?: string | null
+          id?: string
+          inspiration_image_url?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          metadata?: Json
+          name: string
+          product_slug?: string
+          size_key?: string | null
+          slug: string
+          sort_order?: number
+          status?: string
+          tier_count?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_preview_signature?: string | null
+          ai_preview_url?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          design?: Json
+          gallery_photo_id?: string | null
+          id?: string
+          inspiration_image_url?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          metadata?: Json
+          name?: string
+          product_slug?: string
+          size_key?: string | null
+          slug?: string
+          sort_order?: number
+          status?: string
+          tier_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cake_templates_gallery_photo_id_fkey"
+            columns: ["gallery_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_events: {
         Row: {
           all_day: boolean
@@ -1372,6 +1452,7 @@ export type Database = {
           size_key: string | null
           source_design_id: string | null
           source_order_id: string | null
+          source_template_id: string | null
           status: string
           tier_count: number
           updated_at: string
@@ -1394,6 +1475,7 @@ export type Database = {
           size_key?: string | null
           source_design_id?: string | null
           source_order_id?: string | null
+          source_template_id?: string | null
           status?: string
           tier_count?: number
           updated_at?: string
@@ -1416,6 +1498,7 @@ export type Database = {
           size_key?: string | null
           source_design_id?: string | null
           source_order_id?: string | null
+          source_template_id?: string | null
           status?: string
           tier_count?: number
           updated_at?: string
@@ -1447,6 +1530,13 @@ export type Database = {
             columns: ["source_order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_designs_source_template_id_fkey"
+            columns: ["source_template_id"]
+            isOneToOne: false
+            referencedRelation: "cake_templates"
             referencedColumns: ["id"]
           },
         ]
