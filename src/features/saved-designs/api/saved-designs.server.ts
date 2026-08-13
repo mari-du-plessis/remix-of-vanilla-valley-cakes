@@ -95,6 +95,7 @@ export async function upsertSavedDesign(
     ai_preview_url: input.aiPreviewUrl || null,
     ai_preview_signature: input.aiPreviewSignature || null,
     source_order_id: input.sourceOrderId ?? null,
+    source_template_id: input.sourceTemplateId ?? design.templateRef?.id ?? null,
     status: "active" as const,
     last_opened_at: new Date().toISOString(),
   };

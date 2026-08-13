@@ -1,6 +1,7 @@
 import type { CakeAppearance } from "@/features/cake-builder/lib/appearance";
 import type { GalleryInspiration } from "@/features/gallery/lib/inspiration-reference";
 import type { CakeTier } from "@/features/order/types";
+import type { TemplateReference } from "@/features/cake-templates/lib/reference";
 
 /**
  * Saved Designs — domain types.
@@ -32,6 +33,8 @@ export type SavedDesignSnapshot = {
   cakeText: string;
   /** A Vanilla Valley gallery photo the customer picked as a reference. */
   galleryInspiration: GalleryInspiration | null;
+  /** The Vanilla Valley template this design started from, when any. */
+  templateRef: TemplateReference | null;
   /** The customer's own uploaded reference, already in storage. */
   inspirationImageUrl: string;
 };

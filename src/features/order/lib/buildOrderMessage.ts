@@ -57,6 +57,8 @@ export function buildOrderMessage(
       ? `*Gallery inspiration (${BRAND.name}):* ${form.galleryInspiration.url}`
       : null,
     form.aiPreviewUrl ? `*AI concept:* ${form.aiPreviewUrl}` : null,
+    /* Reference only — the structured design above is what was ordered. */
+    form.templateRef ? `*Started from template:* ${form.templateRef.name}` : null,
     ``,
     `*Name:* ${form.name}`,
     `*Phone:* ${form.phone}`,
