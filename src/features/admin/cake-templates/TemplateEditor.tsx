@@ -38,7 +38,7 @@ import type { BuilderStepKind } from "@/features/cake-builder/lib/steps";
  * customer can design, which is the point of a template.
  */
 /** Stable reference: the builder memoises its steps on this array. */
-const SKIP_KINDS = ["product"] as const satisfies readonly BuilderStepKind[];
+const SKIP_KINDS: BuilderStepKind[] = ["product"];
 
 export function TemplateEditor({
   open,
