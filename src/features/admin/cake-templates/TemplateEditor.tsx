@@ -146,15 +146,16 @@ export function TemplateEditor({
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <SelectField
-              label="Category"
-              value={category}
-              onChange={setCategory}
-              options={[
-                { value: "", label: "Uncategorised" },
-                ...GALLERY_CATEGORIES.map((c) => ({ value: c, label: c })),
-              ]}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="template-category">Category</Label>
+              <SelectField
+                id="template-category"
+                value={category}
+                onChange={setCategory}
+                options={GALLERY_CATEGORIES}
+                placeholder="Uncategorised"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
