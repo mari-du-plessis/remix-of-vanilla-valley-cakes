@@ -28,12 +28,21 @@ export const Route = createFileRoute("/order")({
   /**
    * `?design=<id>` resumes a Saved Design. With `edit`, the wizard reopens the
    * builder and saving updates that design; without it the customer continues
-   * straight to their enquiry.
+   * straight to their enquiry. `?template=<slug>` starts from a Vanilla Valley
+   * cake template — the template itself is never modified.
+   *
+   * Every parameter is optional, so plain `<Link to="/order" />` stays valid.
    */
-  validateSearch: (search: Record<string, unknown>) => ({
-    design: typeof search["design"] === "string" ? search["design"] : undefined,
-    edit: search["edit"] === true || search["edit"] === "true" ? true : undefined,
-  }),
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { design?: string; edit?: boolean; template?: string } => {
+    const parsed: { design?: string; edit?: boolean; template?: string } = {};
+    if (typeof search["design"] === "string") parsed.design = search["design"];
+    if (typeof search["template"] === "string") parsed.template = search["template"];
+    if (search["edit"] === true || search["edit"] === "true") parsed.edit = true;
+    return parsed;
+  },
+
   head: () => ({
     meta: [
       { title: "Order a Custom Cake — Vanilla Valley Bakery" },
