@@ -13,7 +13,8 @@ Status legend: ✅ done · 🚧 in progress · ⬜ planned
 | 5b | Customers (profiles, addresses, notes, tags, order history) | ✅ |
 | 6a | Gallery improvements (masonry, lightbox, filters, inspiration hand-off) | ✅ |
 | 6 | PDF quotations (`quotes` versions on `quoted` orders) | ✅ |
-| 7 | Cake templates (`cake_templates`, start-from-template) | ⬜ |
+| 7 | Cake templates (`cake_templates`, start-from-template) | ✅ |
+| 7b | Product-specific ordering workflows (cupcakes, cheesecakes, biscuits, rusks, cake cups, tarts) | ⬜ awaiting bakery requirements |
 | 8 | Staff (`staff_members` on profiles + roles) | ⬜ |
 | 9 | Production workflows (`workflow_templates`, `order_tasks`) | ⬜ |
 | 10 | Recipes, ingredients, inventory | ⬜ |
@@ -78,3 +79,16 @@ a `min` date on the event-date input.
 - [x] **Custom cake appearance model** — free-text colours, per-tier colours,
       ombre and fault-line treatments, independent decoration colours, topper
       style/colour/wording, and an appearance-aware AI concept brief.
+
+
+## Ordering workflows (module 7b — awaiting requirements)
+
+The ordering architecture now separates the **Custom Cake workflow** (full SVG
+cake builder) from the **generic enquiry workflow** used by every other product
+family. The generic workflow intentionally asks no product-specific questions:
+quantities, packaging, servings, flavours, fillings and decoration options for
+cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups and tarts are still
+to be confirmed with the bakery.
+
+Extension point: `features/order/flows/` (registry + `OrderDesignStep`).
+"Better ordering flow" is therefore **not complete**.

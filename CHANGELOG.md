@@ -2,6 +2,25 @@
 
 All notable changes to the Vanilla Valley platform.
 
+## Product-specific ordering workflows
+
+- New `features/order/flows/` layer: `OrderFlow` types, a registry mapping each
+  product family to its workflow, a `useOrderFlow` hook resolving the wizard
+  stages, and `OrderDesignStep` as the single extension point for
+  product-specific design stages.
+- Custom Cake keeps the full builder (shape, size, tiers, per-tier flavour and
+  colour, finish, treatments, decorations, drips, flowers, macarons, metallics,
+  topper, inspiration, SVG preview, AI concept, Saved Designs, Templates).
+- Cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups and tarts now use a
+  generic enquiry workflow (occasion, product, details, contact) and no longer
+  receive cake-specific questions. Their real workflows are still awaiting
+  bakery requirements — nothing was invented.
+- "What are we baking?" is a proper wizard stage (`ProductStep`) driven by the
+  catalog; the guided cake builder no longer repeats it.
+- `buildOrderMessage` and `buildOrderPayload` gate cake-only fields behind
+  `usesCakeRenderer`, and the saved order item now uses the chosen product's
+  name. No database or API changes.
+
 ## Cake Templates
 
 - `cake_templates` table: bakery-owned starting designs stored as the same
