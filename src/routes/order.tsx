@@ -245,8 +245,8 @@ function OrderPage() {
           )}
         </div>
 
-        {/* Saving keeps the design only — contact details stay with the enquiry. */}
-        {(step === 1 || step === 2) && (
+        {/* Saved Designs hold a cake design, so they follow the cake workflow. */}
+        {flow.savesDesigns && (stepKey === "design" || stepKey === "details") && (
           <div className="mt-3 flex">
             <SaveDesignDialog
               form={form}
