@@ -75,6 +75,3 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   notes: "",
 };
 
-
-
-export const ORDER_STEPS = ["Occasion", "Cake", "Details", "Contact"] as const;

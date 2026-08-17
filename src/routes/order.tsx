@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -7,15 +7,18 @@ import { StepProgress } from "@/components/common";
 import { Eyebrow } from "@/components/common/Typography";
 import { SiteShell } from "@/features/site/components/SiteShell";
 import { BRAND } from "@/config/brand";
-import { ORDER_STEPS } from "@/features/order/types";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { useOrderForm } from "@/features/order/hooks/useOrderForm";
+import { useOrderFlow } from "@/features/order/flows/useOrderFlow";
+import { stepLabel } from "@/features/order/flows/registry";
+import { OrderDesignStep } from "@/features/order/flows/OrderDesignStep";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
 import { useInspirationConcept } from "@/features/order/hooks/useInspirationConcept";
 import { whatsappUrl } from "@/features/order/lib/whatsapp";
 import { useGuidedBuilder } from "@/features/cake-builder/hooks/useGuidedBuilder";
-import { GuidedCakeBuilder } from "@/features/cake-builder/components/GuidedCakeBuilder";
+import type { BuilderStepKind } from "@/features/cake-builder/lib/steps";
 import { OccasionStep } from "@/features/order/components/OccasionStep";
+import { ProductStep } from "@/features/order/components/ProductStep";
 import { DetailsStep } from "@/features/order/components/DetailsStep";
 import { ContactStep } from "@/features/order/components/ContactStep";
 import { SaveDesignDialog } from "@/features/saved-designs/components/SaveDesignDialog";
@@ -23,6 +26,11 @@ import { useSavedDesign } from "@/features/saved-designs/hooks/useSavedDesigns";
 import { snapshotToForm } from "@/features/saved-designs/lib/snapshot";
 import { useCakeTemplate } from "@/features/cake-templates/hooks/useCakeTemplates";
 import { templateReference } from "@/features/cake-templates/types";
+
+/** Product choice is a wizard stage now, so the builder never repeats it. */
+const SKIP_KINDS: BuilderStepKind[] = ["product"];
+
+
 
 
 
@@ -68,10 +76,18 @@ export const Route = createFileRoute("/order")({
 function OrderPage() {
   const { catalog } = useCakeCatalog();
   const { design: designId, edit, template: templateSlug } = Route.useSearch();
-  const order = useOrderForm(catalog);
+  /* Product family -> ordering workflow -> the stages this wizard shows. */
+  const [productSlug, setProductSlug] = useState("");
+  const { flow, choices, steps } = useOrderFlow(productSlug);
+  const order = useOrderForm(catalog, steps);
   const concept = useInspirationConcept();
   const { submit, submitting, fallbackMessage } = useSubmitOrder(concept);
-  const { form, step } = order;
+  const { form, step, stepKey } = order;
+
+  /* The flow follows whatever product the form currently holds. */
+  useEffect(() => {
+    setProductSlug(form.product);
+  }, [form.product]);
 
   /* Saved Design hand-off: hydrate the wizard once the design arrives. */
   const saved = useSavedDesign(designId ?? null);
@@ -86,7 +102,7 @@ function OrderPage() {
         aiPreviewSignature: record.aiPreviewSignature,
       }),
     );
-    order.setStep(edit ? 1 : 2);
+    order.setStep(steps.indexOf(edit ? "design" : "details"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saved.data, edit]);
 
@@ -106,7 +122,7 @@ function OrderPage() {
       templateRef: templateReference(record),
     });
     /* Straight into the builder, so it reads as "a design to adjust". */
-    order.setStep(1);
+    order.setStep(Math.max(0, steps.indexOf("design")));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template.data]);
 
@@ -114,9 +130,10 @@ function OrderPage() {
   /**
    * The AI concept starts rendering the moment the customer reaches "Your
    * details", so it is usually on screen before they send the enquiry. The
-   * hook itself guards against repeat runs.
+   * hook itself guards against repeat runs — and against products that have
+   * no cake design to illustrate.
    */
-  const conceptStep = step === 3;
+  const conceptStep = stepKey === "contact";
   useEffect(() => {
     if (conceptStep) concept.start(order.form, catalog);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,10 +142,11 @@ function OrderPage() {
   /**
    * The cake builder owns its own sub-steps; the wizard's Back/Continue simply
    * drive them while the customer is designing, so there is only ever one set
-   * of navigation on screen.
+   * of navigation on screen. Product selection is a wizard stage now, so the
+   * builder never asks for it.
    */
-  const builder = useGuidedBuilder(form, catalog, order);
-  const designing = step === 1;
+  const builder = useGuidedBuilder(form, catalog, order, { skipKinds: SKIP_KINDS });
+  const designing = stepKey === "design";
   const canContinue = designing ? builder.canAdvance : order.canContinue();
 
   const goBack = () =>
@@ -145,20 +163,35 @@ function OrderPage() {
       <div className="mx-auto max-w-xl px-6 py-10">
         <div className="mb-8 text-center">
           <Eyebrow className="text-primary">Bespoke commission</Eyebrow>
-          <h1 className="mt-4 text-2xl sm:text-3xl">Design your cake</h1>
+          <h1 className="mt-4 text-2xl sm:text-3xl">
+            {flow.usesCakeBuilder ? "Design your cake" : "Send your enquiry"}
+          </h1>
           <div className="gold-rule mx-auto mt-5 max-w-[7rem]" />
         </div>
 
-        <StepProgress steps={ORDER_STEPS} current={step} className="mb-8" />
+        <StepProgress
+          steps={steps.map((key) => stepLabel(key, flow))}
+          current={step}
+          className="mb-8"
+        />
 
         <div className="surface-card rounded-3xl p-6 sm:p-8">
 
-          {step === 0 && (
+          {stepKey === "occasion" && (
             <OccasionStep value={form.occasion} onChange={(o) => order.update("occasion", o)} />
           )}
 
+          {stepKey === "product" && (
+            <ProductStep
+              value={form.product}
+              choices={choices}
+              onChange={(slug) => order.update("product", slug)}
+            />
+          )}
+
           {designing && (
-            <GuidedCakeBuilder
+            <OrderDesignStep
+              flow={flow}
               form={form}
               catalog={catalog}
               builder={builder}
@@ -168,7 +201,7 @@ function OrderPage() {
           )}
 
 
-          {step === 2 && (
+          {stepKey === "details" && (
             <DetailsStep
               form={form}
               onInspirationChange={order.setInspirationFile}
@@ -177,7 +210,7 @@ function OrderPage() {
             />
           )}
 
-          {step === 3 && (
+          {stepKey === "contact" && (
             <ContactStep form={form} onChange={order.update} concept={concept} />
           )}
         </div>
@@ -214,8 +247,8 @@ function OrderPage() {
           )}
         </div>
 
-        {/* Saving keeps the design only — contact details stay with the enquiry. */}
-        {(step === 1 || step === 2) && (
+        {/* Saved Designs hold a cake design, so they follow the cake workflow. */}
+        {flow.savesDesigns && (stepKey === "design" || stepKey === "details") && (
           <div className="mt-3 flex">
             <SaveDesignDialog
               form={form}

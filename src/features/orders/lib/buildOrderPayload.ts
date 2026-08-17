@@ -1,3 +1,4 @@
+import { productFamily, usesCakeRenderer } from "@/config/product-builders";
 import { appearanceLines } from "@/features/cake-builder/lib/appearance";
 import { tierLabel } from "@/features/order/lib/tiers";
 import type { OrderFormState } from "@/features/order/types";
@@ -18,8 +19,14 @@ export function buildOrderPayload(
   } = {},
 ): CreateOrderInput {
   const options: NonNullable<CreateOrderInput["items"][number]["options"]> = [];
+  /**
+   * Flavours, tiers, extras, appearance and cake text belong to the Custom Cake
+   * workflow. Other product families record only the generic enquiry details
+   * until the bakery confirms their ordering requirements.
+   */
+  const rendersCake = usesCakeRenderer(form.product);
 
-  if (form.tiers.length > 0) {
+  if (rendersCake && form.tiers.length > 0) {
     form.tiers.forEach((tier, index) => {
       const label = tierLabel(index, form.tiers.length);
       if (tier.flavour) {
@@ -39,7 +46,7 @@ export function buildOrderPayload(
         });
       }
     });
-  } else {
+  } else if (rendersCake) {
     if (form.flavour) {
       options.push({
         groupKey: "flavour",
@@ -58,7 +65,8 @@ export function buildOrderPayload(
     }
   }
 
-  form.extras.forEach((value) =>
+  if (rendersCake)
+    form.extras.forEach((value) =>
     options.push({
       groupKey: "extra",
       groupLabel: "Extra",
@@ -72,17 +80,18 @@ export function buildOrderPayload(
    * key keeps it queryable, so a future appearance report or template can read
    * it back without a schema change.
    */
-  appearanceLines(
-    form.appearance,
-    form.tiers.length > 0 ? form.tiers.map((_, i) => tierLabel(i, form.tiers.length)) : ["Cake"],
-  ).forEach((line) =>
-    options.push({
-      groupKey: "appearance",
-      groupLabel: line.label,
-      valueLabel: line.value,
-      tierIndex: null,
-    }),
-  );
+  if (rendersCake)
+    appearanceLines(
+      form.appearance,
+      form.tiers.length > 0 ? form.tiers.map((_, i) => tierLabel(i, form.tiers.length)) : ["Cake"],
+    ).forEach((line) =>
+      options.push({
+        groupKey: "appearance",
+        groupLabel: line.label,
+        valueLabel: line.value,
+        tierIndex: null,
+      }),
+    );
 
   /**
    * A Vanilla Valley gallery photo used as a reference is recorded as its own
@@ -112,7 +121,7 @@ export function buildOrderPayload(
     });
   }
 
-  if (form.cakeText.trim()) {
+  if (rendersCake && form.cakeText.trim()) {
     options.push({
       groupKey: "message",
       groupLabel: "Message on cake",
@@ -137,7 +146,7 @@ export function buildOrderPayload(
     summary: extra.summary || undefined,
     items: [
       {
-        name: "Custom Cake",
+        name: productFamily(form.product).label,
         sizeId: form.size || undefined,
         sizeLabel: form.size ? (extra.sizeLabel ?? form.size) : undefined,
         quantity: 1,

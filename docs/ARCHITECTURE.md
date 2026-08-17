@@ -152,6 +152,46 @@ Only builders listed in `IMPLEMENTED_BUILDERS` mount a dedicated experience, so
 a new family ships by adding its entry and its component — no order, message or
 renderer code changes.
 
+### Ordering workflows (generic vs Custom Cake)
+
+The wizard frame is generic; the *workflow* is chosen per product family.
+
+```
+product slug → product-builders.ts (builder id) → flows/registry.ts (OrderFlow)
+                                                        ↓
+                                        wizard stages + optional design stage
+```
+
+- `features/order/flows/types.ts` — `OrderStepKey`, `OrderFlow`.
+- `features/order/flows/registry.ts` — the only product-family → workflow map,
+  plus stage labels.
+- `features/order/flows/useOrderFlow.ts` — resolves flow, orderable products
+  and the stage list (the Product stage is hidden when only one product is
+  orderable).
+- `features/order/flows/OrderDesignStep.tsx` — the single extension point for
+  product-specific design stages.
+
+Two workflows exist today:
+
+| Workflow | Stages | Notes |
+| --- | --- | --- |
+| `custom-cake` | Occasion · Product · Cake · Details · Contact | Full SVG cake builder, per-tier design, appearance, AI concept, Saved Designs, Templates |
+| `generic-enquiry` | Occasion · Product · Details · Contact | Cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups, tarts. **Deliberately asks nothing product-specific** — their ordering requirements are still to be confirmed with the bakery |
+
+Everything cake-specific (SVG renderer, tiers, per-tier appearance, appearance
+controls, cake assets, AI concept, Saved Designs) is reachable only through the
+`custom-cake` workflow. `buildOrderMessage` and `buildOrderPayload` both gate
+those fields on `usesCakeRenderer(form.product)`, so a non-cake enquiry saves
+and sends only the generic details. Shared pieces — occasion, product choice,
+event date, inspiration upload, contact, validation, step navigation, order
+persistence and the WhatsApp hand-off — stay in `features/order` and are reused
+by every workflow. No database change was needed: enquiries keep using the
+existing `orders` / `order_items` / `order_item_options` structure.
+
+A future CupcakeOrderFlow is: add the flow to the registry, point the builder
+id at it, and add one branch in `OrderDesignStep`. The Custom Cake workflow is
+untouched.
+
 ### View-agnostic rendering
 
 The cake data model (`CakeDesign`) never encodes *how* a cake is drawn.
