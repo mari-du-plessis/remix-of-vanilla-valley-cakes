@@ -14,6 +14,7 @@ export const ORDER_FLOWS: Record<OrderFlowId, OrderFlow> = {
     steps: ["occasion", "product", "design", "details", "contact"],
     designStepLabel: "Cake",
     usesCakeBuilder: true,
+    savesDesigns: true,
   },
   /**
    * Cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups and tarts.
@@ -27,6 +28,7 @@ export const ORDER_FLOWS: Record<OrderFlowId, OrderFlow> = {
     steps: ["occasion", "product", "details", "contact"],
     designStepLabel: null,
     usesCakeBuilder: false,
+    savesDesigns: false,
   },
 };
 

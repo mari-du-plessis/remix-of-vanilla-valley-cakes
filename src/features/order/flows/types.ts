@@ -30,4 +30,6 @@ export type OrderFlow = {
    * appearance, cake assets, live preview and the AI concept.
    */
   usesCakeBuilder: boolean;
+  /** Whether this workflow produces something a customer can save and reopen. */
+  savesDesigns: boolean;
 };
