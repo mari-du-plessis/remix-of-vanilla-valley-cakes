@@ -1,5 +1,5 @@
 import { BRAND } from "@/config/brand";
-import { productFamily } from "@/config/product-builders";
+import { productFamily, usesCakeRenderer } from "@/config/product-builders";
 import { appearanceLines } from "@/features/cake-builder/lib/appearance";
 import { tierLabel } from "./tiers";
 import type { OrderFormState } from "../types";
@@ -23,9 +23,33 @@ export function buildOrderMessage(
       .replace(/^\w/, (c) => c.toUpperCase());
 
   const family = productFamily(form.product);
+  /** Cake design answers only exist for the Custom Cake workflow. */
+  const rendersCake = usesCakeRenderer(form.product);
   const heading = [family.emoji, `*New ${family.noun} Request — ${BRAND.name}*`]
     .filter(Boolean)
     .join(" ");
+
+  const designLines = rendersCake
+    ? [
+        form.shapeKey ? `*Shape:* ${pretty(form.shapeKey)}` : null,
+        form.size ? `*Size:* ${options.sizeLabel ?? form.size}` : null,
+        form.icingKey ? `*Finish:* ${pretty(form.icingKey)}` : null,
+        form.tiers.length > 1 ? `*Tiers:* ${form.tiers.length}` : null,
+        ...(form.tiers.length > 0
+          ? form.tiers.map(
+              (t, i) => `*${tierLabel(i, form.tiers.length)}:* ${t.flavour} with ${t.filling}`,
+            )
+          : [`*Flavour:* ${form.flavour}`, `*Filling:* ${form.filling}`]),
+        form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
+        ...appearanceLines(
+          form.appearance,
+          form.tiers.length > 0
+            ? form.tiers.map((_, i) => tierLabel(i, form.tiers.length))
+            : ["Cake"],
+        ).map((line) => `*${line.label}:* ${line.value}`),
+        form.cakeText.trim() ? `*Message on cake:* ${form.cakeText.trim()}` : null,
+      ]
+    : [];
 
   return [
     heading,
@@ -33,23 +57,8 @@ export function buildOrderMessage(
     ``,
     `*Occasion:* ${form.occasion}`,
     `*Product:* ${family.label}`,
-    form.shapeKey ? `*Shape:* ${pretty(form.shapeKey)}` : null,
-    `*Size:* ${options.sizeLabel ?? form.size}`,
-    form.icingKey ? `*Finish:* ${pretty(form.icingKey)}` : null,
-    form.tiers.length > 1 ? `*Tiers:* ${form.tiers.length}` : null,
-    ...(form.tiers.length > 0
-      ? form.tiers.map(
-          (t, i) => `*${tierLabel(i, form.tiers.length)}:* ${t.flavour} with ${t.filling}`,
-        )
-      : [`*Flavour:* ${form.flavour}`, `*Filling:* ${form.filling}`]),
-    form.extras.length ? `*Extras:* ${form.extras.join(", ")}` : null,
-    ...appearanceLines(
-      form.appearance,
-      form.tiers.length > 0
-        ? form.tiers.map((_, i) => tierLabel(i, form.tiers.length))
-        : ["Cake"],
-    ).map((line) => `*${line.label}:* ${line.value}`),
-    form.cakeText.trim() ? `*Message on cake:* ${form.cakeText.trim()}` : null,
+    ...designLines,
+
     ``,
     `*Event date:* ${form.eventDate}`,
     options.photoLine ?? null,

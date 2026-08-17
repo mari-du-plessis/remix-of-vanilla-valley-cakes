@@ -8,9 +8,10 @@ import {
   readGalleryInspiration,
 } from "@/features/gallery/lib/inspiration-reference";
 import { useAvailabilityWindow } from "@/features/calendar/hooks/useAvailability";
+import { ORDER_FLOWS } from "../flows/registry";
+import type { OrderStepKey } from "../flows/types";
 import {
   EMPTY_ORDER_FORM,
-  ORDER_STEPS,
   type CakeTier,
   type OrderFormState,
 } from "../types";
@@ -19,10 +20,23 @@ import {
  * Owns all order wizard state, tier rules and per-step validation.
  * Cake choices come from the catalog (database-backed) rather than constants,
  * so tiers and signature pairings follow whatever the bakery configures.
+ *
+ * The wizard's stages are supplied by the active ordering workflow, so a
+ * product family without a design stage simply never reaches one.
  */
-export function useOrderForm(catalog: CakeCatalog) {
+export function useOrderForm(
+  catalog: CakeCatalog,
+  steps: OrderStepKey[] = ORDER_FLOWS["custom-cake"].steps,
+) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<OrderFormState>(EMPTY_ORDER_FORM);
+
+  /** Stages can change when the product changes; never point past the end. */
+  useEffect(() => {
+    setStep((s) => Math.min(s, Math.max(0, steps.length - 1)));
+  }, [steps.length]);
+
+  const stepKey = steps[Math.min(step, steps.length - 1)] ?? "contact";
 
   /**
    * Availability runs behind the scenes today: the lookup always happens so the
@@ -144,8 +158,10 @@ export function useOrderForm(catalog: CakeCatalog) {
   );
 
   const canContinue = useCallback(() => {
-    if (step === 0) return !!form.occasion;
-    if (step === 1) {
+    if (stepKey === "occasion") return !!form.occasion;
+    if (stepKey === "product") return !!form.product;
+    /* The design stage is validated by the flow's own builder. */
+    if (stepKey === "design") {
       if (!form.size) return false;
       const count = tierCount(catalog, form.size);
       if (count > 0) {
@@ -153,19 +169,21 @@ export function useOrderForm(catalog: CakeCatalog) {
       }
       return !!form.flavour && !!form.filling;
     }
-    if (step === 2) {
+    if (stepKey === "details") {
       if (!form.eventDate) return false;
       if (FEATURE_FLAGS.enforceOrderAvailability)
         return availability.isDateAvailable(form.eventDate);
       return true;
     }
     return !!form.name && !!form.phone;
-  }, [step, form, catalog, availability]);
+  }, [stepKey, form, catalog, availability]);
 
   return {
     step,
     setStep,
-    isLastStep: step === ORDER_STEPS.length - 1,
+    /** Key of the stage currently on screen. */
+    stepKey,
+    isLastStep: step === steps.length - 1,
     form,
     loadForm,
     update,
