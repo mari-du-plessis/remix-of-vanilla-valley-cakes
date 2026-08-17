@@ -163,7 +163,9 @@ function OrderPage() {
       <div className="mx-auto max-w-xl px-6 py-10">
         <div className="mb-8 text-center">
           <Eyebrow className="text-primary">Bespoke commission</Eyebrow>
-          <h1 className="mt-4 text-2xl sm:text-3xl">Design your cake</h1>
+          <h1 className="mt-4 text-2xl sm:text-3xl">
+            {flow.usesCakeBuilder ? "Design your cake" : "Send your enquiry"}
+          </h1>
           <div className="gold-rule mx-auto mt-5 max-w-[7rem]" />
         </div>
 
