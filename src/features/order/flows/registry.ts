@@ -1,4 +1,5 @@
 import { productFamily, type ProductBuilderId } from "@/config/product-builders";
+import { requirementsFor } from "./product-requirements";
 import type { OrderFlow, OrderFlowId, OrderStepKey } from "./types";
 
 /**
@@ -17,11 +18,19 @@ export const ORDER_FLOWS: Record<OrderFlowId, OrderFlow> = {
     savesDesigns: true,
   },
   /**
-   * Cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups and tarts.
-   * Their ordering questions are still to be confirmed with the bakery, so
-   * this workflow deliberately asks nothing product-specific — the customer
-   * can still send an enquiry and the detail is agreed on WhatsApp.
+   * Cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups and tarts. The
+   * questions themselves come from the catalog (see `product-requirements.ts`),
+   * so the bakery changes them without a developer.
    */
+  "product-selection": {
+    id: "product-selection",
+    label: "Product order",
+    steps: ["occasion", "product", "selections", "details", "contact"],
+    designStepLabel: null,
+    usesCakeBuilder: false,
+    savesDesigns: false,
+  },
+  /** Fallback for a family with no questions configured yet. */
   "generic-enquiry": {
     id: "generic-enquiry",
     label: "Product enquiry",
@@ -33,31 +42,44 @@ export const ORDER_FLOWS: Record<OrderFlowId, OrderFlow> = {
 };
 
 /**
- * Builder id -> workflow. Future workflows (CupcakeOrderFlow, TartOrderFlow…)
- * are registered by pointing their builder id at a new flow above.
+ * Builder id -> workflow. A family with configured requirements walks the
+ * selections workflow; anything else falls back to the plain enquiry.
  */
 const FLOW_BY_BUILDER: Record<ProductBuilderId, OrderFlowId> = {
   "cake-svg": "custom-cake",
-  cupcake: "generic-enquiry",
-  cheesecake: "generic-enquiry",
-  cookie: "generic-enquiry",
-  tart: "generic-enquiry",
-  "cake-cup": "generic-enquiry",
-  rusk: "generic-enquiry",
+  cupcake: "product-selection",
+  cheesecake: "product-selection",
+  cookie: "product-selection",
+  tart: "product-selection",
+  "cake-cup": "product-selection",
+  rusk: "product-selection",
   none: "generic-enquiry",
 };
 
 /** The workflow a product slug orders through. */
-export const orderFlowFor = (slug: string | null | undefined): OrderFlow =>
-  ORDER_FLOWS[FLOW_BY_BUILDER[productFamily(slug).builder]];
+export const orderFlowFor = (slug: string | null | undefined): OrderFlow => {
+  const builder = productFamily(slug).builder;
+  const flow = ORDER_FLOWS[FLOW_BY_BUILDER[builder]];
+  /* No configured questions yet -> never show an empty stage. */
+  if (flow.id === "product-selection" && !requirementsFor(builder))
+    return ORDER_FLOWS["generic-enquiry"];
+  return flow;
+};
 
 /** Human labels for the wizard progress bar. */
-const STEP_LABELS: Record<Exclude<OrderStepKey, "design">, string> = {
+const STEP_LABELS: Record<Exclude<OrderStepKey, "design" | "selections">, string> = {
   occasion: "Occasion",
   product: "Product",
   details: "Details",
   contact: "Contact",
 };
 
-export const stepLabel = (key: OrderStepKey, flow: OrderFlow): string =>
-  key === "design" ? (flow.designStepLabel ?? "Design") : STEP_LABELS[key];
+export const stepLabel = (
+  key: OrderStepKey,
+  flow: OrderFlow,
+  selectionsLabel = "Choices",
+): string => {
+  if (key === "design") return flow.designStepLabel ?? "Design";
+  if (key === "selections") return selectionsLabel;
+  return STEP_LABELS[key];
+};

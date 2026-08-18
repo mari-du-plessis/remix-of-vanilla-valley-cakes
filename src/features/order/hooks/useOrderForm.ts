@@ -10,10 +10,12 @@ import {
 import { useAvailabilityWindow } from "@/features/calendar/hooks/useAvailability";
 import { ORDER_FLOWS } from "../flows/registry";
 import type { OrderStepKey } from "../flows/types";
+import { hasRequiredSelections, toggleSelection } from "../lib/selections";
 import {
   EMPTY_ORDER_FORM,
   type CakeTier,
   type OrderFormState,
+  type OrderSelection,
 } from "../types";
 
 /**
@@ -27,6 +29,8 @@ import {
 export function useOrderForm(
   catalog: CakeCatalog,
   steps: OrderStepKey[] = ORDER_FLOWS["custom-cake"].steps,
+  /** Option groups the chosen product must have an answer for. */
+  requiredSelectionKeys: string[] = [],
 ) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<OrderFormState>(EMPTY_ORDER_FORM);
@@ -84,6 +88,37 @@ export function useOrderForm(
       })),
     [],
   );
+
+  /**
+   * Answers to the chosen product's catalog option groups. Single-select
+   * groups replace their previous answer; multi-select groups toggle.
+   */
+  const toggleSelectionValue = useCallback(
+    (selection: OrderSelection, multi: boolean) =>
+      setForm((f) => ({ ...f, selections: toggleSelection(f.selections, selection, multi) })),
+    [],
+  );
+
+  const setQuantity = useCallback(
+    (value: number) => setForm((f) => ({ ...f, quantity: Math.max(1, Math.round(value)) })),
+    [],
+  );
+
+  /**
+   * Changing the product changes the questions, so previous answers — which
+   * belonged to another family's option groups — are cleared.
+   */
+  const setProduct = useCallback(
+    (slug: string, initialQuantity = 1) =>
+      setForm((f) =>
+        f.product === slug
+          ? f
+          : { ...f, product: slug, selections: [], quantity: initialQuantity },
+      ),
+    [],
+  );
+
+
 
   const setInspirationFile = useCallback((file: File | null) => {
     setForm((f) => {
