@@ -89,6 +89,37 @@ export function useOrderForm(
     [],
   );
 
+  /**
+   * Answers to the chosen product's catalog option groups. Single-select
+   * groups replace their previous answer; multi-select groups toggle.
+   */
+  const toggleSelectionValue = useCallback(
+    (selection: OrderSelection, multi: boolean) =>
+      setForm((f) => ({ ...f, selections: toggleSelection(f.selections, selection, multi) })),
+    [],
+  );
+
+  const setQuantity = useCallback(
+    (value: number) => setForm((f) => ({ ...f, quantity: Math.max(1, Math.round(value)) })),
+    [],
+  );
+
+  /**
+   * Changing the product changes the questions, so previous answers — which
+   * belonged to another family's option groups — are cleared.
+   */
+  const setProduct = useCallback(
+    (slug: string, initialQuantity = 1) =>
+      setForm((f) =>
+        f.product === slug
+          ? f
+          : { ...f, product: slug, selections: [], quantity: initialQuantity },
+      ),
+    [],
+  );
+
+
+
   const setInspirationFile = useCallback((file: File | null) => {
     setForm((f) => {
       if (f.inspirationPreview) URL.revokeObjectURL(f.inspirationPreview);
