@@ -88,6 +88,8 @@ export const EMPTY_ORDER_FORM: OrderFormState = {
   inspirationPreview: "",
   galleryInspiration: null,
   templateRef: null,
+  selections: [],
+  quantity: 1,
   eventDate: "",
   name: "",
   phone: "",
