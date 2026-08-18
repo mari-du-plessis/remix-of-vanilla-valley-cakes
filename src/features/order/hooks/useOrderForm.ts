@@ -29,6 +29,8 @@ import {
 export function useOrderForm(
   catalog: CakeCatalog,
   steps: OrderStepKey[] = ORDER_FLOWS["custom-cake"].steps,
+  /** Option groups the chosen product must have an answer for. */
+  requiredSelectionKeys: string[] = [],
 ) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<OrderFormState>(EMPTY_ORDER_FORM);
