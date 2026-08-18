@@ -10,10 +10,12 @@ import {
 import { useAvailabilityWindow } from "@/features/calendar/hooks/useAvailability";
 import { ORDER_FLOWS } from "../flows/registry";
 import type { OrderStepKey } from "../flows/types";
+import { hasRequiredSelections, toggleSelection } from "../lib/selections";
 import {
   EMPTY_ORDER_FORM,
   type CakeTier,
   type OrderFormState,
+  type OrderSelection,
 } from "../types";
 
 /**
