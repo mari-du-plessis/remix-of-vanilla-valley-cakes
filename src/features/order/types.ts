@@ -55,6 +55,14 @@ export type OrderFormState = {
    * never touches the template and deleting the template never affects them.
    */
   templateRef: TemplateReference | null;
+  /**
+   * Answers to the chosen product's option groups (cupcakes, cheesecakes,
+   * biscuits, rusks, cake cups, tarts). Empty for the Custom Cake workflow,
+   * which records its design in the fields above instead.
+   */
+  selections: OrderSelection[];
+  /** How many the customer wants, in the family's own unit (dozen, packs…). */
+  quantity: number;
   eventDate: string;
   name: string;
   phone: string;
