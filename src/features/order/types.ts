@@ -4,6 +4,18 @@ import type { TemplateReference } from "@/features/cake-templates/lib/reference"
 
 export type CakeTier = { flavour: string; filling: string };
 
+/**
+ * One answer to a catalog option group (flavour, size, decoration…). Stored
+ * self-describing — key *and* label — so the summary, the saved order and any
+ * future quotation read it without knowing the product family.
+ */
+export type OrderSelection = {
+  groupKey: string;
+  groupLabel: string;
+  valueKey: string;
+  valueLabel: string;
+};
+
 export type OrderFormState = {
   occasion: string;
   /** Product slug chosen in the cake builder (celebration cake, cupcakes…). */
