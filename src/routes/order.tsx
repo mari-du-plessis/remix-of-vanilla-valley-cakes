@@ -12,6 +12,8 @@ import { useOrderForm } from "@/features/order/hooks/useOrderForm";
 import { useOrderFlow } from "@/features/order/flows/useOrderFlow";
 import { stepLabel } from "@/features/order/flows/registry";
 import { OrderDesignStep } from "@/features/order/flows/OrderDesignStep";
+import { useProductSelections } from "@/features/order/hooks/useProductSelections";
+import { SelectionsStep } from "@/features/order/components/SelectionsStep";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
 import { useInspirationConcept } from "@/features/order/hooks/useInspirationConcept";
 import { whatsappUrl } from "@/features/order/lib/whatsapp";
@@ -79,7 +81,9 @@ function OrderPage() {
   /* Product family -> ordering workflow -> the stages this wizard shows. */
   const [productSlug, setProductSlug] = useState("");
   const { flow, choices, steps } = useOrderFlow(productSlug);
-  const order = useOrderForm(catalog, steps);
+  /* Catalog-driven questions for non-cake product families. */
+  const selections = useProductSelections(productSlug);
+  const order = useOrderForm(catalog, steps, selections.requiredKeys);
   const concept = useInspirationConcept();
   const { submit, submitting, fallbackMessage } = useSubmitOrder(concept);
   const { form, step, stepKey } = order;
@@ -170,7 +174,7 @@ function OrderPage() {
         </div>
 
         <StepProgress
-          steps={steps.map((key) => stepLabel(key, flow))}
+          steps={steps.map((key) => stepLabel(key, flow, selections.stepLabel))}
           current={step}
           className="mb-8"
         />
@@ -185,7 +189,7 @@ function OrderPage() {
             <ProductStep
               value={form.product}
               choices={choices}
-              onChange={(slug) => order.update("product", slug)}
+              onChange={(slug) => order.setProduct(slug)}
             />
           )}
 
@@ -200,6 +204,19 @@ function OrderPage() {
             />
           )}
 
+
+          {stepKey === "selections" && (
+            <SelectionsStep
+              headline={selections.headline}
+              groups={selections.groups}
+              selections={form.selections}
+              quantity={form.quantity}
+              quantityRule={selections.quantity}
+              isPending={selections.isPending}
+              onToggle={order.toggleSelectionValue}
+              onQuantityChange={order.setQuantity}
+            />
+          )}
 
           {stepKey === "details" && (
             <DetailsStep
