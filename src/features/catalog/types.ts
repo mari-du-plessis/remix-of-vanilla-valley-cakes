@@ -103,4 +103,6 @@ export const catalogKeys = {
   productGroups: (productId: string) =>
     ["catalog", "product-option-groups", productId] as const,
   cake: ["catalog", "cake"] as const,
+  /** Groups + every active option, for catalog-driven product questions. */
+  selections: ["catalog", "selections"] as const,
 };

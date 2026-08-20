@@ -33,7 +33,7 @@ export function useProductSelections(productSlug: string) {
   const requirements = requirementsFor(productFamily(productSlug).builder);
 
   const { data, isPending } = useQuery({
-    queryKey: catalogKeys.cake,
+    queryKey: catalogKeys.selections,
     queryFn: async () => {
       const [groups, options] = await Promise.all([fetchOptionGroups(), fetchAllOptions()]);
       return { groups, options };
