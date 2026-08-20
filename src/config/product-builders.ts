@@ -37,9 +37,9 @@ export const PRODUCT_FAMILIES: ProductFamily[] = [
   { slug: "cheesecake", label: "Cheesecake", builder: "cheesecake", emoji: "🍰", noun: "Cheesecake" },
   { slug: "biscuits", label: "Biscuits", builder: "cookie", emoji: "🍪", noun: "Biscuit" },
   { slug: "cookies", label: "Cookies", builder: "cookie", emoji: "🍪", noun: "Cookie" },
-  { slug: "tarts", label: "Tarts", builder: "tart", emoji: "", noun: "Tart" },
-  { slug: "cake-cups", label: "Cake Cups", builder: "cake-cup", emoji: "", noun: "Cake Cup" },
-  { slug: "rusks", label: "Rusks", builder: "rusk", emoji: "", noun: "Rusk" },
+  { slug: "tarts", label: "Tarts", builder: "tart", emoji: "🥧", noun: "Tart" },
+  { slug: "cake-cups", label: "Cake Cups", builder: "cake-cup", emoji: "🍮", noun: "Cake Cup" },
+  { slug: "rusks", label: "Rusks", builder: "rusk", emoji: "🍞", noun: "Rusk" },
 ];
 
 const familyBySlug = new Map(PRODUCT_FAMILIES.map((f) => [f.slug, f]));
