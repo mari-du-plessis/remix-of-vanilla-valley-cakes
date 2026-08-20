@@ -1,3 +1,13 @@
+## Product-specific ordering workflows
+
+- Cupcakes, cheesecakes, biscuits, rusks, cake cups and tarts now order through a
+  catalog-driven `product-selection` workflow: flavour, size and decoration
+  questions plus a quantity rule per family.
+- Option groups and options are seeded in the database, so the bakery edits every
+  choice from Admin > Products without a developer.
+- Answers flow into the WhatsApp summary and the saved order as ordinary option
+  rows; the Custom Cake workflow is unchanged.
+
 # Changelog
 
 All notable changes to the Vanilla Valley platform.
