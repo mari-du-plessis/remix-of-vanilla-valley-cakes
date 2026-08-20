@@ -121,6 +121,22 @@ export function buildOrderPayload(
     });
   }
 
+  /**
+   * Non-cake families: their catalog answers are already self-describing, so
+   * they map straight onto option rows.
+   */
+  if (!rendersCake) {
+    form.selections.forEach((selection) =>
+      options.push({
+        groupKey: selection.groupKey,
+        groupLabel: selection.groupLabel,
+        valueKey: selection.valueKey,
+        valueLabel: selection.valueLabel,
+        tierIndex: null,
+      }),
+    );
+  }
+
   if (rendersCake && form.cakeText.trim()) {
     options.push({
       groupKey: "message",
@@ -149,7 +165,7 @@ export function buildOrderPayload(
         name: productFamily(form.product).label,
         sizeId: form.size || undefined,
         sizeLabel: form.size ? (extra.sizeLabel ?? form.size) : undefined,
-        quantity: 1,
+        quantity: rendersCake ? 1 : Math.max(1, form.quantity),
         options,
       },
     ],

@@ -13,6 +13,8 @@ import { useOrderFlow } from "@/features/order/flows/useOrderFlow";
 import { stepLabel } from "@/features/order/flows/registry";
 import { OrderDesignStep } from "@/features/order/flows/OrderDesignStep";
 import { useProductSelections } from "@/features/order/hooks/useProductSelections";
+import { requirementsFor } from "@/features/order/flows/product-requirements";
+import { productFamily } from "@/config/product-builders";
 import { SelectionsStep } from "@/features/order/components/SelectionsStep";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
 import { useInspirationConcept } from "@/features/order/hooks/useInspirationConcept";
@@ -189,7 +191,12 @@ function OrderPage() {
             <ProductStep
               value={form.product}
               choices={choices}
-              onChange={(slug) => order.setProduct(slug)}
+              onChange={(slug) =>
+                order.setProduct(
+                  slug,
+                  requirementsFor(productFamily(slug).builder)?.quantity?.initial ?? 1,
+                )
+              }
             />
           )}
 
