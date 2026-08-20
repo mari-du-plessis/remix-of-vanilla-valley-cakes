@@ -204,6 +204,9 @@ export function useOrderForm(
       }
       return !!form.flavour && !!form.filling;
     }
+    /* Catalog-driven product questions: every required group needs an answer. */
+    if (stepKey === "selections")
+      return hasRequiredSelections(form.selections, requiredSelectionKeys);
     if (stepKey === "details") {
       if (!form.eventDate) return false;
       if (FEATURE_FLAGS.enforceOrderAvailability)
@@ -211,7 +214,7 @@ export function useOrderForm(
       return true;
     }
     return !!form.name && !!form.phone;
-  }, [stepKey, form, catalog, availability]);
+  }, [stepKey, form, catalog, availability, requiredSelectionKeys]);
 
   return {
     step,
@@ -231,6 +234,9 @@ export function useOrderForm(
     setTierField,
     setTierFlavour,
     setFlavour,
+    setProduct,
+    toggleSelectionValue,
+    setQuantity,
     canContinue,
     /** Availability integration point for the customer wizard (see feature flag). */
     availability,

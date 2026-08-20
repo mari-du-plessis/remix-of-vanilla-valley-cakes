@@ -2,6 +2,7 @@ import { BRAND } from "@/config/brand";
 import { productFamily, usesCakeRenderer } from "@/config/product-builders";
 import { appearanceLines } from "@/features/cake-builder/lib/appearance";
 import { tierLabel } from "./tiers";
+import { selectionSummary } from "./selections";
 import type { OrderFormState } from "../types";
 
 /**
@@ -51,6 +52,17 @@ export function buildOrderMessage(
       ]
     : [];
 
+  /**
+   * Non-cake families record their answers as catalog selections, so the
+   * summary is generated from the data rather than a per-product template.
+   */
+  const selectionLines = rendersCake
+    ? []
+    : [
+        ...selectionSummary(form.selections).map((l) => `*${l.label}:* ${l.value}`),
+        form.quantity > 1 ? `*Quantity:* ${form.quantity}` : null,
+      ];
+
   return [
     heading,
     options.orderNumber ? `*Reference:* ${options.orderNumber}` : null,
@@ -58,6 +70,7 @@ export function buildOrderMessage(
     `*Occasion:* ${form.occasion}`,
     `*Product:* ${family.label}`,
     ...designLines,
+    ...selectionLines,
 
     ``,
     `*Event date:* ${form.eventDate}`,
