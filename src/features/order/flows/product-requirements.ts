@@ -14,6 +14,8 @@ import type { ProductBuilderId } from "@/config/product-builders";
 export type QuantityRule = {
   /** Unit shown next to the stepper, e.g. "dozen", "each", "packs". */
   unit: string;
+  /** Singular form, used when the customer asks for exactly one. */
+  unitOne?: string;
   /** Increment of the stepper. */
   step: number;
   /** Starting value. */
@@ -72,6 +74,7 @@ export const PRODUCT_REQUIREMENTS: Partial<Record<ProductBuilderId, ProductRequi
     groupKeys: ["rusk-flavour"],
     quantity: {
       unit: "packs",
+      unitOne: "pack",
       step: 1,
       initial: 1,
       min: 1,
@@ -85,6 +88,7 @@ export const PRODUCT_REQUIREMENTS: Partial<Record<ProductBuilderId, ProductRequi
     groupKeys: ["cake-cup-flavour", "cake-cup-decoration"],
     quantity: {
       unit: "cups",
+      unitOne: "cup",
       step: 1,
       initial: 6,
       min: 1,
@@ -98,6 +102,7 @@ export const PRODUCT_REQUIREMENTS: Partial<Record<ProductBuilderId, ProductRequi
     groupKeys: ["tart-flavour", "tart-size"],
     quantity: {
       unit: "tarts",
+      unitOne: "tart",
       step: 1,
       initial: 1,
       min: 1,

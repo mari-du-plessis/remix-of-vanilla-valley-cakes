@@ -35,7 +35,7 @@ export function QuantityField({
         </Button>
         <div className="min-w-24 text-center">
           <span className="text-2xl">{value}</span>{" "}
-          <span className="text-sm text-muted-foreground">{rule.unit}</span>
+          <span className="text-sm text-muted-foreground">{value === 1 ? (rule.unitOne ?? rule.unit) : rule.unit}</span>
         </div>
         <Button
           type="button"
