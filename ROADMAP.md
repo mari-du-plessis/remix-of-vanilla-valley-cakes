@@ -14,7 +14,7 @@ Status legend: ✅ done · 🚧 in progress · ⬜ planned
 | 6a | Gallery improvements (masonry, lightbox, filters, inspiration hand-off) | ✅ |
 | 6 | PDF quotations (`quotes` versions on `quoted` orders) | ✅ |
 | 7 | Cake templates (`cake_templates`, start-from-template) | ✅ |
-| 7b | Product-specific ordering workflows (cupcakes, cheesecakes, biscuits, rusks, cake cups, tarts) | ⬜ awaiting bakery requirements |
+| 7b | Product-specific ordering workflows (cupcakes, cheesecakes, biscuits, rusks, cake cups, tarts) | ✅ confirmed requirements implemented; flavour/size/decoration seed data provisional |
 | 8 | Staff (`staff_members` on profiles + roles) | ⬜ |
 | 9 | Production workflows (`workflow_templates`, `order_tasks`) | ⬜ |
 | 10 | Recipes, ingredients, inventory | ⬜ |
