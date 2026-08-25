@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { LoadingState, OptionPill, SelectableCard } from "@/components/common";
 import { Muted } from "@/components/common/Typography";
 import { QuantityField } from "./QuantityField";
@@ -33,6 +34,29 @@ export function SelectionsStep({
   onToggle: (selection: OrderSelection, multi: boolean) => void;
   onQuantityChange: (value: number) => void;
 }) {
+  /**
+   * A group the bakery currently offers only one of (today: the standard cake
+   * cup size) is not a question — it is answered for the customer and simply
+   * shown, so a second size can be added later without changing this flow.
+   */
+  const fixed = groups.filter((g) => g.options.length === 1 && g.required);
+  useEffect(() => {
+    for (const group of fixed) {
+      const option = group.options[0]!;
+      if (!isSelected(selections, group.key, option.key))
+        onToggle(
+          {
+            groupKey: group.key,
+            groupLabel: group.name,
+            valueKey: option.key,
+            valueLabel: option.name,
+          },
+          false,
+        );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups]);
+
   if (isPending && groups.length === 0) return <LoadingState label="Loading choices…" />;
 
   return (
@@ -42,7 +66,13 @@ export function SelectionsStep({
         <Muted>Tell us what you'd like and we'll come back with a quotation.</Muted>
       </div>
 
-      {groups.map((group) => (
+      {groups.map((group) =>
+        group.options.length === 1 && group.required ? (
+          <div key={group.key} className="space-y-1">
+            <p className="text-sm font-medium">{group.name}</p>
+            <p className="text-sm text-muted-foreground">{group.options[0]!.name}</p>
+          </div>
+        ) : (
         <div key={group.key} className="space-y-3">
           <div>
             <p className="text-sm font-medium">
@@ -109,7 +139,8 @@ export function SelectionsStep({
             </div>
           )}
         </div>
-      ))}
+        ),
+      )}
 
       {quantityRule && (
         <QuantityField rule={quantityRule} value={quantity} onChange={onQuantityChange} />
