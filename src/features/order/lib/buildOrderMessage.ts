@@ -36,8 +36,8 @@ export function buildOrderMessage(
     ``,
     `*Occasion:* ${form.occasion}`,
     `*Product:* ${family.label}`,
-    ...designLines,
-    ...selectionLines,
+    ...detailLines,
+
 
     ``,
     `*Event date:* ${form.eventDate}`,
