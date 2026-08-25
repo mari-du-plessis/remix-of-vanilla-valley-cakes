@@ -1,3 +1,22 @@
+## Confirmed product ordering requirements
+
+- Each family now asks only what the bakery confirmed: cupcakes (inspiration
+  photo, flavour, decoration, quantity), cheesecakes (flavour, size), cookies
+  and rusks (flavour, quantity), cake cups (flavour, standard size), tarts
+  (flavour, size). No cake fields appear anywhere else.
+- New `cake-cup-size` option group with a provisional "Standard" size, so a
+  second size is added in Admin without touching the workflow. A group with a
+  single option is shown, not asked.
+- Inspiration photo upload is limited to Custom Cakes and cupcakes, with
+  product-appropriate wording; it stays optional and reuses the existing upload.
+- New shared summary (`lib/orderSummary.ts`) drives both the customer review
+  panel on the last step and the WhatsApp message, so each product shows only
+  its own fields.
+- WhatsApp emoji comes from the family configuration: cake 🎂, cupcakes 🧁,
+  cookies/biscuits 🍪, cheesecake 🍰 — tarts, cake cups and rusks carry none.
+- All seeded flavours, sizes and decorations remain provisional South African
+  bakery defaults, fully editable in Admin > Products > Options.
+
 ## Product-specific ordering workflows
 
 - Cupcakes, cheesecakes, biscuits, rusks, cake cups and tarts now order through a

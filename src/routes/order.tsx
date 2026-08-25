@@ -15,6 +15,7 @@ import { OrderDesignStep } from "@/features/order/flows/OrderDesignStep";
 import { useProductSelections } from "@/features/order/hooks/useProductSelections";
 import { requirementsFor } from "@/features/order/flows/product-requirements";
 import { productFamily } from "@/config/product-builders";
+import { OrderReviewPanel } from "@/features/order/components/OrderReviewPanel";
 import { SelectionsStep } from "@/features/order/components/SelectionsStep";
 import { useSubmitOrder } from "@/features/order/hooks/useSubmitOrder";
 import { useInspirationConcept } from "@/features/order/hooks/useInspirationConcept";
@@ -89,6 +90,8 @@ function OrderPage() {
   const concept = useInspirationConcept();
   const { submit, submitting, fallbackMessage } = useSubmitOrder(concept);
   const { form, step, stepKey } = order;
+  /** Human size label for the review panel; the catalog owns the wording. */
+  const sizeLabel = catalog.sizes.find((s) => s.id === form.size)?.label;
 
   /* The flow follows whatever product the form currently holds. */
   useEffect(() => {
@@ -228,6 +231,10 @@ function OrderPage() {
           {stepKey === "details" && (
             <DetailsStep
               form={form}
+              showInspiration={flow.usesCakeBuilder || selections.inspiration}
+              {...(selections.inspirationHint
+                ? { inspirationHint: selections.inspirationHint }
+                : {})}
               onInspirationChange={order.setInspirationFile}
               onEventDateChange={(v) => order.update("eventDate", v)}
               onClearGalleryInspiration={order.clearGalleryReference}
@@ -235,7 +242,16 @@ function OrderPage() {
           )}
 
           {stepKey === "contact" && (
-            <ContactStep form={form} onChange={order.update} concept={concept} />
+            <>
+              <OrderReviewPanel
+                form={form}
+                productLabel={productFamily(form.product).label}
+                {...(sizeLabel ? { sizeLabel } : {})}
+              />
+              <div className="mt-6">
+                <ContactStep form={form} onChange={order.update} concept={concept} />
+              </div>
+            </>
           )}
         </div>
 

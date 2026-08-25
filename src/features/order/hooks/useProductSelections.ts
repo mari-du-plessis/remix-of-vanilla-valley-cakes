@@ -77,6 +77,9 @@ export function useProductSelections(productSlug: string) {
     quantity,
     headline: requirements?.headline ?? "Your order",
     stepLabel: requirements?.stepLabel ?? "Choices",
+    /** Only families the bakery works from a reference photo for. */
+    inspiration: requirements?.inspiration ?? false,
+    inspirationHint: requirements?.inspirationHint,
     isPending,
   };
 }

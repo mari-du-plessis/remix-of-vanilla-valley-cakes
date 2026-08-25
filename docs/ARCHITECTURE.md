@@ -162,6 +162,11 @@ product slug → product-builders.ts (builder id) → flows/registry.ts (OrderFl
                                         wizard stages + optional design stage
 ```
 
+- `features/order/flows/product-requirements.ts` — per family: which catalog
+  option groups it asks for, its quantity rule, its heading and whether an
+  inspiration photo is offered. Answers always come from the catalog.
+- `features/order/lib/orderSummary.ts` — the one product-aware summary used by
+  the customer review panel and the WhatsApp message.
 - `features/order/flows/types.ts` — `OrderStepKey`, `OrderFlow`.
 - `features/order/flows/registry.ts` — the only product-family → workflow map,
   plus stage labels.

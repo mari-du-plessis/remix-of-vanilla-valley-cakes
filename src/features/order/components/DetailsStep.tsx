@@ -6,6 +6,10 @@ import type { OrderFormState } from "../types";
 
 type DetailsStepProps = {
   form: OrderFormState;
+  /** Families that don't work from a reference photo hide the upload. */
+  showInspiration?: boolean;
+  /** Product-appropriate explanation of why a photo helps. */
+  inspirationHint?: string;
   onInspirationChange: (file: File | null) => void;
   onEventDateChange: (value: string) => void;
   /** Removes a gallery photo the customer picked as inspiration. */
@@ -14,6 +18,8 @@ type DetailsStepProps = {
 
 export function DetailsStep({
   form,
+  showInspiration = true,
+  inspirationHint,
   onInspirationChange,
   onEventDateChange,
   onClearGalleryInspiration,
@@ -53,14 +59,14 @@ export function DetailsStep({
         </div>
       )}
 
+      {showInspiration && (
       <div>
         <Label htmlFor="inspiration" className="mb-2 block">
           Add an inspiration photo (recommended)
         </Label>
         <p className="mb-2 text-xs leading-relaxed text-muted-foreground">
-          A photo helps us understand your colour scheme, decoration style, overall look, flower
-          colours, finish, drip colour and any other visual details. You can continue without one
-          — we'll simply work from your choices and notes.
+          {inspirationHint ??
+            "A photo helps us understand your colour scheme, decoration style, overall look, flower colours, finish, drip colour and any other visual details. You can continue without one — we'll simply work from your choices and notes."}
         </p>
         <FileDropField
           id="inspiration"
@@ -78,6 +84,7 @@ export function DetailsStep({
           </div>
         )}
       </div>
+      )}
 
       <div>
         <Label htmlFor="date" className="mb-2 block">
