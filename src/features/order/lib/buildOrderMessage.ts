@@ -1,9 +1,8 @@
 import { BRAND } from "@/config/brand";
-import { productFamily, usesCakeRenderer } from "@/config/product-builders";
-import { appearanceLines } from "@/features/cake-builder/lib/appearance";
-import { tierLabel } from "./tiers";
-import { selectionSummary } from "./selections";
+import { productFamily } from "@/config/product-builders";
+import { productSummaryLines } from "./orderSummary";
 import type { OrderFormState } from "../types";
+
 
 /**
  * Pure formatter for the customer's order summary.
