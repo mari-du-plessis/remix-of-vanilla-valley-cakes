@@ -12,7 +12,8 @@ export const ORDER_FLOWS: Record<OrderFlowId, OrderFlow> = {
   "custom-cake": {
     id: "custom-cake",
     label: "Custom Cake",
-    steps: ["occasion", "product", "design", "details", "contact"],
+    /* Choosing what we're baking comes first: it decides everything after it. */
+    steps: ["product", "occasion", "design", "details", "contact"],
     designStepLabel: "Cake",
     usesCakeBuilder: true,
     savesDesigns: true,
@@ -21,11 +22,15 @@ export const ORDER_FLOWS: Record<OrderFlowId, OrderFlow> = {
    * Cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups and tarts. The
    * questions themselves come from the catalog (see `product-requirements.ts`),
    * so the bakery changes them without a developer.
+   *
+   * Simple products stay short: what we're baking, the product's own
+   * questions, the details, then a review. The occasion is asked as an
+   * optional field on the details stage rather than a stage of its own.
    */
   "product-selection": {
     id: "product-selection",
     label: "Product order",
-    steps: ["occasion", "product", "selections", "details", "contact"],
+    steps: ["product", "selections", "details", "contact"],
     designStepLabel: null,
     usesCakeBuilder: false,
     savesDesigns: false,
@@ -34,12 +39,13 @@ export const ORDER_FLOWS: Record<OrderFlowId, OrderFlow> = {
   "generic-enquiry": {
     id: "generic-enquiry",
     label: "Product enquiry",
-    steps: ["occasion", "product", "details", "contact"],
+    steps: ["product", "details", "contact"],
     designStepLabel: null,
     usesCakeBuilder: false,
     savesDesigns: false,
   },
 };
+
 
 /**
  * Builder id -> workflow. A family with configured requirements walks the
