@@ -72,13 +72,17 @@ export const orderFlowFor = (slug: string | null | undefined): OrderFlow => {
   return flow;
 };
 
-/** Human labels for the wizard progress bar. */
+/**
+ * Human labels for the wizard progress bar. Deliberately plain bakery words —
+ * a customer never sees a workflow name, an option group or a product family.
+ */
 const STEP_LABELS: Record<Exclude<OrderStepKey, "design" | "selections">, string> = {
   occasion: "Occasion",
-  product: "Product",
+  product: "Choose",
   details: "Details",
-  contact: "Contact",
+  contact: "Review",
 };
+
 
 export const stepLabel = (
   key: OrderStepKey,
