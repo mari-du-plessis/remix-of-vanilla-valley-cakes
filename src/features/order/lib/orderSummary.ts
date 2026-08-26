@@ -1,5 +1,6 @@
-import { usesCakeRenderer } from "@/config/product-builders";
+import { productFamily, usesCakeRenderer } from "@/config/product-builders";
 import { appearanceLines } from "@/features/cake-builder/lib/appearance";
+import { requirementsFor } from "../flows/product-requirements";
 import { tierLabel } from "./tiers";
 import { selectionSummary } from "./selections";
 import type { OrderFormState } from "../types";
@@ -26,9 +27,19 @@ export function productSummaryLines(
 
   if (!usesCakeRenderer(form.product)) {
     const lines = selectionSummary(form.selections);
-    if (form.quantity > 1) lines.push({ label: "Quantity", value: String(form.quantity) });
+    /**
+     * Quantity is only meaningful for families the bakery sells by amount, and
+     * it is always shown for them — with the unit the bakery configured, so
+     * "2 dozen" never reads as a bare "2".
+     */
+    const rule = requirementsFor(productFamily(form.product).builder)?.quantity;
+    if (rule) {
+      const unit = form.quantity === 1 ? (rule.unitOne ?? rule.unit) : rule.unit;
+      lines.push({ label: "Quantity", value: `${form.quantity} ${unit}` });
+    }
     return lines;
   }
+
 
   return [
     form.shapeKey ? { label: "Shape", value: pretty(form.shapeKey) } : null,
