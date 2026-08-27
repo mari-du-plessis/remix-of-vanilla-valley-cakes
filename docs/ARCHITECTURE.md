@@ -176,12 +176,16 @@ product slug → product-builders.ts (builder id) → flows/registry.ts (OrderFl
 - `features/order/flows/OrderDesignStep.tsx` — the single extension point for
   product-specific design stages.
 
-Two workflows exist today:
+Three workflows exist today. Every one of them starts by asking what we are
+baking, because that answer decides which stages follow and what the progress
+indicator shows:
 
 | Workflow | Stages | Notes |
 | --- | --- | --- |
-| `custom-cake` | Occasion · Product · Cake · Details · Contact | Full SVG cake builder, per-tier design, appearance, AI concept, Saved Designs, Templates |
-| `generic-enquiry` | Occasion · Product · Details · Contact | Cupcakes, cheesecakes, biscuits/cookies, rusks, cake cups, tarts. **Deliberately asks nothing product-specific** — their ordering requirements are still to be confirmed with the bakery |
+| `custom-cake` | Choose · Occasion · Cake · Details · Review | Full SVG cake builder, per-tier design (max 5 tiers), appearance, AI concept, Saved Designs, Templates |
+| `product-selection` | Choose · <product's own questions> · Details · Review | Cupcakes, cheesecakes, cookies/biscuits, rusks, cake cups, tarts. Questions come from the catalog; the occasion is an optional field on Details |
+| `generic-enquiry` | Choose · Details · Review | Fallback for a family with no questions configured yet |
+
 
 Everything cake-specific (SVG renderer, tiers, per-tier appearance, appearance
 controls, cake assets, AI concept, Saved Designs) is reachable only through the

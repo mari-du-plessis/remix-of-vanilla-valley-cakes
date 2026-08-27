@@ -1,0 +1,1 @@
+update public.products set name = 'Cookies & Biscuits', description = 'Decorated or plain cookies and biscuits' where slug = 'biscuits';

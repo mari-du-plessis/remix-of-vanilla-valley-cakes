@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { AdminSection } from "@/features/admin/components/AdminSection";
 import { CakePreview } from "@/features/cake-builder/components/CakePreview";
+import { MAX_TIERS, clampTierCount } from "@/features/cake-builder/lib/geometry";
 import { CAKE_COLOR_DEFAULTS, spongeColour, fillingColour } from "@/config/cake-builder";
 import type { CakeAsset, CakeDesign } from "@/features/cake-builder/types";
 
@@ -82,13 +83,15 @@ export function PreviewLab({ assets }: { assets: CakeAsset[] }) {
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                 Tiers
               </Label>
+              {/* The bakery's maximum is five tiers, shared with the renderer. */}
               <Input
                 type="number"
                 min={1}
-                max={6}
+                max={MAX_TIERS}
                 value={tierCount}
-                onChange={(e) => setTierCount(Math.min(6, Math.max(1, Number(e.target.value))))}
+                onChange={(e) => setTierCount(clampTierCount(Number(e.target.value)))}
               />
+
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">
