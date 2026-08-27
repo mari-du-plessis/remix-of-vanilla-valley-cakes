@@ -43,7 +43,14 @@ export function snapshotToForm(
     size: snapshot.size ?? "",
     flavour: snapshot.flavour ?? "",
     filling: snapshot.filling ?? "",
-    tiers: snapshot.tiers ?? [],
+    /**
+     * Designs saved before the bakery confirmed a five-tier maximum can hold
+     * more tiers than the bakery makes. They are trimmed to the supported
+     * range on open rather than crashing the renderer or being silently
+     * rewritten in storage.
+     */
+    tiers: (snapshot.tiers ?? []).slice(0, MAX_TIERS),
+
     extras: snapshot.extras ?? [],
     appearance: snapshot.appearance ?? EMPTY_ORDER_FORM.appearance,
     cakeText: snapshot.cakeText ?? "",
