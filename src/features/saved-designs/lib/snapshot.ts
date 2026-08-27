@@ -1,3 +1,4 @@
+import { MAX_TIERS } from "@/features/cake-builder/lib/geometry";
 import { EMPTY_ORDER_FORM, type OrderFormState } from "@/features/order/types";
 import type { SavedDesignSnapshot } from "../types";
 
