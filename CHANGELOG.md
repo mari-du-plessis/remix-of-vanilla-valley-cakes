@@ -1,4 +1,25 @@
+## Clearer customer ordering experience
+
+- "What are we baking?" is now the first question in every workflow, so the
+  wizard, its stages and the progress indicator adapt to the product straight
+  away instead of asking the occasion first.
+- Progress now shows the product's own name (Choose · Cupcakes · Details ·
+  Review) and the final stage is called Review, where a plain-language summary
+  of the whole request appears above the contact fields, with a
+  "Change something" link back to the answers.
+- Simple products no longer get an occasion screen of their own — it is an
+  optional field on Details, and it is left out of the summary and the
+  WhatsApp message when empty.
+- Quantity is a large plus/minus stepper with the product's own unit (dozen,
+  packs, boxes), direct typing, clamping to the product's minimum and step, and
+  a screen-reader announcement on every change.
+- Custom Cakes are capped at five tiers everywhere: the geometry engine, the
+  guided builder, the admin preview lab and saved designs, which are safely
+  truncated to five tiers when an older design is opened.
+- "Cookies & Biscuits" replaces "Biscuits" as the customer-facing product name.
+
 ## Confirmed product ordering requirements
+
 
 - Each family now asks only what the bakery confirmed: cupcakes (inspiration
   photo, flavour, decoration, quantity), cheesecakes (flavour, size), cookies
