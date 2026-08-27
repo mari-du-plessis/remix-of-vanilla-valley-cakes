@@ -83,13 +83,15 @@ export function PreviewLab({ assets }: { assets: CakeAsset[] }) {
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                 Tiers
               </Label>
+              {/* The bakery's maximum is five tiers, shared with the renderer. */}
               <Input
                 type="number"
                 min={1}
-                max={6}
+                max={MAX_TIERS}
                 value={tierCount}
-                onChange={(e) => setTierCount(Math.min(6, Math.max(1, Number(e.target.value))))}
+                onChange={(e) => setTierCount(clampTierCount(Number(e.target.value)))}
               />
+
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">
