@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { AdminSection } from "@/features/admin/components/AdminSection";
 import { CakePreview } from "@/features/cake-builder/components/CakePreview";
+import { MAX_TIERS, clampTierCount } from "@/features/cake-builder/lib/geometry";
 import { CAKE_COLOR_DEFAULTS, spongeColour, fillingColour } from "@/config/cake-builder";
 import type { CakeAsset, CakeDesign } from "@/features/cake-builder/types";
 
