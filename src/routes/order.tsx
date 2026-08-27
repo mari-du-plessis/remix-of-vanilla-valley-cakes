@@ -167,6 +167,20 @@ function OrderPage() {
     order.setStep(step + 1);
   };
 
+  /**
+   * "Change something" on the review returns to the stage that owns the
+   * product's answers — the cake builder or the product's questions — falling
+   * back to the details stage. The customer never restarts the order.
+   */
+  const editStep = Math.max(
+    0,
+    ["design", "selections", "details"]
+      .map((key) => steps.indexOf(key as (typeof steps)[number]))
+      .find((index) => index >= 0) ?? step - 1,
+  );
+
+
+
   return (
     <SiteShell footer={false}>
       <div className="mx-auto max-w-xl px-6 py-10">
