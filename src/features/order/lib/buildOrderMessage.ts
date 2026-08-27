@@ -34,7 +34,9 @@ export function buildOrderMessage(
     heading,
     options.orderNumber ? `*Reference:* ${options.orderNumber}` : null,
     ``,
-    `*Occasion:* ${form.occasion}`,
+    /* Optional on the shorter workflows — never sent as an empty field. */
+    form.occasion ? `*Occasion:* ${form.occasion}` : null,
+
     `*Product:* ${family.label}`,
     ...detailLines,
 
