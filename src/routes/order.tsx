@@ -235,6 +235,9 @@ function OrderPage() {
               {...(selections.inspirationHint
                 ? { inspirationHint: selections.inspirationHint }
                 : {})}
+              /* Shorter workflows ask the occasion here instead of on a stage of its own. */
+              showOccasion={!steps.includes("occasion")}
+              onOccasionChange={(v) => order.update("occasion", v)}
               onInspirationChange={order.setInspirationFile}
               onEventDateChange={(v) => order.update("eventDate", v)}
               onClearGalleryInspiration={order.clearGalleryReference}
@@ -247,12 +250,14 @@ function OrderPage() {
                 form={form}
                 productLabel={productFamily(form.product).label}
                 {...(sizeLabel ? { sizeLabel } : {})}
+                onEdit={() => order.setStep(editStep)}
               />
               <div className="mt-6">
                 <ContactStep form={form} onChange={order.update} concept={concept} />
               </div>
             </>
           )}
+
         </div>
 
         <div className="flex gap-3 mt-6">
