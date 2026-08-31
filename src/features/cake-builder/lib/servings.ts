@@ -67,8 +67,8 @@ export function recommendTierSizes(
 
   const target = Math.max(0, Math.floor(requestedServings) || 0);
 
-  let best: { sizes: number[]; total: number } | null = null;
-  let largest: { sizes: number[]; total: number } | null = null;
+  type Combination = { sizes: number[]; total: number };
+  const found: { best?: Combination; largest?: Combination } = {};
 
   /**
    * Walk strictly decreasing combinations bottom-first. `maxIndex` is the
@@ -76,16 +76,18 @@ export function recommendTierSizes(
    */
   const walk = (remaining: number, maxIndex: number, picked: number[], total: number) => {
     if (remaining === 0) {
-      const candidate = { sizes: [...picked], total };
-      if (!largest || candidate.total > largest.total) largest = candidate;
+      const candidate: Combination = { sizes: [...picked], total };
+      const largest = found.largest;
+      if (!largest || candidate.total > largest.total) found.largest = candidate;
       if (candidate.total < target) return;
+      const best = found.best;
       if (
         !best ||
         candidate.total < best.total ||
         /* Same overage: prefer the stack whose bottom tier is smaller. */
         (candidate.total === best.total && (candidate.sizes[0] ?? 0) < (best.sizes[0] ?? 0))
       ) {
-        best = candidate;
+        found.best = candidate;
       }
       return;
     }
@@ -99,7 +101,7 @@ export function recommendTierSizes(
 
   walk(count, sizes.length - 1, [], 0);
 
-  const chosen: { sizes: number[]; total: number } | null = best ?? largest;
+  const chosen = found.best ?? found.largest;
   return chosen ? chosen.sizes : [];
 }
 
