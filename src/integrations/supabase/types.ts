@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.17"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -691,6 +691,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          item_type: string
           metadata: Json
           name: string
           order_id: string
@@ -706,6 +707,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          item_type?: string
           metadata?: Json
           name: string
           order_id: string
@@ -721,6 +723,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          item_type?: string
           metadata?: Json
           name?: string
           order_id?: string
@@ -1129,6 +1132,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean
+          is_customer_visible: boolean
           kind: Database["public"]["Enums"]["product_kind"]
           metadata: Json
           name: string
@@ -1143,6 +1147,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          is_customer_visible?: boolean
           kind?: Database["public"]["Enums"]["product_kind"]
           metadata?: Json
           name: string
@@ -1157,6 +1162,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          is_customer_visible?: boolean
           kind?: Database["public"]["Enums"]["product_kind"]
           metadata?: Json
           name?: string
@@ -1540,6 +1546,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      serving_sizes: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string | null
+          metadata: Json
+          servings: number
+          size_cm: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          metadata?: Json
+          servings: number
+          size_cm: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          metadata?: Json
+          servings?: number
+          size_cm?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
