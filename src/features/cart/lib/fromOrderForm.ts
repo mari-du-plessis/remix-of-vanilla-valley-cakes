@@ -1,4 +1,5 @@
 import { productFamily, usesCakeRenderer } from "@/config/product-builders";
+import { tierColour } from "@/features/cake-builder/lib/appearance";
 import { tierPositionAt } from "@/features/cake-builder/lib/tier-position";
 import type { OrderFormState } from "@/features/order/types";
 import { EMPTY_INSPIRATION, type CartItem, type InspirationRef } from "../types";
@@ -37,7 +38,8 @@ export function cartItemFromOrderForm(
       flavour: tier.flavour,
       filling: tier.filling,
       fillingLocked: false,
-      colour: form.appearance?.tierColours?.[index] ?? "",
+      /* Appearance already stores colours bottom-first, matching the tier order. */
+      colour: tierColour(form.appearance, index)?.name ?? "",
       finish: form.icingKey,
       shape: form.shapeKey,
     }));
