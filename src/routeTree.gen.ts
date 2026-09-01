@@ -15,6 +15,8 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrderRouteImport } from './routes/order'
+import { Route as OrderSentRouteImport } from './routes/order-sent'
+import { Route as ProductsRouteImport } from './routes/products'
 import { Route as SavedDesignsRouteImport } from './routes/saved-designs'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as CakeTemplatesIndexRouteImport } from './routes/cake-templates/index'
@@ -60,6 +62,16 @@ const LoginRoute = LoginRouteImport.update({
 const OrderRoute = OrderRouteImport.update({
   id: '/order',
   path: '/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderSentRoute = OrderSentRouteImport.update({
+  id: '/order-sent',
+  path: '/order-sent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedDesignsRoute = SavedDesignsRouteImport.update({
@@ -166,6 +178,8 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/order-sent': typeof OrderSentRoute
+  '/products': typeof ProductsRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
@@ -190,6 +204,8 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/order-sent': typeof OrderSentRoute
+  '/products': typeof ProductsRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
   '/cake-templates': typeof CakeTemplatesIndexRoute
@@ -215,6 +231,8 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/order-sent': typeof OrderSentRoute
+  '/products': typeof ProductsRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
@@ -241,6 +259,8 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/login'
     | '/order'
+    | '/order-sent'
+    | '/products'
     | '/saved-designs'
     | '/admin'
     | '/cake-templates/$slug'
@@ -265,6 +285,8 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/login'
     | '/order'
+    | '/order-sent'
+    | '/products'
     | '/saved-designs'
     | '/cake-templates/$slug'
     | '/cake-templates'
@@ -289,6 +311,8 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/login'
     | '/order'
+    | '/order-sent'
+    | '/products'
     | '/saved-designs'
     | '/_authenticated/admin'
     | '/cake-templates/$slug'
@@ -315,6 +339,8 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
   OrderRoute: typeof OrderRoute
+  OrderSentRoute: typeof OrderSentRoute
+  ProductsRoute: typeof ProductsRoute
   SavedDesignsRoute: typeof SavedDesignsRoute
   CakeTemplatesSlugRoute: typeof CakeTemplatesSlugRoute
   CakeTemplatesIndexRoute: typeof CakeTemplatesIndexRoute
@@ -362,6 +388,20 @@ declare module '@tanstack/react-router' {
       path: '/order'
       fullPath: '/order'
       preLoaderRoute: typeof OrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order-sent': {
+      id: '/order-sent'
+      path: '/order-sent'
+      fullPath: '/order-sent'
+      preLoaderRoute: typeof OrderSentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved-designs': {
@@ -544,6 +584,8 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
   OrderRoute: OrderRoute,
+  OrderSentRoute: OrderSentRoute,
+  ProductsRoute: ProductsRoute,
   SavedDesignsRoute: SavedDesignsRoute,
   CakeTemplatesSlugRoute: CakeTemplatesSlugRoute,
   CakeTemplatesIndexRoute: CakeTemplatesIndexRoute,
