@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Toaster } from "@/components/ui/sonner";
+import { CartProvider } from "@/features/cart/CartProvider";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
