@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Toaster } from "@/components/ui/sonner";
+import { CartProvider } from "@/features/cart/CartProvider";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -113,8 +114,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster />
+      {/* One basket for the whole visit: an order can hold several products. */}
+      <CartProvider>
+        <Outlet />
+        <Toaster />
+      </CartProvider>
     </QueryClientProvider>
   );
 }

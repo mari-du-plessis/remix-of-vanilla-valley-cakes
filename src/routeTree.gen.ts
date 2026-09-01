@@ -11,9 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrderRouteImport } from './routes/order'
+import { Route as OrderSentRouteImport } from './routes/order-sent'
+import { Route as ProductsRouteImport } from './routes/products'
 import { Route as SavedDesignsRouteImport } from './routes/saved-designs'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as CakeTemplatesIndexRouteImport } from './routes/cake-templates/index'
@@ -41,6 +44,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
@@ -54,6 +62,16 @@ const LoginRoute = LoginRouteImport.update({
 const OrderRoute = OrderRouteImport.update({
   id: '/order',
   path: '/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderSentRoute = OrderSentRouteImport.update({
+  id: '/order-sent',
+  path: '/order-sent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedDesignsRoute = SavedDesignsRouteImport.update({
@@ -156,9 +174,12 @@ const AuthenticatedAdminQuotesQuoteIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/order-sent': typeof OrderSentRoute
+  '/products': typeof ProductsRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
@@ -179,9 +200,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/order-sent': typeof OrderSentRoute
+  '/products': typeof ProductsRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
   '/cake-templates': typeof CakeTemplatesIndexRoute
@@ -203,9 +227,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/cart': typeof CartRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/order-sent': typeof OrderSentRoute
+  '/products': typeof ProductsRoute
   '/saved-designs': typeof SavedDesignsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/cake-templates/$slug': typeof CakeTemplatesSlugRoute
@@ -228,9 +255,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/cart'
     | '/gallery'
     | '/login'
     | '/order'
+    | '/order-sent'
+    | '/products'
     | '/saved-designs'
     | '/admin'
     | '/cake-templates/$slug'
@@ -251,9 +281,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/cart'
     | '/gallery'
     | '/login'
     | '/order'
+    | '/order-sent'
+    | '/products'
     | '/saved-designs'
     | '/cake-templates/$slug'
     | '/cake-templates'
@@ -274,9 +307,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/cart'
     | '/gallery'
     | '/login'
     | '/order'
+    | '/order-sent'
+    | '/products'
     | '/saved-designs'
     | '/_authenticated/admin'
     | '/cake-templates/$slug'
@@ -299,9 +335,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  CartRoute: typeof CartRoute
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
   OrderRoute: typeof OrderRoute
+  OrderSentRoute: typeof OrderSentRoute
+  ProductsRoute: typeof ProductsRoute
   SavedDesignsRoute: typeof SavedDesignsRoute
   CakeTemplatesSlugRoute: typeof CakeTemplatesSlugRoute
   CakeTemplatesIndexRoute: typeof CakeTemplatesIndexRoute
@@ -323,6 +362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
@@ -342,6 +388,20 @@ declare module '@tanstack/react-router' {
       path: '/order'
       fullPath: '/order'
       preLoaderRoute: typeof OrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order-sent': {
+      id: '/order-sent'
+      path: '/order-sent'
+      fullPath: '/order-sent'
+      preLoaderRoute: typeof OrderSentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved-designs': {
@@ -520,9 +580,12 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  CartRoute: CartRoute,
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
   OrderRoute: OrderRoute,
+  OrderSentRoute: OrderSentRoute,
+  ProductsRoute: ProductsRoute,
   SavedDesignsRoute: SavedDesignsRoute,
   CakeTemplatesSlugRoute: CakeTemplatesSlugRoute,
   CakeTemplatesIndexRoute: CakeTemplatesIndexRoute,
