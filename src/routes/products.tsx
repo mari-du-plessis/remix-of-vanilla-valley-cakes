@@ -10,7 +10,7 @@ import { SiteShell } from "@/features/site/components/SiteShell";
 import { fetchProducts } from "@/features/catalog/api";
 import { catalogKeys } from "@/features/catalog/types";
 import { useCart } from "@/features/cart/CartProvider";
-import { formatMoney } from "@/features/pricing/lib/money";
+import { formatCents } from "@/features/pricing/lib/money";
 
 /**
  * Ready-made treats.
@@ -120,7 +120,7 @@ function ProductsPage() {
                   </p>
                 )}
                 <p className="mt-4 text-sm tracking-[0.12em] text-primary uppercase">
-                  {formatMoney(product.base_price_cents ?? 0)}
+                  {formatCents(product.base_price_cents ?? 0)}
                 </p>
                 <Button
                   onClick={() => add(product)}
