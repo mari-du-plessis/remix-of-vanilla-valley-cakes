@@ -48,7 +48,7 @@ function OrderSentPage() {
         )}
         <Muted className="mx-auto mt-5 max-w-md">
           We'll reply on WhatsApp within {BRAND.replyWindow} with your quotation. If WhatsApp didn't
-          open, message us on {BRAND.whatsappDisplay ?? BRAND.whatsappNumber}.
+          open, message us on +{BRAND.whatsappNumber}.
         </Muted>
 
         <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">

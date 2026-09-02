@@ -5,6 +5,8 @@ import { PUBLIC_NAV } from "@/config/navigation";
 import { DEFAULT_PUBLIC_THEME, type ThemeId } from "@/config/themes";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import { cn } from "@/lib/utils";
+import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/features/cart/CartProvider";
 import logoSrc from "@/assets/logo.jpg";
 
 /** Wordmark used across the customer-facing site. */
@@ -60,9 +62,31 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
               {item.label}
             </Link>
           ))}
+          <CartLink />
         </nav>
       </div>
     </header>
+  );
+}
+
+/** Basket entry point, with a live count once anything has been added. */
+function CartLink() {
+  const { itemCount } = useCart();
+  return (
+    <Link
+      to="/cart"
+      aria-label={itemCount > 0 ? `Your order, ${itemCount} items` : "Your order"}
+      activeProps={{ className: "text-primary" }}
+      inactiveProps={{ className: "text-muted-foreground" }}
+      className="relative inline-flex items-center transition-colors hover:text-primary"
+    >
+      <ShoppingBag className="h-4 w-4" />
+      {itemCount > 0 && (
+        <span className="absolute -top-2 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] text-primary-foreground tabular-nums">
+          {itemCount}
+        </span>
+      )}
+    </Link>
   );
 }
 

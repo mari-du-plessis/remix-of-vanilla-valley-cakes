@@ -66,9 +66,12 @@ function CartPage() {
 
         {cart.items.length === 0 ? (
           <EmptyState
-            icon={ShoppingBag}
-            title="Your order is empty"
-            description="Start with a custom cake or browse our ready-made treats."
+            message={
+              <span className="flex flex-col items-center gap-3">
+                <ShoppingBag className="h-6 w-6 text-muted-foreground" aria-hidden />
+                Your order is empty — start with a custom cake or browse our ready-made treats.
+              </span>
+            }
             action={
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Button asChild className="h-12 rounded-full px-8">

@@ -1,3 +1,20 @@
+## Multi-product orders (cart architecture)
+
+- **One order, many products.** Added a cart layer (`src/features/cart`) so a
+  single enquiry can hold a custom cake, cupcakes and ready-made treats. The
+  basket persists on the customer's device and becomes one order with one
+  order item per line when it is sent.
+- **Explicit tier positions.** Tiers are stored bottom-first and carry an
+  explicit `position` (`cake-builder/lib/tier-position.ts`), fixing the
+  long-standing inversion where "bottom tier" edits appeared at the top.
+- **Serving chart.** `cake-builder/lib/servings.ts` recommends tier sizes in
+  centimetres from the bakery's admin-managed cutting chart, always rounding
+  up to the requested number of servings.
+- **New customer pages.** `/cart` (review, edit, remove, contact details),
+  `/products` (fixed-price treats) and `/order-sent` (direct confirmation).
+- **Homepage CTA** now reads "Start your order", and occasions are read from
+  the catalog so the bakery manages them in admin.
+
 ## Clearer customer ordering experience
 
 - "What are we baking?" is now the first question in every workflow, so the

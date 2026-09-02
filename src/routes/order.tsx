@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, MessageCircle } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, Check, MessageCircle, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { StepProgress } from "@/components/common";
 import { Eyebrow } from "@/components/common/Typography";
 import { SiteShell } from "@/features/site/components/SiteShell";
+import { useCart } from "@/features/cart/CartProvider";
+import { cartItemFromOrderForm } from "@/features/cart/lib/fromOrderForm";
 import { BRAND } from "@/config/brand";
 import { useCakeCatalog } from "@/features/catalog/hooks/useCakeCatalog";
 import { useOrderForm } from "@/features/order/hooks/useOrderForm";
@@ -50,10 +52,12 @@ export const Route = createFileRoute("/order")({
    */
   validateSearch: (
     search: Record<string, unknown>,
-  ): { design?: string; edit?: boolean; template?: string } => {
-    const parsed: { design?: string; edit?: boolean; template?: string } = {};
+  ): { design?: string; edit?: boolean; template?: string; item?: string } => {
+    const parsed: { design?: string; edit?: boolean; template?: string; item?: string } = {};
     if (typeof search["design"] === "string") parsed.design = search["design"];
     if (typeof search["template"] === "string") parsed.template = search["template"];
+    /* `?item=<cart id>` reopens a product already in the basket for editing. */
+    if (typeof search["item"] === "string") parsed.item = search["item"];
     if (search["edit"] === true || search["edit"] === "true") parsed.edit = true;
     return parsed;
   },
@@ -80,7 +84,9 @@ export const Route = createFileRoute("/order")({
 
 function OrderPage() {
   const { catalog } = useCakeCatalog();
-  const { design: designId, edit, template: templateSlug } = Route.useSearch();
+  const { design: designId, edit, template: templateSlug, item: cartItemId } = Route.useSearch();
+  const cart = useCart();
+  const navigate = useNavigate();
   /* Product family -> ordering workflow -> the stages this wizard shows. */
   const [productSlug, setProductSlug] = useState("");
   const { flow, choices, steps } = useOrderFlow(productSlug);
@@ -180,6 +186,27 @@ function OrderPage() {
   );
 
 
+
+  /**
+   * Adding to the basket is what ends the product wizard now: an order can
+   * hold several products, so the customer configures one, banks it, and
+   * either adds another or reviews everything on the order page.
+   */
+  const addToCart = () => {
+    if (!order.canContinue()) {
+      toast.error("Please complete this step");
+      return;
+    }
+    const line = cartItemFromOrderForm(form);
+    if (cartItemId && cart.getItem(cartItemId)) {
+      cart.updateItem(cartItemId, line);
+      toast.success("Your changes were saved");
+    } else {
+      cart.addItem(line);
+      toast.success(`${line.label} added to your order`);
+    }
+    navigate({ to: "/cart" });
+  };
 
   return (
     <SiteShell footer={false}>
@@ -295,14 +322,22 @@ function OrderPage() {
             </Button>
           ) : (
 
-            <Button
-              onClick={() => submit(form)}
-              className="flex-1 h-12 rounded-full"
-              disabled={!order.canContinue() || submitting}
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />{" "}
-              {submitting ? "Sending…" : "Send via WhatsApp"}
-            </Button>
+            <div className="flex flex-1 flex-col gap-3">
+              <Button onClick={addToCart} className="h-12 w-full rounded-full">
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                {cartItemId ? "Save changes" : "Add to my order"}
+              </Button>
+              {/* One product only? Send it straight away, exactly as before. */}
+              <Button
+                variant="outline"
+                onClick={() => submit(form)}
+                className="h-12 w-full rounded-full"
+                disabled={!order.canContinue() || submitting}
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />{" "}
+                {submitting ? "Sending…" : "Send this on WhatsApp"}
+              </Button>
+            </div>
           )}
         </div>
 
