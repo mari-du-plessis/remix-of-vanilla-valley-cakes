@@ -78,7 +78,7 @@ function Index() {
                     size="lg"
                     className="h-14 rounded-full px-10 text-sm tracking-[0.18em] uppercase"
                   >
-                    Design your cake
+                    Start your order
                   </Button>
                 </Link>
                 <Link to="/gallery">
